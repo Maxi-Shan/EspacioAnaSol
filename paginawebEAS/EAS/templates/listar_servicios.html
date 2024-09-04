@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Listado de Servicios</title>
+</head>
+<body>
+    <h1>Listado de Servicios</h1>
+    <a href="{% url 'crear_servicio' %}">Crear Nuevo Servicio</a>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID Servicio</th>
+                <th>Nombre del Servicio</th>
+                <th>Descripción</th>
+                <th>Categoría</th>
+                <th>Precio</th>
+                <th>Nota Adicional</th>
+                <th>Imagen</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for servicio in servicios %}
+            <tr>
+                <td>{{ servicio.id_servicio }}</td>
+                <td>{{ servicio.nombre_del_servicio }}</td>
+                <td>{{ servicio.descripcion_del_servicio }}</td>
+                <td>{{ servicio.categoria_del_servicio }}</td>
+                <td>{{ servicio.precio_del_servicio }}</td>
+                <td>{{ servicio.nota_adicional }}</td>
+                <td>
+                    {% if servicio.imagen %}
+                        <img src="{{ servicio.imagen.url }}" alt="Imagen de {{ servicio.nombre_del_servicio }}" style="max-width: 100px; height: auto;">
+                    {% else %}
+                        No hay imagen
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{% url 'modificar_servicio' servicio.id_servicio %}">Modificar</a>
+                    <a href="{% url 'eliminar_servicio' servicio.id_servicio %}">Eliminar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{% url 'pagina_principal' %}">Volver a la Página Principal</a>
+</body>
+</html>
+

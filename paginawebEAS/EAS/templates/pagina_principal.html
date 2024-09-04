@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Página Principal</title>
+
+</head>
+<body>
+    <h1>Bienvenido a Espacio AnaSol</h1>
+    <div>
+        {% for empleado in empleados %}
+        <div>
+            <img src="{{ empleado.imagen.url }}" alt="Imagen de {{ empleado.nombre }}" width="100">
+            <p>{{ empleado.nombre }} {{ empleado.apellido }}</p>
+        </div>
+        {% endfor %}
+    </div>
+    <ul>
+        <li><a href="{% url 'listar_cajas' %}">Gestión de Cajas</a></li>
+        <li><a href="{% url 'listar_servicios' %}">Gestión de Servicios</a></li>
+        <li><a href="{% url 'gestion_empleados' %}">Ir a Gestión de Empleados</a></li>
+    
+    </ul>
+    
+    
+</body>
+</html>
