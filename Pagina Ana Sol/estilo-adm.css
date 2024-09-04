@@ -1,0 +1,92 @@
+body {
+    background-image: url(RECURSOS/9.png);
+}
+
+.boton-volver {
+    margin-right: 85%;
+    display: inline-block;
+    background: linear-gradient(90deg, #fa8dfa 0%, #b033bb 100%);
+    padding: 10px 35px;
+    margin-right: 20px;
+    color: #fdfdfd;
+    border-radius: 25px;
+}
+
+.padre {
+    display: flow-root;
+    background-color: #770082;
+    border-color: 30px #8f8f8f;
+    margin: 50px auto;
+    margin-top: 4%;
+    height: 400px;
+    width: 1000px;
+    border-radius: 2.5%;
+}
+
+.caja {
+    display: flow-root;
+}
+
+.caja2 {
+    display: flow-root;
+}
+
+.texto {
+    position: relative;
+    text-align: center;
+    margin-right: -350px;
+    margin-top: -30%;
+    font-size: xx-large;
+    color: #fdfdfd;
+}
+
+img {
+    position: static;
+    display: inline-flexbox;
+    margin-top: 50px;
+    margin-left: 45px;
+    width: 410px;
+    height: 280px;
+}
+.caja3{
+    display: flow-root;
+    background-color: #fa8dfa;
+    position: relative;
+    margin-left: 550px;
+    margin-top: -15%;
+    height: 40px;
+    width:250px;
+}
+.correo{
+    position: fixed;
+    margin-top: 9px;
+    margin-left: -60px;
+}
+.caja4{
+    display: flow-root;
+    background-color: #fa8dfa;
+    position: relative;
+    margin-left: 550px;
+    margin-top: 5%;
+    height: 40px;
+    width:250px;
+}
+.contraseña{
+    position: fixed;
+    margin-top: 9px;
+    margin-left: -60px;
+}
+.password{
+    position:fixed;
+    width: 31px;
+    height: 21px;
+    margin-left: -110px;
+    margin-top: 9px;
+}
+.user{
+    position:fixed;
+    width: 30px;
+    height: 23px;
+    margin-left: -110px;
+    margin-top: 9px;
+}
