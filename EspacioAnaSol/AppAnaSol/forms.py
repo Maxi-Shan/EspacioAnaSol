@@ -1,0 +1,1 @@
+#El archivo forms.py en Django es fundamental para crear y gestionar formularios web. Sirve como una interfaz entre el modelo de datos (definido en models.py) y la vista de la aplicacion
