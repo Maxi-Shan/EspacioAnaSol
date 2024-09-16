@@ -1,10 +1,6 @@
 from django.db import models
 from django.utils import timezone
 
-#Comando para hacer las migraciones:
-#python manage.py makemigrations
-#python manage.py migrate
-
 class Cliente(models.Model):
     id_cliente = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=255)
