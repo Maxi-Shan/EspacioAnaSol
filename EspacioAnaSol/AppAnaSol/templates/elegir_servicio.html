@@ -1,0 +1,78 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SERVICIOS</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+    
+        <h1>ELIGE TU SERVICIO Y REALIZA TU RESERVA</h1>
+
+        <div class="menu-contenedor">
+            <div class="tarjeta-servicio">
+                <img src="{% static 'imagenes/esculpidas.jpg' %}" alt="Esculpidas">
+                <div class="titulo-servicio">Esculpidas</div>
+                <div class="descripcion-servicio">
+                    <p>Las esculpidas son uñas que su fin es alargar la uña natural, con un molde de base y hechas de gel son más rígidas, mas pesadas y duras. </p>
+                    <div class="info-servicio">
+                        Duración: 2h<br>
+                        Valor del Servicio: $15.000<br>
+                        Valor de la Reserva: 30%
+                    </div>
+                </div>
+                <a href="#" class="boton-reservar">Reservar</a>
+            </div>
+
+            <div class="tarjeta-servicio">
+                <img src="{% static 'imagenes/softgel.jpg' %}" alt="Soft Gel">
+                <div class="titulo-servicio">Soft Gel</div>
+                <div class="descripcion-servicio">
+                    <p>Las Soft Gel son uñas premoldeadas (hechas) de gel que vienen a medida y van pegadas con otro gel y tiene la misma duración pero son más flexibles y livianas. </p>
+                    <div class="info-servicio">
+                        Duración: 2h<br>
+                        Valor del Servicio: $15000<br>
+                        Valor de la Reserva: 30%
+                    </div>
+                </div>
+                <a href="#" class="boton-reservar">Reservar</a>
+            </div>
+
+            <div class="tarjeta-servicio">
+                <img src="{% static 'imagenes/kapping.jpg' %}" alt="Kapping">
+                <div class="titulo-servicio">Kapping</div>
+                <div class="descripcion-servicio">
+                    <p>Las Kapping  es un gel de refuerzo que va SOBRE TU UÑA NATURAL (no alarga) ideal para mantener este servicio todos los meses para clientas con uñas quebradizas o escamadas o débiles.</p>
+                    <div class="info-servicio">
+                        Duración: 2h<br>
+                        Valor del Servicio: $15000<br>
+                        Valor de la Reserva: 30%
+                    </div>
+                </div>
+                <a href="#" class="boton-reservar">Reservar</a>
+            </div>
+
+            <div class="tarjeta-servicio">
+                <img src="{% static 'imagenes/semi.jpg' %}" alt="Semi">
+
+                <div class="titulo-servicio">Semi</div>
+                <div class="descripcion-servicio">
+                    <p>El Esmaltado Semi es solo un esmaltado en gel que tiene una duración de 15 a 21 días, pero con la diferencia que en cada service la uña se va desgastando, por ende, debilitando. Ideal para mantener uñas naturales.</p>
+                    <div class="info-servicio">
+                        Duración: 2h<br>
+                        Valor del Servicio: $15000<br>
+                        Valor de la Reserva: 30%
+                    </div>
+                </div>
+                <a href="#" class="boton-reservar">Reservar</a>
+            </div>
+        </div>
+        <a href="#" class="boton-volver">Volver</a>
+{% block content %}
+{% endblock %}
+</body>
+</html>

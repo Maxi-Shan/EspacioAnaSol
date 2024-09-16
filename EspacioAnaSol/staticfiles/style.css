@@ -1,0 +1,86 @@
+body {
+    background-image: url("10.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+.menu-contenedor {
+    padding: 20px;
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap; 
+}
+
+.tarjeta-servicio {
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    margin: 10px;
+    padding: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.tarjeta-servicio img {
+    width: 100%;
+    height: auto;
+}
+
+.titulo-servicio {
+    font-size: 18px;
+    font-weight: bold;
+    background-color: #000000;
+    color: #ffffff;
+    padding: 10px;
+}
+
+.descripcion-servicio {
+    padding: 10px;
+    text-align: justify;
+}
+
+.info-servicio {
+    font-size: 15px;
+    color: #313030;
+    background-color: #9e9c9c;
+    padding: 10px;
+}
+
+.boton-reservar {
+    background-color: #0f0207;
+    color: white;
+    padding: 10px 15px;
+    margin: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.boton-reservar:hover {
+    background-color: #a3fa81;
+}
+
+.boton-volver {
+    margin-right: 20px;
+    width: 150px; 
+    height: 20px;
+    background: linear-gradient(90deg, #fa8dfa 0%, #b033bb 100%);
+    color: #fdfdfd;
+    padding: 10px 35px;
+    border: 2px solid #000000;
+    border-radius: 25px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 20px;
+}
+
+.boton-volver:hover {
+    background-color: #b6b4b4;
+}
