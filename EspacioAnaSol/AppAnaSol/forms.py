@@ -1,1 +1,11 @@
-#El archivo forms.py en Django es fundamental para crear y gestionar formularios web. Sirve como una interfaz entre el modelo de datos (definido en models.py) y la vista de la aplicacion
+from django import forms
+from .models import Turno
+
+class TurnoForm(forms.ModelForm):
+    class Meta:
+        model = Turno
+        fields = ['fecha', 'hora']
+        widgets = {
+            'fecha' : forms.DateInput(attrs={'type':'date'}),
+            'hora' : forms.TimeInput(attrs={'type':'time'}),
+        }

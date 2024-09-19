@@ -1,0 +1,37 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<button class="boton-login" type="button"><a class="texto-sesion" href=""><b>INICIAR SESION</b></a></button>
+<h1>
+    <center>ESTETICA DE UÑAS</center>
+</h1><br>
+<center><img class="logo" src="{% static 'imagenes/inicio.png' %}" alt=""></center>
+
+<body>
+    <center><button class="tutorial" type="button"><a class="texto-tutorial" href=""><b>¿COMO HACER MI
+                    RESERVA?</b></a></button></center><br>
+    <center><button class="reserva" type="button"><a class="texto-reserva" href="{% url 'elegir_servicio' %}"><b>HACER MI
+                    RESERVA</b></a></button><br></center><br>
+    <center>
+        <a href="https://www.instagram.com/anasol.nailsart?igsh=MTJmZ2Y2Y3NjOWRuZw=="><img class="ig"
+                src="{% static 'imagenes/insta.jpg' %}" alt=""></a>
+        <a
+            href="https://api.whatsapp.com/send?phone=543874870525&text=%20Holaa!%20Me%20podr%C3%ADa%20enviar%20la%20lista%20de%20precios%3F&fbclid=IwAR1afpJgbYX0-sZYpJ45BQ6M3XlGAPkfzL5YKdtTnp3Hw7Nko6QRI27nUFI"><img
+                class="wsp" src="{% static 'imagenes/wpp.jpg' %}" alt=""></a>
+    </center>
+
+
+    <footer>
+        <p>&copy; 2024 Espacio AnaSol</p>
+    </footer>
+    {% block content %}
+    {% endblock %}
+</body>
+</html>

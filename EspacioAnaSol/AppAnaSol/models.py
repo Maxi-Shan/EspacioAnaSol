@@ -17,10 +17,21 @@ class Cliente(models.Model):
     pass
 
 class Turno(models.Model):
+    ESTADO_CHOICES = [
+        ('pendiente', 'Pendiente'),
+        ('confirmado', 'Confirmado'),
+        ('cancelado', 'Cancelado'),
+    ]
+
+
     id_turno = models.AutoField(primary_key=True)
     fecha = models.DateField()
     hora = models.TimeField()
-    estado_turno = models.BooleanField()
+    estado_turno = models.CharField(
+        max_length=10,
+        choices=ESTADO_CHOICES,
+        default='pendiente'
+    )
 
     def __str__(self):
         return f'Turno {self.id_turno} - {self.fecha} {self.hora}'

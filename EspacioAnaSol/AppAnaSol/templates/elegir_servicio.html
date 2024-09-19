@@ -5,14 +5,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SERVICIOS</title>
-    {% load static %}
+    <title>Inicio</title>
     <link rel="stylesheet" href="{% static 'style.css' %}">
 </head>
+<button class="boton-login" type="button"><a class="texto-sesion" href=""><b>INICIAR SESION</b></a></button>
+<h1>
+    <center>ESTETICA DE UÑAS</center>
+</h1>
 <body>
-    
-        <h1>ELIGE TU SERVICIO Y REALIZA TU RESERVA</h1>
-
+    <h1>ELIGE TU SERVICIO Y REALIZA TU RESERVA</h1>
         <div class="menu-contenedor">
             <div class="tarjeta-servicio">
                 <img src="{% static 'imagenes/esculpidas.jpg' %}" alt="Esculpidas">
@@ -25,7 +26,7 @@
                         Valor de la Reserva: 30%
                     </div>
                 </div>
-                <a href="#" class="boton-reservar">Reservar</a>
+                <a href="{% url 'elegir_turno' %}" class="boton-reservar">Reservar</a>
             </div>
 
             <div class="tarjeta-servicio">
@@ -39,7 +40,7 @@
                         Valor de la Reserva: 30%
                     </div>
                 </div>
-                <a href="#" class="boton-reservar">Reservar</a>
+                <a href="{% url 'elegir_turno' %}" class="boton-reservar">Reservar</a>
             </div>
 
             <div class="tarjeta-servicio">
@@ -53,7 +54,7 @@
                         Valor de la Reserva: 30%
                     </div>
                 </div>
-                <a href="#" class="boton-reservar">Reservar</a>
+                <a href="{% url 'elegir_turno' %}" class="boton-reservar">Reservar</a>
             </div>
 
             <div class="tarjeta-servicio">
@@ -68,11 +69,17 @@
                         Valor de la Reserva: 30%
                     </div>
                 </div>
-                <a href="#" class="boton-reservar">Reservar</a>
+                <a href="{% url 'elegir_turno' %}" class="boton-reservar">Reservar</a>
             </div>
         </div>
-        <a href="#" class="boton-volver">Volver</a>
-{% block content %}
-{% endblock %}
+
+        <a href="{% url 'inicio' %}" class="boton-volver">Volver</a>
+        <footer>
+            <p>&copy; 2024 Espacio AnaSol</p>
+        </footer>
+
 </body>
 </html>
+    
+        
+
