@@ -1,1 +1,6 @@
-#El archivo forms.py en Django es fundamental para crear y gestionar formularios web. Sirve como una interfaz entre el modelo de datos (definido en models.py) y la vista de la aplicacion
+from django import forms
+
+class LoginForm(forms.Form):
+    dni = forms.IntegerField(label='DNI')
+    contraseña = forms.CharField(widget=forms.PasswordInput, label='Contraseña')
+

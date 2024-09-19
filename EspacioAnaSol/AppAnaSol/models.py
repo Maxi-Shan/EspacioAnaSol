@@ -33,6 +33,9 @@ class Servicios(models.Model):
     def __str__(self):
         return self.nombre_del_servicio
 
+from django.db import models
+from django.utils import timezone
+
 class Empleado(models.Model):
     dni = models.IntegerField(primary_key=True)
     nombre = models.CharField(max_length=255)
@@ -40,12 +43,13 @@ class Empleado(models.Model):
     domicilio = models.CharField(max_length=255)
     correo_electronico = models.CharField(max_length=255)
     numero_telefono = models.CharField(max_length=20)
-    imagen = models.ImageField(upload_to='imagenes/', null=True, blank=True)
-    contraseña = models.CharField(max_length=255, null=True, blank=True)
+    imagen = models.CharField(max_length=255)
+    contraseña = models.CharField(max_length=255)
     estado_empleado = models.BooleanField(default=True)
+    last_login = models.DateTimeField(default=timezone.now)  # Este campo es necesario
 
     def __str__(self):
-        return f'{self.nombre} {self.apellido}'
+        return self.nombre
 
 class Caja(models.Model):
     id_caja = models.AutoField(primary_key=True)

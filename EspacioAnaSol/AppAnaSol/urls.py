@@ -1,1 +1,11 @@
-#El archivo urls.py en la aplicacion de Django es esencial para mapear las URLs de la aplicacion con las vistas correspondientes. Es como una guia que le dice a django que funcion debe ejecutar cuando el usuario ingresa una URL especifica en el navegador
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('', views.inicio, name='inicio'),
+    path('inicio/', views.inicio, name='inicio'),
+    path('login/', views.login_view, name='login'),
+    path('pagina_principal/', views.pagina_principal, name='pagina_principal'),
+    path('login_admin/', views.login_admin_view, name='login_admin'),
+    path('pagina_admin/', views.pagina_admin, name='pagina_admin'),
+]

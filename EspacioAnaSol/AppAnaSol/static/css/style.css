@@ -1,0 +1,67 @@
+body{
+    background-image: url(../imagenes/fondo.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.logo {
+    width: 25%;
+    height: 25%;
+}
+
+.texto-tutorial,.texto-reserva {
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+}
+
+.tutorial {
+    margin-top: 3%;
+    background: linear-gradient(90deg, #fa8dfa 0%, #b033bb 100%);
+    padding: 30px 10px;
+    color: #fdfdfd;
+    border-radius: 25px;
+}
+
+.reserva {
+    background: linear-gradient(90deg, #fa8dfa 0%, #b033bb 100%);
+    padding: 30px 40px;
+    color: #fdfdfd;
+    border-radius: 25px;
+}
+
+.botones{
+    display: grid;
+    justify-content: center;
+    align-items: center;
+}
+
+.ig {
+    width: 6%;
+    height: 6%;
+    margin-top: 3%;
+    border-radius: 26%;
+}
+
+.wsp {
+    width: 6%;
+    height: 6%;
+    margin-top: 3%;
+    border-radius: 100%;
+
+}
+
+.texto-sesion {
+    text-decoration: none;
+    color: #fdfdfd;
+}
+
+.boton-login {
+    margin-left: 85%;
+    display: inline-block;
+    background: linear-gradient(90deg, #fa8dfa 0%, #b033bb 100%);
+    padding: 20px 30px;
+    margin-right: 20px;
+    color: #fdfdfd;
+    border-radius: 25px ;
+}
