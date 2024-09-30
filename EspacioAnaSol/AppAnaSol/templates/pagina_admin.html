@@ -5,9 +5,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="{% static 'css/fondo2.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
     <title>Panel de Administración</title>
 </head>
 <body>
-    <h2>Bienvenido a la página del administrador</h2>
+    <!--
+    <div class="header">
+    <button class="cerrar_sesion" type="button">
+        <a class="texto-sesion" href="{% url 'logout' %}"><b>Cerrar Sesion</b></a>
+    </button>
+    </div>
+     -->
+    <div class="welcome-admin">
+        <img class="logo-admin" src="{% static 'imagenes/Logo2.png' %}" alt="Logotipo">
+        <h1>Bienvenido a la página de administradores</h1>
+    </div>
+    <div class="colums1">
+        <button class="boton-item2" type="button"><a href="{% url 'Ventas' %}"><p class="text-button">Ventas</p></a></button>
+        <button class="boton-item2" type="button"><a href="{% url 'Caja' %}"><p class="text-button">Caja</p></a></button>
+        <button class="boton-item2" type="button"><a href="{% url 'Turnos' %}"><p class="text-button">Turnos</p></a></button>
+        <button class="boton-item2" type="button"><a href="{% url 'Servicios' %}"><p class="text-button">Servicios</p></a></button>
+        <button class="boton-item2" type="button"><a href="{% url 'Clientes' %}"><p class="text-button">Clientes</p></a></button>
+        <button class="boton-item2" type="button"><a href="{% url 'listar_empleados' %}"><p class="text-button">Empleados</p></a></button>
+    </div>
+    
 </body>
 </html>

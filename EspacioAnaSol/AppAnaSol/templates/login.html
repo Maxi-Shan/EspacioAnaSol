@@ -4,14 +4,42 @@
     {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/fondo.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style_login.css' %}">
     <title>Iniciar Sesión - Empleados</title>
 </head>
 <body>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Iniciar sesión</button>
-    </form>
+    <button class="boton-volver" type="button"><a href="{% url 'inicio' %}">VOLVER</a></button>
+    <div class="padre">
+        <div class="contenedor-flex">
+            <div class="caja">
+                <img src="{% static 'imagenes/Logo1.png' %}" alt="Logotipo">
+            </div>
+            <div class="caja2">
+                <center><h1 class="texto">Iniciar Sesion</h1></center>
+                <form method="POST" action="{% url 'login' %}">
+                    {% csrf_token %}
+                    <div class="caja3">
+                        <label for="dni"><p class="title">DNI:</p></label>
+                        <input type="number" id="dni" name="dni" placeholder="Ingrese su DNI">
+                    </div>
+                    <div class="caja4">
+                        <label for="password"><p class="title">Contraseña:</p></label>
+                        <input type="password" id="password" name="contraseña" placeholder="Ingrese su contraseña">
+                    </div>
+                    <div class="boton_enviar">
+                        <button type="submit">Acceder</button>
+                    </div>
+                </form>
+                {% if messages %}
+                <ul>
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                        {% endfor %}
+                </ul>
+            {% endif %}
+            </div>
+        </div>
+    </div>
 </body>
 </html>

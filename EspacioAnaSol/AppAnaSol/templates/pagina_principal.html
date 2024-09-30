@@ -4,11 +4,31 @@
     {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/fondo.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
     <title>Página Principal</title>
 </head>
 <body>
-    <h2>Bienvenido {{ empleado.nombre }}</h2>
-    <p><a href="{% url 'login_admin' %}">Iniciar sesión como administrador</a></p>
+    <!--
+    <div class="header">
+    <button class="cerrar_sesion" type="button">
+        <a class="texto-sesion" href="{% url 'logout' %}"><b>Cerrar Sesion</b></a>
+    </button>
+    </div>
+     -->
+    <div class="welcome">
+        <img class="logo-eas" src="{% static 'imagenes/Logo1.png' %}" alt="Logotipo">
+        <h1>Bienvenido</h1>
+        <h2>A Espacio Ana Sol</h2>
+    </div>
+    <div class="colums1">
+        <button class="boton-item" type="button"><a href="{% url 'Ventas' %}"><p class="text-button">Ventas</p></a></button>
+        <button class="boton-item" type="button"><a href="{% url 'Caja' %}"><p class="text-button">Caja</p></a></button>
+        <button class="boton-item" type="button"><a href="{% url 'Turnos' %}"><p class="text-button">Turnos</p></a></button>
+        <button class="boton-item" type="button"><a href="{% url 'Servicios' %}"><p class="text-button">Servicios</p></a></button>
+        <button class="boton-item" type="button"><a href="{% url 'Clientes' %}"><p class="text-button">Clientes</p></a></button>
+    </div>
+
+    
 </body>
 </html>

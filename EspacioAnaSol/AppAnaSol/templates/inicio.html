@@ -4,21 +4,24 @@
     {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/fondo.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
     <title>Inicio</title>
 </head>
 <button class="boton-login" type="button"><a class="texto-sesion" href="{% url 'login' %}"><b>INICIAR SESION</b></a></button>
-        <h1><center>ESTETICA DE UÑAS</center></h1><br>
+        <h1 class="titulo"><center>ESTETICA DE UÑAS</center></h1><br>
         <center><img class="logo" src="{% static 'imagenes/02.png' %}" alt="Logo"></center>
 <body>
     <div class="botones">
     <button class="tutorial" type="button"><a class="texto-tutorial" href="#"><b>¿COMO HACER MI RESERVA?</b></a></button><br>
     <button class="reserva" type="button"><a class="texto-reserva" href="#"><b>HACER MI RESERVA</b></a></button><br><br>
     </div>
+    <div class="iconos">
     <center>
         <a href="https://www.instagram.com/anasol.nailsart?igsh=MTJmZ2Y2Y3NjOWRuZw=="><img class="ig" src="{% static 'imagenes/7db29584-014b-45da-a5c5-b2b211f8255d.jpg' %}" alt=""></a>
         <a href="https://api.whatsapp.com/send?phone=543874870525&text=%20Holaa!%20Me%20podr%C3%ADa%20enviar%20la%20lista%20de%20precios%3F&fbclid=IwAR1afpJgbYX0-sZYpJ45BQ6M3XlGAPkfzL5YKdtTnp3Hw7Nko6QRI27nUFI"><img class="wsp" src="{% static 'imagenes/1bf30483-de51-4aa9-8708-45ca8ccf4bbd.jpg' %}" alt=""></a>
     </center>
+    </div>
 </body>
 
 </html>

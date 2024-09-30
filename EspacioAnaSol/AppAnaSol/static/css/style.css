@@ -1,12 +1,13 @@
-body{
-    background-image: url(../imagenes/fondo.png);
-    background-repeat: no-repeat;
-    background-size: cover;
+.titulo{
+    font-weight: bold;
+    margin-top: -40px;
 }
 
 .logo {
-    width: 25%;
-    height: 25%;
+    width: 20%;
+    height: 20%;
+    margin-top: 40px;
+    margin-bottom: 10px;
 }
 
 .texto-tutorial,.texto-reserva {
@@ -18,16 +19,20 @@ body{
 .tutorial {
     margin-top: 3%;
     background: linear-gradient(90deg, #fa8dfa 0%, #b033bb 100%);
-    padding: 30px 10px;
+    padding: 15px 10px;
     color: #fdfdfd;
     border-radius: 25px;
 }
 
 .reserva {
     background: linear-gradient(90deg, #fa8dfa 0%, #b033bb 100%);
-    padding: 30px 40px;
+    padding: 15px 40px;
     color: #fdfdfd;
     border-radius: 25px;
+}
+
+.iconos{
+    margin-top: -30px;
 }
 
 .botones{
@@ -56,12 +61,126 @@ body{
     color: #fdfdfd;
 }
 
+.cerrar_sesion {
+    margin-left: 85%;
+    display: inline-block;
+    background: linear-gradient(90deg, #fa8dfa 0%, #b033bb 100%);
+    padding: 20px 5px;
+    margin-right: 20px;
+    color: #fdfdfd;
+    border-radius: 25px ;
+}
+
 .boton-login {
     margin-left: 85%;
     display: inline-block;
     background: linear-gradient(90deg, #fa8dfa 0%, #b033bb 100%);
-    padding: 20px 30px;
+    padding: 20px 5px;
     margin-right: 20px;
     color: #fdfdfd;
     border-radius: 25px ;
+}
+
+.header {
+    display: flex;
+    margin-top: 10px;
+    margin-right: 10px;
+}
+
+.foto-perfil {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+.colums1{
+    display: grid;
+    grid-template-columns: 500px 500px;
+    justify-content: center;
+}
+
+.boton-item{
+    background-color: rgb(255, 255, 255);
+    border: 0;
+    text-align: center;
+    border-radius: 10px;
+    margin: 30px;
+    height: 200px;
+}
+
+.boton-item2{
+    background-color: #8B2EA9;
+    border: 0;
+    text-align: center;
+    border-radius: 10px;
+    margin: 30px;
+    height: 200px;
+}
+
+.boton{
+    background-color: #fa8dfa;
+    height: 100px;
+    width: 200px;
+}
+a{
+    color: #b033bb;
+    text-decoration: none;
+    font-size: 15px;
+}
+
+.text-button{
+    font-weight: 900;
+    font-size: 30px;
+    text-align: center;
+    color: black;
+}
+
+.text-button2{
+    font-weight: 900;
+    font-size: 30px;
+    text-align: center;
+    color: white;
+}
+
+.welcome{
+    background-image: url(../imagenes/fondo2.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+    text-align: center;
+    font-size: 20px;
+    font-weight: 900;
+    margin-left: 150px;
+    margin-right: 150px;
+    margin-top: 100px;
+    padding: 100px;
+}
+
+.logo-eas{
+    float: right;
+    height: 250px;
+    margin-top: -50px;
+}
+
+.welcome-admin{
+    background-image: url(../imagenes/fondo.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+    text-align: center;
+    font-size: 20px;
+    font-weight: 900;
+    margin-left: 150px;
+    margin-right: 150px;
+    margin-top: 100px;
+    padding: 100px;
+}
+
+.logo-admin{
+    float: right;
+    height: 250px;
+    margin-top: -50px;
+}
+
+.boton_.boton-login{
+    background-color: white;
+    color: black;
 }

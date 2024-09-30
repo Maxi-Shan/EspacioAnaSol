@@ -1,0 +1,106 @@
+.boton-volver {
+    display: inline-block;
+    background: linear-gradient(90deg, #fa8dfa 0%, #b033bb 100%);
+    margin-right: 10px;
+    border-radius: 25px;
+    text-align: center;
+    width: 90px;
+    padding: 20px 10px;
+}
+
+a{
+    text-decoration: none;
+    color: white;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.texto{
+    font-weight: bold;
+    color: #b033bb;
+    font-size: 50px;
+}
+
+.title{
+    position: relative;
+    top: 15px;
+    margin-left: 80px;
+}
+
+.padre {
+    background-color: #ffffff;
+    border: 2px solid #8b2ea8;
+    margin: 50px auto;
+    margin-top: 4%;
+    height: 400px;
+    width: 800px;
+    border-radius: 50px;
+}
+
+.contenedor-flex {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    height: 100%;
+    padding: 10px;
+}
+
+.caja img {
+    max-width: 400px;
+    height: auto;
+}
+
+.caja2 {
+    display: inline-block;
+    flex-direction: column;
+    justify-content: center;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 400px;
+}
+
+.caja3 , .caja4{
+    background-color: #8b2ea8;
+    margin-top: 30px;
+    width: 350px;
+    height: 50px;
+}
+
+form {
+    width: 100%;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+input{
+    position: relative;
+    top: -25px;
+    width: 150px;
+    height: 23px;
+    margin-left: 180px;
+}
+
+button {
+    width: 150px;
+    padding: 10px;
+    background-color: #a964bf;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.boton_enviar{
+    margin-top: 40px;
+    margin-left: 200px;
+}
+
+button:hover {
+    background-color: #8b2ea8;
+}

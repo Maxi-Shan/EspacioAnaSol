@@ -1,10 +1,13 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from .models import Caja, Empleado
 from .forms import LoginForm
-from .models import Empleado
-
-def inicio(request):
-    return render(request, 'inicio.html')
+from .forms import EmpleadoForm
+from django.contrib.auth.mixins import UserPassesTestMixin
+from django.utils import timezone
+from .forms import AbrirCajaForm, CerrarCajaForm
 
 def login_view(request):
     if request.method == 'POST':
@@ -14,70 +17,111 @@ def login_view(request):
             contraseña = form.cleaned_data['contraseña']
             try:
                 empleado = Empleado.objects.get(dni=dni, contraseña=contraseña)
+                if not empleado.estado_empleado:
+                    messages.error(request, 'Este empleado está suspendido')
+                    return redirect('login')
+                else:
+                    request.session['empleado_dni'] = empleado.dni  # Almacena el dni en la sesión
+                    if empleado.es_admin:
+                        return redirect('pagina_admin')
+                    else:
+                        return redirect('pagina_principal')
             except Empleado.DoesNotExist:
-                messages.error(request, 'DNI o contraseña incorrectos.')
-                return render(request, 'login.html', {'form': form})
-
-            if empleado.estado_empleado:
-                request.session['empleado_id'] = empleado.dni
-                return redirect('pagina_principal')
-            else:
-                messages.error(request, 'Empleado inactivo.')
-                return render(request, 'login.html', {'form': form})
+                messages.error(request, 'DNI o contraseña incorrectos o no registrados')
     else:
         form = LoginForm()
+
     return render(request, 'login.html', {'form': form})
 
-def pagina_principal(request):
-    if 'empleado_id' not in request.session:
-        return redirect('login')
+def admin_required(view_func):
+    def _wrapped_view_func(request, *args, **kwargs):
+        if not request.empleado or not request.empleado.es_admin:
+            messages.error(request, "Acceso denegado. Solo los administradores pueden acceder.")
+            return redirect('pagina_principal')  
+        return view_func(request, *args, **kwargs)
+    return _wrapped_view_func
 
-    empleado_id = request.session['empleado_id']
-    try:
-        empleado = Empleado.objects.get(dni=empleado_id)
-    except Empleado.DoesNotExist:
-        return redirect('login')
+@login_required
+@admin_required
+def listar_empleados(request):
+    empleados = Empleado.objects.all()
+    return render(request, 'listar_empleados.html', {'empleados': empleados})
 
-    return render(request, 'pagina_principal.html', {'empleado': empleado})
-
-def login_admin_view(request):
+@login_required
+@admin_required
+def crear_empleado(request):
     if request.method == 'POST':
-        form = LoginForm(request.POST)
+        form = EmpleadoForm(request.POST)
         if form.is_valid():
-            dni = form.cleaned_data['dni']
-            contraseña = form.cleaned_data['contraseña']
-            try:
-                empleado = Empleado.objects.first()  # Solo el primer empleado puede ser administrador
-            except Empleado.DoesNotExist:
-                messages.error(request, 'No hay empleados registrados.')
-                return render(request, 'login_admin.html', {'form': form})
-
-            if empleado.dni == dni and empleado.contraseña == contraseña:
-                if empleado.estado_empleado:
-                    # Guardar el DNI del empleado en la sesión
-                    request.session['empleado_id'] = empleado.dni
-                    return redirect('pagina_admin')
-                else:
-                    messages.error(request, 'Empleado inactivo.')
-                    return render(request, 'login_admin.html', {'form': form})
-            else:
-                messages.error(request, 'DNI o contraseña incorrectos.')
-                return render(request, 'login_admin.html', {'form': form})
+            form.save()
+            messages.success(request, 'Empleado creado exitosamente.')
+            return redirect('listar_empleados')
     else:
-        form = LoginForm()
-    return render(request, 'login_admin.html', {'form': form})
+        form = EmpleadoForm()
+    return render(request, 'crear_empleado.html', {'form': form})
 
+@login_required
+@admin_required
+def editar_empleado(request, dni):
+    empleado = get_object_or_404(Empleado, dni=dni)
+    if request.method == 'POST':
+        form = EmpleadoForm(request.POST, instance=empleado)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Empleado actualizado exitosamente.')
+            return redirect('listar_empleados')
+    else:
+        form = EmpleadoForm(instance=empleado)
+    return render(request, 'editar_empleado.html', {'form': form})
+
+@login_required
+@admin_required
+def eliminar_empleado(request, dni):
+    empleado = get_object_or_404(Empleado, dni=dni)
+    if request.method == 'POST':
+        empleado.delete()
+        messages.success(request, 'Empleado eliminado exitosamente.')
+        return redirect('listar_empleados')
+    return render(request, 'eliminar_empleado.html', {'empleado': empleado})
+
+
+def inicio(request):
+    return render(request, 'inicio.html')
+
+@login_required
+def pagina_principal(request):
+    return render(request, 'pagina_principal.html')
+
+@admin_required
 def pagina_admin(request):
-    # Verificar si el empleado está logueado como administrador
-    if 'empleado_id' not in request.session:
-        return redirect('login_admin')
+    return render(request, 'pagina_admin.html')
 
-    empleado_id = request.session['empleado_id']
-    try:
-        empleado = Empleado.objects.first()  # Solo el primer empleado es administrador
-        if empleado.dni != empleado_id:
-            return redirect('login_admin')
-    except Empleado.DoesNotExist:
-        return redirect('login_admin')
+@login_required
+@admin_required
+def clientes_view(request):
+    return render(request, 'clientes.html')
 
-    return render(request, 'pagina_admin.html', {'empleado': empleado})
+@login_required
+@admin_required
+def ventas_view(request):
+    return render(request, 'ventas.html')
+
+@login_required
+@admin_required
+def turnos_view(request):
+    return render(request, 'turnos.html')
+
+@login_required
+@admin_required
+def servicios_view(request):
+    return render(request, 'servicios.html')
+
+@login_required
+@admin_required
+def caja_view(request):
+    return render(request, 'caja.html')
+
+
+def logout_view(request):
+    logout(request)
+    return redirect('login') 
