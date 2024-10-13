@@ -12,6 +12,8 @@
             <th>Correo</th>
             <th>Domicilio</th>
             <th>Número de Teléfono</th>
+            <th>Estado</th>
+            <th>Rol</th>
             <th>Acciones</th>
         </tr>
     </thead>
@@ -24,6 +26,20 @@
             <td>{{ empleado.correo_electronico }}</td>
             <td>{{ empleado.domicilio }}</td>
             <td>{{ empleado.numero_telefono }}</td>
+            <td>
+                {% if empleado.estado_empleado %}
+                    Activo
+                {% else %}
+                    Suspendido
+                {% endif %}
+            </td>
+            <td>
+                {% if empleado.es_admin %}
+                    Administrador
+                {% else %}
+                    Empleado
+                {% endif %}
+            </td>
             <td>
                 <a href="{% url 'modificar_empleado' empleado.dni %}">Editar</a>
                 <a href="{% url 'eliminar_empleado' empleado.dni %}">Eliminar</a>

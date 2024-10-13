@@ -9,8 +9,19 @@
     <h1>Registrar Cliente</h1>
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Registrar</button>
+        <label for="nombre">Nombre:</label>
+        <input type="text" name="nombre" id="nombre" value="{{ form.nombre.value }}">
+    
+        <label for="apellido">Apellido:</label>
+        <input type="text" name="apellido" id="apellido" value="{{ form.apellido.value }}">
+    
+        <label for="correo_electronico">Correo Electrónico:</label>
+        <input type="email" name="correo_electronico" id="correo_electronico" value="{{ form.correo_electronico.value }}">
+    
+        <label for="numero_telefono">Número de Teléfono:</label>
+        <input type="text" name="numero_telefono" id="numero_telefono" value="{{ form.numero_telefono.value }}">
+    
+        <button type="submit">Guardar</button>
     </form>
     <a href="{% url 'listar_clientes' %}">Ver Clientes</a>
 </body>

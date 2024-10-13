@@ -23,7 +23,13 @@
             <td>{{ turno.id_turno }}</td>
             <td>{{ turno.fecha }}</td>
             <td>{{ turno.hora }}</td>
-            <td>{{ turno.estado_turno }}</td>
+            <td>
+                {% if turno.estado_turno %}
+                    Disponible
+                {% else %}
+                    Reservado
+                {% endif %}
+            </td>
             <td>
                 {% for servicio in servicios_x_turno %}
                     {% if servicio.id_turno.id_turno == turno.id_turno %}

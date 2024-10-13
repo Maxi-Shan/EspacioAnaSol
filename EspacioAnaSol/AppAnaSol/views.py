@@ -29,7 +29,7 @@ def login_view(request):
                 if not empleado.estado_empleado:
                     messages_to_display.append('Este empleado está suspendido')
                 else:
-                    request.session['empleado_dni'] = empleado.dni  # Almacena el dni en la sesión
+                    request.session['empleado_dni'] = empleado.dni 
                     if empleado.es_admin:
                         return redirect('pagina_admin')
                     else:
@@ -100,15 +100,14 @@ def listar_cajas(request):
     cajas = Caja.objects.all()
     caja_abierta = cajas.filter(fecha_cierre__isnull=True).exists()
     
-    # Obtener si el usuario es administrador
     dni_empleado = request.session.get('empleado_dni')
     empleado = get_object_or_404(Empleado, dni=dni_empleado)
-    es_admin = empleado.es_admin  # Comprobar si es administrador
+    es_admin = empleado.es_admin  
 
     return render(request, 'listar_cajas.html', {
         'cajas': cajas, 
         'caja_abierta': caja_abierta,
-        'es_admin': es_admin  # Pasar la variable al template
+        'es_admin': es_admin  
     })
 
 @login_required
@@ -131,11 +130,9 @@ def cerrar_caja(request, id_caja):
     caja = get_object_or_404(Caja, id_caja=id_caja)
 
     if request.method == 'POST':
-        # Obtener el empleado que está cerrando la caja
         dni_empleado = request.session.get('empleado_dni')
         empleado = get_object_or_404(Empleado, dni=dni_empleado)
 
-        # Cerrar la caja
         caja.cerrar_caja(empleado)
         messages.success(request, 'Caja cerrada correctamente.')
         return redirect('listar_cajas')
@@ -150,7 +147,6 @@ def modificar_caja(request, id_caja):
         monto_inicial = request.POST.get('monto_inicial', caja.monto_inicial)
         monto_recaudado = request.POST.get('monto_recaudado', caja.monto_recaudado)
 
-        # Convertir los montos a números decimales si es necesario
         try:
             monto_inicial = float(monto_inicial)
             monto_recaudado = float(monto_recaudado)
@@ -158,14 +154,11 @@ def modificar_caja(request, id_caja):
             messages.error(request, 'Los montos ingresados deben ser valores numéricos.')
             return redirect('modificar_caja', id_caja=id_caja)
 
-        # Actualizar los montos en la caja
         caja.monto_inicial = monto_inicial
         caja.monto_recaudado = monto_recaudado
 
-        # Recalcular el monto final
         caja.monto_final = caja.monto_inicial + caja.monto_recaudado
         
-        # Guardar la caja actualizada
         caja.save()
 
         messages.success(request, 'Montos actualizados y monto final recalculado exitosamente.')
@@ -187,13 +180,12 @@ def eliminar_caja(request, id_caja):
 def listar_servicios(request):
     servicios = Servicios.objects.all()
 
-    # Obtener el empleado de la sesión
     dni_empleado = request.session.get('empleado_dni')
     empleado = Empleado.objects.get(dni=dni_empleado)
 
     context = {
         'servicios': servicios,
-        'es_admin': empleado.es_admin,  # Pasamos si es admin al contexto
+        'es_admin': empleado.es_admin, 
     }
     return render(request, 'listar_servicios.html', context)
 
@@ -202,9 +194,8 @@ def crear_servicio(request):
     if request.method == 'POST':
         form = ServiciosForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()  # Guardar el servicio y obtener la instancia
+            form.save() 
             messages.success(request, 'Servicio creado exitosamente.')
-            # Redirigir a la vista de crear turno pasando el id del servicio
             return redirect('listar_servicios')
     else:
         form = ServiciosForm()
@@ -232,15 +223,13 @@ def crear_turno(request, servicio_id):
     if request.method == 'POST':
         form = TurnoForm(request.POST)
         if form.is_valid():
-            turno = form.save()  # Guardar el nuevo turno
-            # Guardar la relación entre el servicio y el turno
+            turno = form.save()
             ServicioXTurno.objects.create(id_servicio_id=servicio_id, id_turno=turno)
             messages.success(request, 'Turno creado exitosamente.')
-            return redirect('listar_turnos')  # Redirigir a la lista de turnos
+            return redirect('listar_turnos') 
     else:
         form = TurnoForm()
 
-    # Aquí puedes pasar el servicio actual para mostrar información si deseas
     servicio = Servicios.objects.get(id_servicio=servicio_id)
     return render(request, 'crear_turno.html', {'form': form, 'servicio': servicio})
 
@@ -250,7 +239,6 @@ def listar_turnos(request):
     servicios_x_turno = ServicioXTurno.objects.select_related('id_turno', 'id_servicio').all()
     empleados_x_turno = EmpleadoXTurno.objects.select_related('id_turno', 'dni_emp').all()
 
-    # Obtener el empleado de la sesión
     dni_empleado = request.session.get('empleado_dni')
     empleado = Empleado.objects.get(dni=dni_empleado)
 
@@ -258,7 +246,7 @@ def listar_turnos(request):
         'turnos': turnos,
         'servicios_x_turno': servicios_x_turno,
         'empleados_x_turno': empleados_x_turno,
-        'es_admin': empleado.es_admin,  # Pasamos si es admin al contexto
+        'es_admin': empleado.es_admin, 
     }
     return render(request, 'listar_turnos.html', context)
 
@@ -284,7 +272,6 @@ def crear_registro_turno(request):
 def modificar_registro_turno(request, turno_id):
     turno = get_object_or_404(Turno, id_turno=turno_id)
     
-    # Obtener la relación actual de servicio y empleado, manejando el caso si no existe
     servicio_actual = ServicioXTurno.objects.filter(id_turno=turno).first()
     empleado_actual = EmpleadoXTurno.objects.filter(id_turno=turno).first()
 
@@ -299,7 +286,6 @@ def modificar_registro_turno(request, turno_id):
         else:
             ServicioXTurno.objects.create(id_servicio_id=nuevo_servicio_id, id_turno=turno)
 
-        # Actualizar o crear el empleado si no existe
         if empleado_actual:
             empleado_actual.dni_emp_id = nuevo_empleado_id
             empleado_actual.save()
@@ -309,7 +295,6 @@ def modificar_registro_turno(request, turno_id):
         messages.success(request, 'El turno ha sido actualizado correctamente.')
         return redirect('listar_turnos')
 
-    # Obtener todos los servicios y empleados para mostrar en el formulario
     servicios = Servicios.objects.all()
     empleados = Empleado.objects.all()
 
@@ -347,13 +332,12 @@ def registrar_cliente(request):
 def listar_clientes(request):
     clientes = Cliente.objects.all()
     
-    # Obtener el empleado de la sesión
     dni_empleado = request.session.get('empleado_dni')
     empleado = Empleado.objects.get(dni=dni_empleado)
     
     context = {
         'clientes': clientes,
-        'es_admin': empleado.es_admin,  # Pasamos si es admin al contexto
+        'es_admin': empleado.es_admin,
     }
     return render(request, 'listar_clientes.html', context)
 
@@ -361,38 +345,36 @@ def listar_clientes(request):
 def listar_ventas(request):
     ventas = Venta.objects.all()
 
-    # Obtener el empleado de la sesión
     dni_empleado = request.session.get('empleado_dni')
     empleado = Empleado.objects.get(dni=dni_empleado)
 
     context = {
         'ventas': ventas,
-        'es_admin': empleado.es_admin,  # Pasamos si es admin al contexto
+        'es_admin': empleado.es_admin, 
     }
     return render(request, 'listar_ventas.html', context)
 
 
 def crear_venta(request):
     if request.method == "POST":
-        # Verificar si hay una caja abierta
-        caja_abierta = Caja.objects.filter(estado=True).first()  # Obtiene la primera caja abierta
+        caja_abierta = Caja.objects.filter(estado=True).first()  
         if caja_abierta:
-            # Si la caja está abierta, proceder a crear la venta
+
             form = VentaForm(request.POST)
             if form.is_valid():
                 venta = form.save(commit=False)
-                venta.id_caja = caja_abierta  # Asignar la caja abierta
-                venta.fecha_venta = timezone.now().date()  # Establecer la fecha actual
-                venta.hs_venta = timezone.now().time()  # Establecer la hora actual
-                venta.save()  # Guardar la venta
+                venta.id_caja = caja_abierta  
+                venta.fecha_venta = timezone.now().date()  
+                venta.hs_venta = timezone.now().time() 
+                venta.save() 
                 messages.success(request, "Venta registrada exitosamente.")
-                return redirect('listar_ventas')  # Redirigir a la lista de ventas
+                return redirect('listar_ventas') 
         else:
             messages.error(request, "No se puede registrar la venta, la caja está cerrada.")
-            return redirect('crear_venta')  # Redirigir de nuevo a la vista de crear venta
+            return redirect('crear_venta')
 
     else:
-        form = VentaForm()  # Crear un formulario vacío para GET
+        form = VentaForm()
 
     return render(request, 'crear_venta.html', {'form': form})
 

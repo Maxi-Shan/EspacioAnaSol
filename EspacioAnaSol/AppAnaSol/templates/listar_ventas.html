@@ -34,6 +34,8 @@
                 Completada
             {% elif venta.estado_venta == 1 %}
                 En Proceso
+            {% elif venta.estado_venta == 2 %}
+                No Completada
             {% endif %}</td>
             <td>
                 {% if es_admin %}

@@ -2,10 +2,27 @@
 
 {% block content %}
 <h1>Registrar Servicio</h1>
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Registrar Servicio</button>
-    </form>
-    <a href="{% url 'listar_servicios' %}">Volver al Listado de Servicios</a>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <label for="nombre_del_servicio">Nombre del Servicio:</label>
+    <input type="text" name="nombre_del_servicio" id="nombre_del_servicio" value="{{ form.nombre_del_servicio.value }}"><br>
+    <br>
+    <label for="imagen">Imagen:</label>
+    <input type="file" name="imagen" id="imagen"><br>
+    <br>
+    <label for="descripcion_del_servicio">Descripción del Servicio:</label><br>
+    <textarea name="descripcion_del_servicio" id="descripcion_del_servicio">{{ form.descripcion_del_servicio.value }}</textarea><br>
+    <br>
+    <label for="duracion">Duración:</label>
+    <input type="text" name="duracion" id="duracion" value="{{ form.duracion.value }}"><br>
+    <br>
+    <label for="precio_del_servicio">Precio del Servicio:</label>
+    <input type="number" step="0.01" name="precio_del_servicio" id="precio_del_servicio" value="{{ form.precio_del_servicio.value }}"> <br>
+    <br>
+    <label for="valor_sello">Valor Sello:</label>
+    <input type="number" step="0.01" name="valor_sello" id="valor_sello" value="{{ form.valor_sello.value }}"> <br>
+    <br>
+    <button type="submit">Guardar</button>
+</form>
+<a href="{% url 'listar_servicios' %}">Volver al Listado de Servicios</a>
 {% endblock %}

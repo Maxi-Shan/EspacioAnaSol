@@ -9,6 +9,7 @@ class EmpleadoForm(forms.ModelForm):
     class Meta:
         model = Empleado
         fields = ['dni', 'nombre', 'apellido', 'domicilio', 'correo_electronico', 'numero_telefono', 'contraseña', 'estado_empleado', 'es_admin']
+        
 
 class AbrirCajaForm(forms.ModelForm):
     class Meta:
@@ -26,8 +27,8 @@ class TurnoForm(forms.ModelForm):
         model = Turno
         fields = ['fecha', 'hora', 'estado_turno']
         widgets = {
-            'fecha': forms.DateInput(attrs={'type': 'date'}),  # Selector de fecha
-            'hora': forms.TimeInput(attrs={'type': 'time'}),  # Selector de hora
+            'fecha': forms.DateInput(attrs={'type': 'date'}),
+            'hora': forms.TimeInput(attrs={'type': 'time'}),
         }
 
 class ClienteForm(forms.ModelForm):
@@ -42,6 +43,7 @@ class VentaForm(forms.ModelForm):
         widgets = {
             'estado_venta': forms.Select(choices=[
                 (0, 'Completada'),
-                (1, 'En proceso')
+                (1, 'En Proceso'),
+                (2, 'No Completada')
             ])
         }

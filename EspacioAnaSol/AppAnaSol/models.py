@@ -66,14 +66,12 @@ class Caja(models.Model):
         self.fecha_cierre = timezone.now()
         self.empleado_cierre = empleado
         
-        # Calcular el monto recaudado basado en las ventas
         total_ventas = Venta.objects.filter(id_caja=self).aggregate(total=Sum('monto_total'))['total'] or 0
         self.monto_recaudado = total_ventas
         
-        # Calcular el monto final
         self.monto_final = self.monto_inicial + self.monto_recaudado
         
-        self.estado = False  # Marcar la caja como cerrada
+        self.estado = False  
         self.save()
 
     def __str__(self):
@@ -84,6 +82,7 @@ class Venta(models.Model):
     ESTADO_VENTA_CHOICES = [
         (0, 'Completada'),
         (1, 'En Proceso'),
+        (2, 'No Completada'),
     ]
     
     id_venta = models.AutoField(primary_key=True)

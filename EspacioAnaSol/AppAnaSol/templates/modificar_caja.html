@@ -5,8 +5,8 @@
 <form method="post">
     {% csrf_token %}
     <label for="monto_inicial">Monto Inicial:</label>
-    <input type="number" name="monto_inicial" value="{{ caja.monto_inicial }}" required>
-    <br>
+    <input type="number" name="monto_inicial" value="{{ caja.monto_inicial }}" required><br>
+    <br> 
     <button type="submit">Actualizar Montos</button>
 </form>
 <a href="{% url 'listar_cajas' %}">Volver al Listado de Cajas</a>

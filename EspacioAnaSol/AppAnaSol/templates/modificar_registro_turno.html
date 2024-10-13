@@ -4,10 +4,19 @@
 <h1>Modificar Registro de Turno</h1>
     <form method="post">
         {% csrf_token %}
+        <label for="fecha">Fecha:</label>
+        <input type="date" name="fecha" id="fecha" value=""><br>
+        <br>
+        <label for="hora">Hora:</label>
+        <input type="time" name="hora" id="hora" value=""><br>
+        <br>
+        <label for="estado_turno">Estado del Turno:</label>
+        <input type="checkbox" name="estado_turno" id="estado_turno" {% if form.estado_turno.value %}checked{% endif %}> <br>
+        <br>
         <input type="hidden" name="turno_id" value="{{ turno.id_turno }}">
-        <!-- Selección del servicio -->
-        <label for="id_servicio">Servicio:</label>
-        <select name="id_servicio" id="id_servicio" required>
+
+        <label for="id_servicio">Servicio:</label><br>
+        <select name="id_servicio" id="id_servicio" required><br>
             {% for servicio in servicios %}
             <option value="{{ servicio.id_servicio }}" {% if servicio.id_servicio == servicio_actual.id_servicio %}selected{% endif %}>
                {{ servicio.nombre_del_servicio }}
@@ -15,9 +24,8 @@
             {% endfor %}
          </select>
         <br>
-    
-        <!-- Selección del empleado -->
-        <label for="id_empleado">Empleado:</label>
+        <br>
+        <label for="id_empleado">Empleado:</label><br>
         <select name="id_empleado" id="id_empleado" required>
             {% for empleado in empleados %}
             <option value="{{ empleado.dni }}" {% if empleado.dni == empleado_actual.dni %}selected{% endif %}>
@@ -26,16 +34,8 @@
             {% endfor %}
         </select>
         <br>
-        
-        <label for="fecha">Fecha:</label>
-        <input type="date" name="fecha" value="{{ turno.fecha }}" required><br>
-
-        <label for="hora">Hora:</label>
-        <input type="time" name="hora" value="{{ turno.hora }}" required><br>
-
-        <label for="estado_turno">Estado:</label>
-        <input type="checkbox" name="estado_turno" {% if turno.estado_turno %}checked{% endif %}> <br>
-        <button type="submit">Modificar Registro</button>
+        <br>
+        <button type="submit">Guardar</button>
     </form>
     <a href="{% url 'listar_turnos' %}">Volver al Listado de Turnos</a>
 {% endblock %}
