@@ -4,14 +4,16 @@
     {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/fondo2.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
     <title>Empleados</title>
 </head>
 <body>
     <h2>Lista de Empleados</h2>
 <a href="{% url 'crear_empleado' %}">Crear Empleado</a>
-<table>
+<table style="border: 3px solid black;">
     <thead>
-        <tr>
+        <tr style="background-color: gray;">
             <th>DNI</th>
             <th>Nombre</th>
             <th>Apellido</th>
@@ -23,7 +25,7 @@
     </thead>
     <tbody>
         {% for empleado in empleados %}
-        <tr>
+        <tr style="background-color: white;">
             <td>{{ empleado.dni }}</td>
             <td>{{ empleado.nombre }}</td>
             <td>{{ empleado.apellido }}</td>
@@ -38,6 +40,6 @@
         {% endfor %}
     </tbody>
 </table>
-
+<a href="{% url 'pagina_admin' %}">Volver a la Página Principal</a>
 </body>
 </html>

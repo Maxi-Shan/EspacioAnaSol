@@ -1,0 +1,60 @@
+{% extends "ventas.html" %}
+
+{% block content %}
+<h2>Listado de Ventas</h2>
+<a href="{% url 'crear_venta' %}" class="btn btn-primary">Registrar Nueva Venta</a>
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID Venta</th>
+            <th>ID Caja</th> 
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>Monto Total</th>
+            <th>Estado de Venta</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for venta in ventas %}
+        <tr>
+            <td>{{ venta.id_venta }}</td>
+            <td>
+                {% if venta.id_caja %}
+                    {{ venta.id_caja.id_caja }}
+                {% else %}
+                    Caja no abierta
+                {% endif %}
+            </td>
+            <td>{{ venta.fecha_venta }}</td>
+            <td>{{ venta.hs_venta }}</td>
+            <td>{{ venta.monto_total }}</td>
+            <td>
+            {% if venta.estado_venta == 0 %}
+                Completada
+            {% elif venta.estado_venta == 1 %}
+                En Proceso
+            {% endif %}</td>
+            <td>
+                {% if es_admin %}
+                    <button type="button"><a href="{% url 'modificar_venta' venta.id_venta %}" class="btn btn-warning">Modificar</a></button>
+                    <button type="button"><a href="{% url 'eliminar_venta' venta.id_venta %}" class="btn btn-danger">Eliminar</a></button>
+                {% else %}
+                    <button type="button"><a href="{% url 'modificar_venta' venta.id_venta %}" class="btn btn-warning">Modificar</a></button>
+                    <button type="button"><a href="{% url 'eliminar_venta' venta.id_venta %}" class="btn btn-danger">Eliminar</a></button>
+                {% endif %}
+            </td>
+            
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="7">No hay ventas registradas.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<a href="{% if es_admin %}{% url 'pagina_admin' %}{% else %}{% url 'pagina_principal' %}{% endif %}">
+    Volver a la Página Principal
+</a>
+
+{% endblock %}

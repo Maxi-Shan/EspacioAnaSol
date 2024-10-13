@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/fondo2.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <title>Listado de Cajas</title>
+</head>
+<body>
+    <h1>Listado de Cajas</h1>
+    {% if caja_abierta %}
+    <button disabled>Abrir Nueva Caja</button>
+    {% else %}
+    <a href="{% url 'abrir_caja' %}">Abrir Nueva Caja</a>
+    {% endif %}
+    <table border="1">
+        <thead>
+            <tr style="background-color: gray;">
+                <th>ID Caja</th>
+                <th>Empleado Que abrio caja</th>
+                <th>Fecha Apertura</th>
+                <th>Empleado Que cerro caja</th>
+                <th>Fecha Cierre</th>
+                <th>Monto Inicial</th>
+                <th>Monto Recaudado</th>
+                <th>Monto Final</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for caja in cajas %}
+            <tr style="background-color: white;">
+                <td>{{ caja.id_caja }}</td>
+                <td>{{ caja.empleado.nombre }}</td>
+                <td>{{ caja.fecha_apertura }}</td>
+                <td>{{ caja.empleado_cierre.nombre }}</td>
+                <td>
+                    {% if caja.fecha_cierre %}
+                        {{ caja.fecha_cierre }}
+                    {% else %}
+                        Sin Cierre
+                    {% endif %}
+                </td>
+                <td>{{ caja.monto_inicial }}</td>
+                <td>
+                    {% if caja.monto_recaudado %}
+                        {{ caja.monto_recaudado }}
+                    {% else %}
+                        0
+                    {% endif %}
+                </td>
+                <td>
+                    {% if caja.monto_final %}
+                        {{ caja.monto_final }}
+                    {% else %}
+                        {{ caja.monto_inicial }}
+                    {% endif %}
+                </td>
+                <td>
+                    {% if not caja.fecha_cierre %}
+                    <a href="{% url 'cerrar_caja' caja.id_caja %}">Cerrar Caja</a>
+                    {% endif %}
+                    
+                    {% if es_admin %}
+                    <a href="{% url 'modificar_caja' caja.id_caja %}" class="btn btn-warning">Modificar</a>
+                    <a href="{% url 'eliminar_caja' caja.id_caja %}" class="btn btn-danger">Eliminar</a>
+                    {% else %}
+                    <!-- Botones deshabilitados para empleados no administradores -->
+                    <button disabled>Modificar</button>
+                    <button disabled>Eliminar</button>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{% if es_admin %}{% url 'pagina_admin' %}{% else %}{% url 'pagina_principal' %}{% endif %}">
+        Volver a la Página Principal
+    </a>
+</body>
+</html>

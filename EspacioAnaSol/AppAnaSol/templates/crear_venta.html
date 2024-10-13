@@ -1,0 +1,23 @@
+{% extends "ventas.html" %}
+
+{% block content %}
+<h2>Crear Venta</h2>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+{% endif %}
+
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }} 
+    
+    {% if form.id_caja.errors %}
+        <div class="alert alert-warning">La caja está cerrada. No se puede registrar la venta.</div>
+    {% endif %}
+
+    <button type="submit" class="btn btn-primary">Registrar Venta</button>
+</form>
+<a href="{% url 'listar_ventas' %}">Volver a la Lista de Ventas </a>
+{% endblock %}

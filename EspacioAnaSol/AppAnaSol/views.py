@@ -1,15 +1,24 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import authenticate, login, logout
+from django.utils.timezone import now
 from django.contrib import messages
-from .models import Caja, Empleado
+from .models import Caja, Empleado, Servicios, ServicioXTurno, Turno, EmpleadoXTurno, Cliente, Venta, DetalleVenta
+from django.utils import timezone
 from .forms import LoginForm
 from .forms import EmpleadoForm
-from django.contrib.auth.mixins import UserPassesTestMixin
-from django.utils import timezone
-from .forms import AbrirCajaForm, CerrarCajaForm
+from .forms import AbrirCajaForm
+from .forms import ServiciosForm
+from .forms import TurnoForm
+from .forms import ClienteForm 
+from .forms import VentaForm
+from datetime import datetime, date
+
+def inicio(request):
+    return render(request, 'inicio.html')
 
 def login_view(request):
+    messages_to_display = []
+
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
@@ -18,8 +27,7 @@ def login_view(request):
             try:
                 empleado = Empleado.objects.get(dni=dni, contraseña=contraseña)
                 if not empleado.estado_empleado:
-                    messages.error(request, 'Este empleado está suspendido')
-                    return redirect('login')
+                    messages_to_display.append('Este empleado está suspendido')
                 else:
                     request.session['empleado_dni'] = empleado.dni  # Almacena el dni en la sesión
                     if empleado.es_admin:
@@ -27,11 +35,16 @@ def login_view(request):
                     else:
                         return redirect('pagina_principal')
             except Empleado.DoesNotExist:
-                messages.error(request, 'DNI o contraseña incorrectos o no registrados')
+                messages_to_display.append('DNI o contraseña incorrectos o no registrados')
+
     else:
         form = LoginForm()
 
-    return render(request, 'login.html', {'form': form})
+    return render(request, 'login.html', {'form': form, 'messages_to_display': messages_to_display})
+
+@login_required
+def pagina_principal(request):
+    return render(request, 'pagina_principal.html')
 
 def admin_required(view_func):
     def _wrapped_view_func(request, *args, **kwargs):
@@ -41,14 +54,15 @@ def admin_required(view_func):
         return view_func(request, *args, **kwargs)
     return _wrapped_view_func
 
-@login_required
-@admin_required
+
 def listar_empleados(request):
     empleados = Empleado.objects.all()
     return render(request, 'listar_empleados.html', {'empleados': empleados})
 
-@login_required
 @admin_required
+def pagina_admin(request):
+    return render(request, 'pagina_admin.html')
+
 def crear_empleado(request):
     if request.method == 'POST':
         form = EmpleadoForm(request.POST)
@@ -60,8 +74,7 @@ def crear_empleado(request):
         form = EmpleadoForm()
     return render(request, 'crear_empleado.html', {'form': form})
 
-@login_required
-@admin_required
+
 def editar_empleado(request, dni):
     empleado = get_object_or_404(Empleado, dni=dni)
     if request.method == 'POST':
@@ -74,8 +87,7 @@ def editar_empleado(request, dni):
         form = EmpleadoForm(instance=empleado)
     return render(request, 'editar_empleado.html', {'form': form})
 
-@login_required
-@admin_required
+
 def eliminar_empleado(request, dni):
     empleado = get_object_or_404(Empleado, dni=dni)
     if request.method == 'POST':
@@ -84,44 +96,326 @@ def eliminar_empleado(request, dni):
         return redirect('listar_empleados')
     return render(request, 'eliminar_empleado.html', {'empleado': empleado})
 
+def listar_cajas(request):
+    cajas = Caja.objects.all()
+    caja_abierta = cajas.filter(fecha_cierre__isnull=True).exists()
+    
+    # Obtener si el usuario es administrador
+    dni_empleado = request.session.get('empleado_dni')
+    empleado = get_object_or_404(Empleado, dni=dni_empleado)
+    es_admin = empleado.es_admin  # Comprobar si es administrador
 
-def inicio(request):
-    return render(request, 'inicio.html')
-
-@login_required
-def pagina_principal(request):
-    return render(request, 'pagina_principal.html')
-
-@admin_required
-def pagina_admin(request):
-    return render(request, 'pagina_admin.html')
-
-@login_required
-@admin_required
-def clientes_view(request):
-    return render(request, 'clientes.html')
+    return render(request, 'listar_cajas.html', {
+        'cajas': cajas, 
+        'caja_abierta': caja_abierta,
+        'es_admin': es_admin  # Pasar la variable al template
+    })
 
 @login_required
-@admin_required
-def ventas_view(request):
-    return render(request, 'ventas.html')
+def abrir_caja(request):
+    if request.method == 'POST':
+        form = AbrirCajaForm(request.POST)
+        if form.is_valid():
+            caja = form.save(commit=False)
+            dni_empleado = request.session.get('empleado_dni')
+            empleado = get_object_or_404(Empleado, dni=dni_empleado)
+            caja.empleado = empleado
+            caja.save()
+            messages.success(request, 'Caja abierta correctamente.')
+            return redirect('listar_cajas')
+    else:
+        form = AbrirCajaForm()
+    return render(request, 'abrir_caja.html', {'form': form})
 
-@login_required
-@admin_required
-def turnos_view(request):
-    return render(request, 'turnos.html')
+def cerrar_caja(request, id_caja):
+    caja = get_object_or_404(Caja, id_caja=id_caja)
 
-@login_required
-@admin_required
-def servicios_view(request):
-    return render(request, 'servicios.html')
+    if request.method == 'POST':
+        # Obtener el empleado que está cerrando la caja
+        dni_empleado = request.session.get('empleado_dni')
+        empleado = get_object_or_404(Empleado, dni=dni_empleado)
 
-@login_required
-@admin_required
-def caja_view(request):
-    return render(request, 'caja.html')
+        # Cerrar la caja
+        caja.cerrar_caja(empleado)
+        messages.success(request, 'Caja cerrada correctamente.')
+        return redirect('listar_cajas')
+
+    return render(request, 'cerrar_caja.html', {'caja': caja})
 
 
-def logout_view(request):
-    logout(request)
-    return redirect('login') 
+def modificar_caja(request, id_caja):
+    caja = get_object_or_404(Caja, id_caja=id_caja)
+
+    if request.method == 'POST':
+        monto_inicial = request.POST.get('monto_inicial', caja.monto_inicial)
+        monto_recaudado = request.POST.get('monto_recaudado', caja.monto_recaudado)
+
+        # Convertir los montos a números decimales si es necesario
+        try:
+            monto_inicial = float(monto_inicial)
+            monto_recaudado = float(monto_recaudado)
+        except ValueError:
+            messages.error(request, 'Los montos ingresados deben ser valores numéricos.')
+            return redirect('modificar_caja', id_caja=id_caja)
+
+        # Actualizar los montos en la caja
+        caja.monto_inicial = monto_inicial
+        caja.monto_recaudado = monto_recaudado
+
+        # Recalcular el monto final
+        caja.monto_final = caja.monto_inicial + caja.monto_recaudado
+        
+        # Guardar la caja actualizada
+        caja.save()
+
+        messages.success(request, 'Montos actualizados y monto final recalculado exitosamente.')
+        return redirect('listar_cajas')
+
+    return render(request, 'modificar_caja.html', {'caja': caja})
+
+
+def eliminar_caja(request, id_caja):
+    caja = get_object_or_404(Caja, id_caja=id_caja)
+
+    if request.method == 'POST':
+        caja.delete()
+        messages.success(request, 'Caja eliminada exitosamente.')
+        return redirect('listar_cajas')
+
+    return render(request, 'eliminar_caja.html', {'caja': caja})
+
+def listar_servicios(request):
+    servicios = Servicios.objects.all()
+
+    # Obtener el empleado de la sesión
+    dni_empleado = request.session.get('empleado_dni')
+    empleado = Empleado.objects.get(dni=dni_empleado)
+
+    context = {
+        'servicios': servicios,
+        'es_admin': empleado.es_admin,  # Pasamos si es admin al contexto
+    }
+    return render(request, 'listar_servicios.html', context)
+
+
+def crear_servicio(request):
+    if request.method == 'POST':
+        form = ServiciosForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()  # Guardar el servicio y obtener la instancia
+            messages.success(request, 'Servicio creado exitosamente.')
+            # Redirigir a la vista de crear turno pasando el id del servicio
+            return redirect('listar_servicios')
+    else:
+        form = ServiciosForm()
+    return render(request, 'crear_servicio.html', {'form': form})
+
+def modificar_servicio(request, id_servicio):
+    servicio = get_object_or_404(Servicios, id_servicio=id_servicio)
+    if request.method == 'POST':
+        form = ServiciosForm(request.POST, instance=servicio)
+        if form.is_valid():
+            form.save()
+            return redirect('listar_servicios')
+    else:
+        form = ServiciosForm(instance=servicio)
+    return render(request, 'modificar_servicio.html', {'form': form})
+
+def eliminar_servicio(request, id_servicio):
+    servicio = get_object_or_404(Servicios, id_servicio=id_servicio)
+    if request.method == 'POST':
+        servicio.delete()
+        return redirect('listar_servicios')
+    return render(request, 'eliminar_servicio.html', {'servicio': servicio})
+
+def crear_turno(request, servicio_id):
+    if request.method == 'POST':
+        form = TurnoForm(request.POST)
+        if form.is_valid():
+            turno = form.save()  # Guardar el nuevo turno
+            # Guardar la relación entre el servicio y el turno
+            ServicioXTurno.objects.create(id_servicio_id=servicio_id, id_turno=turno)
+            messages.success(request, 'Turno creado exitosamente.')
+            return redirect('listar_turnos')  # Redirigir a la lista de turnos
+    else:
+        form = TurnoForm()
+
+    # Aquí puedes pasar el servicio actual para mostrar información si deseas
+    servicio = Servicios.objects.get(id_servicio=servicio_id)
+    return render(request, 'crear_turno.html', {'form': form, 'servicio': servicio})
+
+    
+def listar_turnos(request):
+    turnos = Turno.objects.all()
+    servicios_x_turno = ServicioXTurno.objects.select_related('id_turno', 'id_servicio').all()
+    empleados_x_turno = EmpleadoXTurno.objects.select_related('id_turno', 'dni_emp').all()
+
+    # Obtener el empleado de la sesión
+    dni_empleado = request.session.get('empleado_dni')
+    empleado = Empleado.objects.get(dni=dni_empleado)
+
+    context = {
+        'turnos': turnos,
+        'servicios_x_turno': servicios_x_turno,
+        'empleados_x_turno': empleados_x_turno,
+        'es_admin': empleado.es_admin,  # Pasamos si es admin al contexto
+    }
+    return render(request, 'listar_turnos.html', context)
+
+def crear_registro_turno(request):
+    if request.method == 'POST':
+        servicio_id = request.POST.get('servicio_id')
+        empleado_id = request.POST.get('empleado_id')
+        fecha = request.POST.get('fecha')
+        hora = request.POST.get('hora')
+        
+        # Crear el turno
+        turno = Turno.objects.create(fecha=fecha, hora=hora, estado_turno=True)
+
+        # Relacionar el servicio y el empleado con el turno
+        ServicioXTurno.objects.create(id_servicio_id=servicio_id, id_turno=turno)
+        EmpleadoXTurno.objects.create(dni_emp_id=empleado_id, id_turno=turno)
+
+        messages.success(request, 'Registro creado exitosamente.')
+        return redirect('listar_turnos')
+    
+    servicios = Servicios.objects.all()
+    empleados = Empleado.objects.all()
+    return render(request, 'crear_registro_turno.html', {'servicios': servicios, 'empleados': empleados})
+
+def modificar_registro_turno(request, turno_id):
+    turno = get_object_or_404(Turno, id_turno=turno_id)
+    
+    # Obtener la relación actual de servicio y empleado, manejando el caso si no existe
+    servicio_actual = ServicioXTurno.objects.filter(id_turno=turno).first()
+    empleado_actual = EmpleadoXTurno.objects.filter(id_turno=turno).first()
+
+    if request.method == 'POST':
+        nuevo_servicio_id = request.POST.get('id_servicio')
+        nuevo_empleado_id = request.POST.get('id_empleado')
+
+        # Actualizar o crear el servicio si no existe
+        if servicio_actual:
+            servicio_actual.id_servicio_id = nuevo_servicio_id
+            servicio_actual.save()
+        else:
+            ServicioXTurno.objects.create(id_servicio_id=nuevo_servicio_id, id_turno=turno)
+
+        # Actualizar o crear el empleado si no existe
+        if empleado_actual:
+            empleado_actual.dni_emp_id = nuevo_empleado_id
+            empleado_actual.save()
+        else:
+            EmpleadoXTurno.objects.create(dni_emp_id=nuevo_empleado_id, id_turno=turno)
+
+        messages.success(request, 'El turno ha sido actualizado correctamente.')
+        return redirect('listar_turnos')
+
+    # Obtener todos los servicios y empleados para mostrar en el formulario
+    servicios = Servicios.objects.all()
+    empleados = Empleado.objects.all()
+
+    return render(request, 'modificar_registro_turno.html', {
+        'turno': turno,
+        'servicios': servicios,
+        'empleados': empleados,
+        'servicio_actual': servicio_actual.id_servicio if servicio_actual else None,
+        'empleado_actual': empleado_actual.dni_emp if empleado_actual else None,
+    })
+
+def eliminar_registro_turno(request, turno_id):
+    turno = Turno.objects.get(id_turno=turno_id)
+
+    if request.method == 'POST':
+        turno.delete()
+        messages.success(request, 'Registro eliminado exitosamente.')
+        return redirect('listar_turnos')
+
+    return render(request, 'eliminar_registro_turno.html', {'turno': turno})
+
+
+def registrar_cliente(request):
+    if request.method == 'POST':
+        form = ClienteForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Cliente registrado exitosamente.')
+            return redirect('listar_clientes')
+    else:
+        form = ClienteForm()
+    
+    return render(request, 'registrar_cliente.html', {'form': form})
+
+def listar_clientes(request):
+    clientes = Cliente.objects.all()
+    
+    # Obtener el empleado de la sesión
+    dni_empleado = request.session.get('empleado_dni')
+    empleado = Empleado.objects.get(dni=dni_empleado)
+    
+    context = {
+        'clientes': clientes,
+        'es_admin': empleado.es_admin,  # Pasamos si es admin al contexto
+    }
+    return render(request, 'listar_clientes.html', context)
+
+
+def listar_ventas(request):
+    ventas = Venta.objects.all()
+
+    # Obtener el empleado de la sesión
+    dni_empleado = request.session.get('empleado_dni')
+    empleado = Empleado.objects.get(dni=dni_empleado)
+
+    context = {
+        'ventas': ventas,
+        'es_admin': empleado.es_admin,  # Pasamos si es admin al contexto
+    }
+    return render(request, 'listar_ventas.html', context)
+
+
+def crear_venta(request):
+    if request.method == "POST":
+        # Verificar si hay una caja abierta
+        caja_abierta = Caja.objects.filter(estado=True).first()  # Obtiene la primera caja abierta
+        if caja_abierta:
+            # Si la caja está abierta, proceder a crear la venta
+            form = VentaForm(request.POST)
+            if form.is_valid():
+                venta = form.save(commit=False)
+                venta.id_caja = caja_abierta  # Asignar la caja abierta
+                venta.fecha_venta = timezone.now().date()  # Establecer la fecha actual
+                venta.hs_venta = timezone.now().time()  # Establecer la hora actual
+                venta.save()  # Guardar la venta
+                messages.success(request, "Venta registrada exitosamente.")
+                return redirect('listar_ventas')  # Redirigir a la lista de ventas
+        else:
+            messages.error(request, "No se puede registrar la venta, la caja está cerrada.")
+            return redirect('crear_venta')  # Redirigir de nuevo a la vista de crear venta
+
+    else:
+        form = VentaForm()  # Crear un formulario vacío para GET
+
+    return render(request, 'crear_venta.html', {'form': form})
+
+def modificar_venta(request, venta_id):
+    venta = get_object_or_404(Venta, id_venta=venta_id)
+
+    if request.method == 'POST':
+        nuevo_estado = request.POST.get('estado_venta')
+        venta.estado_venta = nuevo_estado
+        venta.save()
+        messages.success(request, 'Estado de la venta modificado exitosamente.')
+        return redirect('listar_ventas')
+
+    return render(request, 'modificar_venta.html', {'venta': venta})
+
+def eliminar_venta(request, venta_id):
+    venta = get_object_or_404(Venta, id_venta=venta_id)
+
+    if request.method == 'POST':
+        venta.delete()
+        messages.success(request, 'Venta eliminada exitosamente.')
+        return redirect('listar_ventas')
+
+    return render(request, 'eliminar_venta.html', {'venta': venta})

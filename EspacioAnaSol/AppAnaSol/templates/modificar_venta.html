@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modificar Venta</title>
+</head>
+<body>
+    <h1>Modificar Estado de la Venta</h1>
+    <form method="post">
+        {% csrf_token %}
+        <label for="estado_venta">Estado:</label>
+        <select name="estado_venta">
+            <option value="0" {% if form.estado_venta.value == 0 %}selected{% endif %}>Completada</option>
+            <option value="1" {% if form.estado_venta.value == 1 %}selected{% endif %}>En Proceso</option>
+        </select>
+        <br>
+        <button type="submit">Guardar Cambios</button>
+    </form>
+    <a href="{% url 'listar_ventas' %}">Volver al listado</a>
+</body>
+</html>

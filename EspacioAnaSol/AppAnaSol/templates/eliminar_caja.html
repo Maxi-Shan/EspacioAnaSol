@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/fondo2.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <title>Confirmar Eliminación de Caja</title>
+</head>
+<body>
+    <h1>Confirmar Eliminación de Caja</h1>
+    <p>¿Está seguro de que desea eliminar este registro?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">Eliminar</button>
+    </form>
+    <a href="{% url 'listar_cajas' %}">Cancelar</a>
+</body>
+</html>

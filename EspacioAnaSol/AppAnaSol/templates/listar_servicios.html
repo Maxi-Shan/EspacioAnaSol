@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/fondo2.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <title>Listado de Servicios</title>
+</head>
+<body>
+    <h1>Listado de Servicios</h1>
+    <a href="{% url 'crear_servicio' %}">Registrar Nuevo Servicio</a>
+    <table border="1">
+        <thead>
+            <tr style="background-color: gray;">
+                <th>ID Servicio</th>
+                <th>Nombre</th>
+                <th>Imagen</th>
+                <th>Descripción</th>
+                <th>Duracion del servicio</th>
+                <th>Precio del servicio</th>
+                <th>Valor del Sello</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for servicio in servicios %}
+            <tr style="background-color: white;">
+                <td>{{ servicio.id_servicio }}</td>
+                <td>{{ servicio.nombre_del_servicio }}</td>
+                <td>
+                    {% if servicio.imagen %}
+                        <img src="{{ servicio.imagen.url }}" alt="{{ servicio.nombre_del_servicio }}" style="width: 100px; height: auto;"> <!-- Mostrar imagen -->
+                    {% endif %}
+                </td>
+                <td>{{ servicio.descripcion_del_servicio }}</td>
+                <td>{{ servicio.duracion }}</td>
+                <td>{{ servicio.precio_del_servicio }}</td>
+                <td>{{ servicio.valor_sello }}</td>
+                <td>
+                    {% if es_admin %}
+                        <button type="button"><a href="{% url 'modificar_servicio' servicio.id_servicio %}" class="btn btn-warning">Modificar</a></button>
+                        <button type="button"><a href="{% url 'eliminar_servicio' servicio.id_servicio %}" class="btn btn-danger">Eliminar</a></button>
+                    {% else %}
+                        <button type="button"><a href="{% url 'modificar_servicio' servicio.id_servicio %}" class="btn btn-warning">Modificar</a></button>
+                        <button disabled>Eliminar</button>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{% if es_admin %}{% url 'pagina_admin' %}{% else %}{% url 'pagina_principal' %}{% endif %}">
+        Volver a la Página Principal
+    </a>
+</body>
+</html>

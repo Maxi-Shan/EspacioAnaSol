@@ -184,3 +184,17 @@ a{
     background-color: white;
     color: black;
 }
+
+.button_abrir {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: blue;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.button_abrir[style*="pointer-events: none;"] {
+    background-color: gray;
+    cursor: not-allowed;
+}
