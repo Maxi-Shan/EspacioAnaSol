@@ -75,7 +75,7 @@ def crear_empleado(request):
     return render(request, 'crear_empleado.html', {'form': form})
 
 
-def editar_empleado(request, dni):
+def modificar_empleado(request, dni):
     empleado = get_object_or_404(Empleado, dni=dni)
     if request.method == 'POST':
         form = EmpleadoForm(request.POST, instance=empleado)
@@ -85,7 +85,7 @@ def editar_empleado(request, dni):
             return redirect('listar_empleados')
     else:
         form = EmpleadoForm(instance=empleado)
-    return render(request, 'editar_empleado.html', {'form': form})
+    return render(request, 'modificar_empleado.html', {'form': form})
 
 
 def eliminar_empleado(request, dni):
@@ -268,11 +268,9 @@ def crear_registro_turno(request):
         empleado_id = request.POST.get('empleado_id')
         fecha = request.POST.get('fecha')
         hora = request.POST.get('hora')
-        
-        # Crear el turno
+
         turno = Turno.objects.create(fecha=fecha, hora=hora, estado_turno=True)
 
-        # Relacionar el servicio y el empleado con el turno
         ServicioXTurno.objects.create(id_servicio_id=servicio_id, id_turno=turno)
         EmpleadoXTurno.objects.create(dni_emp_id=empleado_id, id_turno=turno)
 

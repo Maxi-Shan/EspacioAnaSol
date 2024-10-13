@@ -1,15 +1,7 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    {% load static %}
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/fondo2.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
-    <title>Listado de Cajas</title>
-</head>
-<body>
-    <h1>Listado de Cajas</h1>
+{% extends "caja.html" %}
+
+{% block content %}
+<h1>Listado de Cajas</h1>
     {% if caja_abierta %}
     <button disabled>Abrir Nueva Caja</button>
     {% else %}
@@ -79,5 +71,5 @@
     <a href="{% if es_admin %}{% url 'pagina_admin' %}{% else %}{% url 'pagina_principal' %}{% endif %}">
         Volver a la Página Principal
     </a>
-</body>
-</html>
+{% endblock %}
+

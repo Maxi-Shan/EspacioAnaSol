@@ -1,15 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    {% load static %}
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/fondo2.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
-    <title>Empleados</title>
-</head>
-<body>
-    <h2>Lista de Empleados</h2>
+{% extends "empleados.html" %}
+
+{% block content %}
+<h2>Lista de Empleados</h2>
 <a href="{% url 'crear_empleado' %}">Crear Empleado</a>
 <table style="border: 3px solid black;">
     <thead>
@@ -33,7 +25,7 @@
             <td>{{ empleado.domicilio }}</td>
             <td>{{ empleado.numero_telefono }}</td>
             <td>
-                <a href="{% url 'editar_empleado' empleado.dni %}">Editar</a>
+                <a href="{% url 'modificar_empleado' empleado.dni %}">Editar</a>
                 <a href="{% url 'eliminar_empleado' empleado.dni %}">Eliminar</a>
             </td>
         </tr>
@@ -41,5 +33,4 @@
     </tbody>
 </table>
 <a href="{% url 'pagina_admin' %}">Volver a la Página Principal</a>
-</body>
-</html>
+{% endblock %}

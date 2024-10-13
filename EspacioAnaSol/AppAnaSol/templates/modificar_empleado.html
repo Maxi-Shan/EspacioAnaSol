@@ -1,9 +1,10 @@
 {% extends "empleados.html" %}
 
 {% block content %}
-<h2>Crear Empleado</h2>
+<h2>Editar Empleado</h2>
 <form method="POST">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit">Crear</button>
+    <button type="submit">Actualizar</button>
+</form>
 {% endblock %}

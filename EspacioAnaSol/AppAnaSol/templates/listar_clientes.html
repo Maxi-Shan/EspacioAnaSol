@@ -1,12 +1,7 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Listado de Clientes</title>
-</head>
-<body>
-    <h1>Listado de Clientes</h1>
+{% extends "clientes.html" %}
+
+{% block content %}
+<h1>Listado de Clientes</h1>
     <table border="1">
         <thead>
             <tr>
@@ -32,5 +27,4 @@
     <a href="{% if es_admin %}{% url 'pagina_admin' %}{% else %}{% url 'pagina_principal' %}{% endif %}">
         Volver a la Página Principal
     </a>
-</body>
-</html>
+{% endblock %}

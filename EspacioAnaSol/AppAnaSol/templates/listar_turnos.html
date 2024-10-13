@@ -1,68 +1,58 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    {% load static %}
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/fondo2.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
-    <title>Listado de Turnos</title>
-</head>
-<body>
-    <h1>Listado de Turnos</h1>
+{% extends "turnos.html" %}
 
-    <!-- Botones para crear, modificar y eliminar registros -->
-    <a href="{% url 'crear_registro_turno' %}">Crear Nuevo Registro</a>
+{% block content %}
+<h1>Listado de Turnos</h1>
 
-    <table border="1">
-        <thead>
-            <tr style="background-color: gray;">
-                <th>ID Turno</th>
-                <th>Fecha</th>
-                <th>Hora</th>
-                <th>Estado</th>
-                <th>Servicio</th>
-                <th>Empleado</th>
-                <th>Acciones</th> <!-- Nueva columna para acciones -->
-            </tr>
-        </thead>
-        <tbody>
-            {% for turno in turnos %}
-            <tr style="background-color: white;">
-                <td>{{ turno.id_turno }}</td>
-                <td>{{ turno.fecha }}</td>
-                <td>{{ turno.hora }}</td>
-                <td>{{ turno.estado_turno }}</td>
-                <td>
-                    {% for servicio in servicios_x_turno %}
-                        {% if servicio.id_turno.id_turno == turno.id_turno %}
-                            {{ servicio.id_servicio.nombre_del_servicio }}
-                        {% endif %}
-                    {% endfor %}
-                </td>
-                <td>
-                    {% for empleado in empleados_x_turno %}
-                        {% if empleado.id_turno.id_turno == turno.id_turno %}
-                            {{ empleado.dni_emp.nombre }}
-                        {% endif %}
-                    {% endfor %}
-                </td>
-                <td>
-                    {% if es_admin %}
-                        <button type="button"><a href="{% url 'modificar_registro_turno' turno.id_turno %}" class="btn btn-warning">Modificar</a></a></button>
-                        <button type="button"><a href="{% url 'eliminar_registro_turno' turno.id_turno %}" class="btn btn-danger">Eliminar</a></button>
-                    {% else %}
-                        <button type="button"><a href="{% url 'modificar_registro_turno' turno.id_turno %}" class="btn btn-warning">Modificar</a></a></button>
-                        <button type="button"><a href="{% url 'eliminar_registro_turno' turno.id_turno %}" class="btn btn-danger">Eliminar</a></button>
+<a href="{% url 'crear_registro_turno' %}">Crear Nuevo Registro</a>
+
+<table border="1">
+    <thead>
+        <tr style="background-color: gray;">
+            <th>ID Turno</th>
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>Estado</th>
+            <th>Servicio</th>
+            <th>Empleado</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for turno in turnos %}
+        <tr style="background-color: white;">
+            <td>{{ turno.id_turno }}</td>
+            <td>{{ turno.fecha }}</td>
+            <td>{{ turno.hora }}</td>
+            <td>{{ turno.estado_turno }}</td>
+            <td>
+                {% for servicio in servicios_x_turno %}
+                    {% if servicio.id_turno.id_turno == turno.id_turno %}
+                        {{ servicio.id_servicio.nombre_del_servicio }}
                     {% endif %}
-                </td>
-                
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <a href="{% if es_admin %}{% url 'pagina_admin' %}{% else %}{% url 'pagina_principal' %}{% endif %}">
-        Volver a la Página Principal
-    </a>
-</body>
-</html>
+                {% endfor %}
+            </td>
+            <td>
+                {% for empleado in empleados_x_turno %}
+                    {% if empleado.id_turno.id_turno == turno.id_turno %}
+                        {{ empleado.dni_emp.nombre }}
+                    {% endif %}
+                {% endfor %}
+            </td>
+            <td>
+                {% if es_admin %}
+                    <button type="button"><a href="{% url 'modificar_registro_turno' turno.id_turno %}" class="btn btn-warning">Modificar</a></a></button>
+                    <button type="button"><a href="{% url 'eliminar_registro_turno' turno.id_turno %}" class="btn btn-danger">Eliminar</a></button>
+                {% else %}
+                    <button type="button"><a href="{% url 'modificar_registro_turno' turno.id_turno %}" class="btn btn-warning">Modificar</a></a></button>
+                    <button type="button"><a href="{% url 'eliminar_registro_turno' turno.id_turno %}" class="btn btn-danger">Eliminar</a></button>
+                {% endif %}
+            </td>
+            
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<a href="{% if es_admin %}{% url 'pagina_admin' %}{% else %}{% url 'pagina_principal' %}{% endif %}">
+    Volver a la Página Principal
+</a>
+{% endblock %}

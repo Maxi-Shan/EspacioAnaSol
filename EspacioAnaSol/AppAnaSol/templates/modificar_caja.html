@@ -1,21 +1,13 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    {% load static %}
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
-    <title>Modificar Montos de Caja</title>
-</head>
-<body>
-    <h1>Modificar Montos de Caja</h1>
-    <form method="post">
-        {% csrf_token %}
-        <label for="monto_inicial">Monto Inicial:</label>
-        <input type="number" name="monto_inicial" value="{{ caja.monto_inicial }}" required>
-        <br>
-        <button type="submit">Actualizar Montos</button>
-    </form>
-    <a href="{% url 'listar_cajas' %}">Volver al Listado de Cajas</a>
-</body>
-</html>
+{% extends "caja.html" %}
+
+{% block content %}
+<h1>Modificar Montos de Caja</h1>
+<form method="post">
+    {% csrf_token %}
+    <label for="monto_inicial">Monto Inicial:</label>
+    <input type="number" name="monto_inicial" value="{{ caja.monto_inicial }}" required>
+    <br>
+    <button type="submit">Actualizar Montos</button>
+</form>
+<a href="{% url 'listar_cajas' %}">Volver al Listado de Cajas</a>
+{% endblock %}
