@@ -1,11 +1,11 @@
 {% extends "caja.html" %}
-
+{% load static %}
 {% block content %}
 <h1>Abrir Caja</h1>
 <form method="post">
     {% csrf_token %}
     <label for="monto_inicial">Monto Inicial:</label>
-    <input type="number" name="monto_inicial" value="{{ caja.monto_inicial }}" required><br>
+    <input type="number" name="monto_inicial" value="" required><br>
     <br> 
     <button type="submit">Abrir Caja</button>
 </form>

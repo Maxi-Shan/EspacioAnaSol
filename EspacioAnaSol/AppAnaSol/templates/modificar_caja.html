@@ -1,6 +1,7 @@
 {% extends "caja.html" %}
-
+{% load static %}
 {% block content %}
+<div class="contenedor">
 <h1>Modificar Montos de Caja</h1>
 <form method="post">
     {% csrf_token %}
@@ -10,4 +11,5 @@
     <button type="submit">Actualizar Montos</button>
 </form>
 <a href="{% url 'listar_cajas' %}">Volver al Listado de Cajas</a>
+</div>
 {% endblock %}

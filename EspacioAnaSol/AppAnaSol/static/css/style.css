@@ -61,16 +61,6 @@
     color: #fdfdfd;
 }
 
-.cerrar_sesion {
-    margin-left: 85%;
-    display: inline-block;
-    background: linear-gradient(90deg, #fa8dfa 0%, #b033bb 100%);
-    padding: 20px 5px;
-    margin-right: 20px;
-    color: #fdfdfd;
-    border-radius: 25px ;
-}
-
 .boton-login {
     margin-left: 85%;
     display: inline-block;

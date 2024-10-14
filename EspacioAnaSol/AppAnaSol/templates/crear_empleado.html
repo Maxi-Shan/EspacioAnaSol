@@ -1,29 +1,30 @@
 {% extends "empleados.html" %}
-
+{% load static %}
 {% block content %}
+<div class="contenedor">
 <h2>Crear Empleado</h2>
 <form method="POST">
     {% csrf_token %}
     <label for="dni">DNI:</label>
-    <input type="text" name="dni" id="dni" value="{{ form.dni.value }}"><br>
+    <input type="text" name="dni" id="dni" value=""><br>
     <br>
     <label for="nombre">Nombre:</label>
-    <input type="text" name="nombre" id="nombre" value="{{ form.nombre.value }}"><br>
+    <input type="text" name="nombre" id="nombre" value=""><br>
     <br>
     <label for="apellido">Apellido:</label>
-    <input type="text" name="apellido" id="apellido" value="{{ form.apellido.value }}"><br>
+    <input type="text" name="apellido" id="apellido" value=""><br>
     <br>
     <label for="domicilio">Domicilio:</label>
-    <input type="text" name="domicilio" id="domicilio" value="{{ form.domicilio.value }}"><br>
+    <input type="text" name="domicilio" id="domicilio" value=""><br>
     <br>
     <label for="correo_electronico">Correo Electrónico:</label>
-    <input type="email" name="correo_electronico" id="correo_electronico" value="{{ form.correo_electronico.value }}"><br>
+    <input type="email" name="correo_electronico" id="correo_electronico" value=""><br>
     <br>
     <label for="numero_telefono">Número de Teléfono:</label>
-    <input type="text" name="numero_telefono" id="numero_telefono" value="{{ form.numero_telefono.value }}"><br>
+    <input type="text" name="numero_telefono" id="numero_telefono" value=""><br>
     <br>
     <label for="contraseña">Contraseña:</label>
-    <input type="password" name="contraseña" id="contraseña" value="{{ form.contraseña.value }}"> <br>
+    <input type="password" name="contraseña" id="contraseña" value=""> <br>
     <br>
     <label for="estado_empleado">Estado del Empleado:</label>
     <input type="checkbox" name="estado_empleado" id="estado_empleado" {% if form.estado_empleado.value %}checked{% endif %}> <br>
@@ -34,4 +35,5 @@
     <button type="submit">Guardar</button>
 </form>
 <a href="{% url 'listar_empleados' %}">Cancelar</a>
+</div>
 {% endblock %}

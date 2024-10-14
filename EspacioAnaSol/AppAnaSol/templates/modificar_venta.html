@@ -1,11 +1,7 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modificar Venta</title>
-</head>
-<body>
+{% extends "ventas.html" %}
+{% load static %}
+{% block content %}
+<div class="contenedor">
     <h1>Modificar Estado de la Venta</h1>
     <form method="post">
         {% csrf_token %}
@@ -22,5 +18,5 @@
         <button type="submit">Guardar</button>
     </form>
     <a href="{% url 'listar_ventas' %}">Volver al listado</a>
-</body>
-</html>
+</div>
+{% endblock %}

@@ -1,6 +1,7 @@
 {% extends "ventas.html" %}
-
+{% load static %}
 {% block content %}
+<div class="contenedor">
 <h2>Crear Venta</h2>
 
 <form method="POST">
@@ -22,4 +23,5 @@
     {% endif %}
 </form>
 <a href="{% url 'listar_ventas' %}">Volver a la Lista de Ventas </a>
+</div>
 {% endblock %}

@@ -1,6 +1,7 @@
 {% extends "empleados.html" %}
-
+{% load static %}
 {% block content %}
+<div class="contenedor">
 <h2>Editar Empleado</h2>
 <form method="POST">
     <label for="dni">DNI:</label>
@@ -33,4 +34,5 @@
     <button type="submit">Guardar</button>
 </form>
 <a href="{% url 'listar_empleados' %}">Cancelar</a>
+</div>
 {% endblock %}

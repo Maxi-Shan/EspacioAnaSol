@@ -1,6 +1,7 @@
 {% extends "turnos.html" %}
-
+{% load static %}
 {% block content %}
+<div class="contenedor">
 <h1>Crear Registro de Turno</h1>
     <form method="post">
         {% csrf_token %}
@@ -38,4 +39,5 @@
         <button type="submit">Guardar</button>
     </form>
     <a href="{% url 'listar_turnos' %}">Volver al Listado de Turnos</a>
+</div>
 {% endblock %}

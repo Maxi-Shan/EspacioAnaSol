@@ -96,6 +96,7 @@ def eliminar_empleado(request, dni):
         return redirect('listar_empleados')
     return render(request, 'eliminar_empleado.html', {'empleado': empleado})
 
+@admin_required
 def listar_cajas(request):
     cajas = Caja.objects.all()
     caja_abierta = cajas.filter(fecha_cierre__isnull=True).exists()
@@ -110,7 +111,6 @@ def listar_cajas(request):
         'es_admin': es_admin  
     })
 
-@login_required
 def abrir_caja(request):
     if request.method == 'POST':
         form = AbrirCajaForm(request.POST)
@@ -399,3 +399,4 @@ def eliminar_venta(request, venta_id):
         return redirect('listar_ventas')
 
     return render(request, 'eliminar_venta.html', {'venta': venta})
+

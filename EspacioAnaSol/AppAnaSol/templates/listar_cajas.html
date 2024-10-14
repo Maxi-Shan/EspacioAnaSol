@@ -1,7 +1,26 @@
 {% extends "caja.html" %}
-
+{% load static %}
 {% block content %}
-<h1>Listado de Cajas</h1>
+<header class="cabezera">
+    <input type="checkbox" id="bar">
+    <label for="bar" class="icon-menu"><a href="{% if es_admin %}{% url 'pagina_admin' %}{% else %}{% url 'pagina_principal' %}{% endif %}" class="title"></label>
+    <div class="cab_nav">
+        <img src="{% static 'imagenes/icono1.png' %}" alt="Logo" class="logo_img">
+        <ul>
+            <li class="boton"><a href="{% url 'listar_ventas' %}">Ventas</a></li>
+            <li class="marca"><a href="{% url 'listar_cajas' %}">Caja</a></li>
+            <li class="boton"><a href="{% url 'listar_turnos' %}">Turnos</a></li>
+            <li class="boton"><a href="{% url 'listar_servicios' %}">Servicios</a></li>
+            <li class="boton"><a href="{% url 'listar_clientes' %}">Clientes</li>
+            {% if es_admin %}
+            <li class="boton">
+                <a href="{% url 'listar_empleados' %}">Empleados</a>
+            </li>
+            {% endif %}
+        </ul>
+    </div>
+</header>
+<div class="contenedor">
     {% if caja_abierta %}
     <button disabled>Abrir Nueva Caja</button>
     {% else %}
@@ -68,8 +87,7 @@
             {% endfor %}
         </tbody>
     </table>
-    <a href="{% if es_admin %}{% url 'pagina_admin' %}{% else %}{% url 'pagina_principal' %}{% endif %}">
-        Volver a la Página Principal
-    </a>
+</main>
+</div>
 {% endblock %}
 

@@ -1,6 +1,7 @@
 {% extends "servicios.html" %}
-
+{% load static %}
 {% block content %}
+<div class="contenedor">
 <h1>Registrar Servicio</h1>
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
@@ -25,4 +26,5 @@
     <button type="submit">Guardar</button>
 </form>
 <a href="{% url 'listar_servicios' %}">Volver al Listado de Servicios</a>
+</div>
 {% endblock %}

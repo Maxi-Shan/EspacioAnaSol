@@ -1,12 +1,12 @@
 {% extends "turnos.html" %}
-
+{% load static %}
 {% block content %}
-<h1>Eliminar Registro de Turno</h1>
-    <p>¿Estás seguro de que deseas eliminar el registro este turno?</p>
-    
+<div class="contenedor">
+<p>¿Estás seguro de que deseas eliminar el registro este turno?</p>
     <form method="post">
         {% csrf_token %}
         <button type="submit">Confirmar Eliminación</button>
     </form>
     <a href="{% url 'listar_turnos' %}">Cancelar</a>
+</div>
 {% endblock %}
