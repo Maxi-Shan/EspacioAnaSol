@@ -1,0 +1,278 @@
+/* Estilos del carrusel */
+.carousel-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    max-width: 100%;
+    overflow: hidden;
+    padding: 20px;
+}
+
+.carousel-wrapper {
+    overflow: hidden;
+    width: 80%;
+    display: flex;
+}
+
+.carousel {
+    display: flex;
+    transition: all 0.5s ease-in-out;
+    white-space: nowrap; /* Fuerza que los elementos estén en una fila horizontal */
+}
+
+.tarjeta-servicio {
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    margin: 10px;
+    padding: 15px;
+    display: inline-block; /* Asegura que los elementos se alineen horizontalmente */
+    cursor: pointer;
+}
+
+.tarjeta-servicio img {
+    width: 100%;
+    height: auto;
+}
+
+.titulo-servicio {
+    font-size: 18px;
+    font-weight: bold;
+    background-color: #000000;
+    color: #ffffff;
+    padding: 10px;
+}
+
+.descripcion-servicio {
+    padding: 10px;
+    text-align: justify;
+}
+
+.info-servicio {
+    font-size: 15px;
+    color: #313030;
+    background-color: #9e9c9c;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+.btn-escoger {
+    margin-top: 10px;
+    background-color: #008CBA;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn-escoger:hover {
+    background-color: #005f6b;
+}
+
+/* Botones del carrusel */
+.carousel-prev, .carousel-next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    padding: 10px;
+}
+
+.carousel-prev {
+    left: 10px;
+}
+
+.carousel-next {
+    right: 10px;
+}
+
+.carousel-prev:hover, .carousel-next:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+/* Estilos de botones en el pie de página */
+.botones-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 20px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.btn-siguiente {
+    background-color: #4CAF50;
+    color: white;
+    padding: 15px 32px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: not-allowed;
+}
+
+.btn-siguiente:enabled {
+    cursor: pointer;
+    background-color: #45a049;
+}
+
+.btn-cancelar {
+    background-color: #f44336;
+    color: white;
+    padding: 15px 32px;
+    font-size: 16px;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+.btn-cancelar:hover {
+    background-color: #d32f2f;
+}
+
+/* Estilos generales */
+.contenedor-turno {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.servicio-seleccionado {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.seleccion-turno {
+    display: flex;
+    justify-content: space-between;
+}
+
+.calendario, .horas-disponibles {
+    flex: 1;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    margin-right: 20px;
+}
+
+.horas-disponibles {
+    margin-left: 20px;
+}
+
+.month {
+    margin-bottom: 20px;
+}
+
+.day {
+    padding: 10px;
+    margin: 5px;
+    border-radius: 4px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.day:hover {
+    background-color: #0056b3;
+}
+
+.hora {
+    display: block;
+    margin: 5px 0;
+    padding: 10px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.hora:hover {
+    background-color: #218838;
+}
+
+/* Botones de navegación */
+.botones-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.btn-volver, .btn-siguiente {
+    background-color: #f44336;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btn-volver {
+    background-color: #007bff;
+}
+
+.btn-volver:hover {
+    background-color: #0056b3;
+}
+
+.btn-siguiente {
+    background-color: #28a745;
+    cursor: not-allowed;
+}
+
+.btn-siguiente:enabled {
+    cursor: pointer;
+    background-color: #218838;
+}
+/* style2.css */
+body {
+    font-family: Arial, sans-serif;
+}
+
+.contenedor-turno {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.month {
+    margin: 20px 0;
+}
+
+.day {
+    margin: 5px;
+    padding: 10px;
+    border: 1px solid #007BFF;
+    background-color: #f8f9fa;
+    cursor: pointer;
+}
+
+.day.ocupado {
+    background-color: #e9ecef;
+    color: #6c757d;
+    border: 1px solid #6c757d;
+    cursor: not-allowed;
+}
+
+body {
+    font-family: Arial, sans-serif;
+}
+
+.contenedor-turno {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.month {
+    margin: 20px 0;
+}

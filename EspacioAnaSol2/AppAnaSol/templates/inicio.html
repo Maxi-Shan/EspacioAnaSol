@@ -8,13 +8,12 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
     <title>Inicio</title>
 </head>
-<button class="boton-login" type="button"><a class="texto-sesion" href="{% url 'login' %}"><b>INICIAR SESION</b></a></button>
         <h1 class="titulo"><center>ESTETICA DE UÑAS</center></h1><br>
         <center><img class="logo" src="{% static 'imagenes/02.png' %}" alt="Logo"></center>
 <body>
     <div class="botones">
     <button class="tutorial" type="button"><a class="texto-tutorial" href="#"><b>¿COMO HACER MI RESERVA?</b></a></button><br>
-    <button class="reserva" type="button"><a class="texto-reserva" href="#"><b>HACER MI RESERVA</b></a></button><br><br>
+    <button class="reserva" type="button"><a class="texto-reserva" href="{% url 'seleccionar_servicio' %}"><b>HACER MI RESERVA</b></a></button><br><br>
     </div>
     <div class="iconos">
     <center>

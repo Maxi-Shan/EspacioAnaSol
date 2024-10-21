@@ -1,0 +1,65 @@
+{% extends "ventas.html" %}
+{% load static %}
+{% block content %}
+<header class="cabezera">
+    <label class="icon-menu"><a href="{% if es_admin %}{% url 'pagina_admin' %}{% else %}{% url 'pagina_principal' %}{% endif %}" class="title"></label>
+    <div class="cab_nav">
+        <img src="{% static 'imagenes/icono1.png' %}" alt="Logo" class="logo_img">
+        <ul>
+            <li class="marca"><a href="{% url 'listar_ventas' %}">Ventas</a></li>
+            <li class="boton"><a href="{% url 'listar_cajas' %}">Caja</a></li>
+            <li class="boton"><a href="{% url 'listar_turnos' %}">Turnos</a></li>
+            <li class="boton"><a href="{% url 'listar_servicios' %}">Servicios</a></li>
+            <li class="boton"><a href="{% url 'listar_clientes' %}">Clientes</li>
+            {% if es_admin %}
+            <li class="boton"><a href="{% url 'listar_empleados' %}">Empleados</a></li>
+            {% else %}
+            <li class="boton"><a href="{% if es_admin %}{% url 'pagina_admin' %}{% else %}{% url 'pagina_principal' %}{% endif %}">Inicio</a></li>
+            {% endif %}
+        </ul>
+    </div>
+</header>
+<div class="contenedor">
+    <table class="table">
+        <tbody>
+            <tr>
+                <td><strong>Cliente:</strong></td>
+                <td>
+                    {{ reserva.id_cliente.nombre }}
+                    {{ reserva.id_cliente.apellido }}
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Servicio:</strong></td>
+                <td>
+                {% if reserva.id_servicio %}
+                    {{ reserva.id_servicio.nombre_del_servicio }}
+                {% else %}
+                    No disponible
+                {% endif %}</td>
+            </tr>
+            <tr>
+                <td><strong>Turno:</strong></td>
+                <td>{{ reserva.id_turno.fecha }} - {{ reserva.id_turno.hora }}</td>
+            </tr>
+            <tr>
+                <td><strong>Estado de la Reserva:</strong></td>
+                <td>
+                    {% if reserva.estado_reserva == 'confirmada' %}
+                        Confirmada
+                    {% elif reserva.estado_reserva == 'en proceso' %}
+                        En Proceso
+                    {% elif reserva.estado_reserva == 'cancelada' %}
+                        Cancelada
+                    {% else %}
+                        {{ reserva.estado_reserva }} <!-- Esto mostrará cualquier valor que no coincida -->
+                    {% endif %}
+                </td>
+            </tr>
+            
+        </tbody>
+    </table>
+    
+    <a href="{% url 'modificar_estado_reserva' reserva.id_reserva %}" class="btn btn-primary">Modificar Reserva</a>
+</div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "ventas.html" %}
+{% load static %}
+
+{% block content %}
+<div class="contenedor">
+    <h2>Modificar Estado de Reserva</h2>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}  <!-- Renderiza el formulario -->
+        <button type="submit">Guardar Cambios</button>
+    </form>
+    <a href="{% url 'ver_reserva' reserva.id_reserva %}">Volver a la Reserva</a>
+</div>
+{% endblock %}

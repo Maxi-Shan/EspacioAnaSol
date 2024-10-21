@@ -2,8 +2,7 @@
 {% load static %}
 {% block content %}
 <header class="cabezera">
-    <input type="checkbox" id="bar">
-    <label for="bar" class="icon-menu"><a href="{% if es_admin %}{% url 'pagina_admin' %}{% else %}{% url 'pagina_principal' %}{% endif %}" class="title"></label>
+    <label class="icon-menu"><a href="{% if es_admin %}{% url 'pagina_admin' %}{% else %}{% url 'pagina_principal' %}{% endif %}" class="title"></label>
     <div class="cab_nav">
         <img src="{% static 'imagenes/icono1.png' %}" alt="Logo" class="logo_img">
         <ul>
@@ -12,35 +11,28 @@
             <li class="marca"><a href="{% url 'listar_turnos' %}">Turnos</a></li>
             <li class="boton"><a href="{% url 'listar_servicios' %}">Servicios</a></li>
             <li class="boton"><a href="{% url 'listar_clientes' %}">Clientes</li>
-
-            <li class="boton">
-                {% if es_admin %}
-                <a href="{% url 'listar_empleados' %}">Empleados</a>
-                {% else %}
-                {% endif %}
-            </li>
+            {% if es_admin %}
+            <li class="boton"><a href="{% url 'listar_empleados' %}">Empleados</a></li>
+            {% endif %}
         </ul>
     </div>
+</header>
 <div class="contenedor">
-<h1>Listado de Turnos</h1>
-
 <a href="{% url 'crear_registro_turno' %}">Crear Nuevo Registro</a>
 
-<table border="1">
+<table>
     <thead>
-        <tr style="background-color: gray;">
+        <tr>
             <th>ID Turno</th>
             <th>Fecha</th>
             <th>Hora</th>
             <th>Estado</th>
-            <th>Servicio</th>
-            <th>Empleado</th>
             <th>Acciones</th>
         </tr>
     </thead>
     <tbody>
         {% for turno in turnos %}
-        <tr style="background-color: white;">
+        <tr">
             <td>{{ turno.id_turno }}</td>
             <td>{{ turno.fecha }}</td>
             <td>{{ turno.hora }}</td>
@@ -51,30 +43,16 @@
                     Reservado
                 {% endif %}
             </td>
-            <td>
-                {% for servicio in servicios_x_turno %}
-                    {% if servicio.id_turno.id_turno == turno.id_turno %}
-                        {{ servicio.id_servicio.nombre_del_servicio }}
-                    {% endif %}
-                {% endfor %}
-            </td>
-            <td>
-                {% for empleado in empleados_x_turno %}
-                    {% if empleado.id_turno.id_turno == turno.id_turno %}
-                        {{ empleado.dni_emp.nombre }}
-                    {% endif %}
-                {% endfor %}
-            </td>
+            
             <td>
                 {% if es_admin %}
-                    <button type="button"><a href="{% url 'modificar_registro_turno' turno.id_turno %}" class="btn btn-warning">Modificar</a></a></button>
+                    <button type="button"><a href="{% url 'modificar_registro_turno' turno.id_turno %}" class="btn btn-warning">Modificar</a></button>
                     <button type="button"><a href="{% url 'eliminar_registro_turno' turno.id_turno %}" class="btn btn-danger">Eliminar</a></button>
                 {% else %}
-                    <button type="button"><a href="{% url 'modificar_registro_turno' turno.id_turno %}" class="btn btn-warning">Modificar</a></a></button>
+                    <button type="button"><a href="{% url 'modificar_registro_turno' turno.id_turno %}" class="btn btn-warning">Modificar</a></button>
                     <button type="button"><a href="{% url 'eliminar_registro_turno' turno.id_turno %}" class="btn btn-danger">Eliminar</a></button>
                 {% endif %}
             </td>
-            
         </tr>
         {% endfor %}
     </tbody>

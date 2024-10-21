@@ -2,8 +2,7 @@
 {% load static %}
 {% block content %}
 <header class="cabezera">
-    <input type="checkbox" id="bar">
-    <label for="bar" class="icon-menu"><a href="{% if es_admin %}{% url 'pagina_admin' %}{% else %}{% url 'pagina_principal' %}{% endif %}" class="title"></label>
+    <label class="icon-menu"><a href="{% if es_admin %}{% url 'pagina_admin' %}{% else %}{% url 'pagina_principal' %}{% endif %}" class="title"></label>
     <div class="cab_nav">
         <img src="{% static 'imagenes/icono1.png' %}" alt="Logo" class="logo_img">
         <ul>
@@ -12,53 +11,55 @@
             <li class="boton"><a href="{% url 'listar_turnos' %}">Turnos</a></li>
             <li class="boton"><a href="{% url 'listar_servicios' %}">Servicios</a></li>
             <li class="boton"><a href="{% url 'listar_clientes' %}">Clientes</li>
-
-            <li class="boton">
-                {% if es_admin %}
-                <a href="{% url 'listar_empleados' %}">Empleados</a>
-                {% else %}
-                {% endif %}
-            </li>
+            {% if es_admin %}
+            <li class="boton"><a href="{% url 'listar_empleados' %}">Empleados</a></li>
+            {% else %}
+            <li class="boton"><a href="{% if es_admin %}{% url 'pagina_admin' %}{% else %}{% url 'pagina_principal' %}{% endif %}">Inicio</a></li>
+            {% endif %}
         </ul>
     </div>
+</header>
 <div class="contenedor">
-<h2>Listado de Ventas</h2>
-<a href="{% url 'crear_venta' %}" class="btn btn-primary">Registrar Nueva Venta</a>
-<table class="table">
-    <thead>
-        <tr>
-            <th>ID Venta</th>
-            <th>ID Caja</th> 
-            <th>Fecha</th>
-            <th>Hora</th>
-            <th>Monto Total</th>
-            <th>Estado de Venta</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for venta in ventas %}
-        <tr>
-            <td>{{ venta.id_venta }}</td>
-            <td>
-                {% if venta.id_caja %}
-                    {{ venta.id_caja.id_caja }}
-                {% else %}
-                    Caja no abierta
-                {% endif %}
-            </td>
-            <td>{{ venta.fecha_venta }}</td>
-            <td>{{ venta.hs_venta }}</td>
-            <td>{{ venta.monto_total }}</td>
-            <td>
-            {% if venta.estado_venta == 0 %}
-                Completada
-            {% elif venta.estado_venta == 1 %}
-                En Proceso
-            {% elif venta.estado_venta == 2 %}
-                No Completada
-            {% endif %}</td>
-            <td>
+    <a href="{% url 'crear_venta' %}" class="btn btn-primary">Registrar Nueva Venta</a>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID Venta</th>
+                <th>ID Caja</th>
+                <th colspan="2">Fecha de Venta</th>
+                <th>Monto Total</th>
+                <th>Estado de Venta</th>
+                <th>Detalles</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for venta in ventas %}
+            <tr>
+                <td>{{ venta.id_venta }}</td>
+                <td>
+                    {% if venta.id_caja %}
+                        {{ venta.id_caja.id_caja }}
+                    {% else %}
+                        Caja no abierta
+                    {% endif %}
+                </td>
+                <td>{{ venta.fecha_venta }}</td>
+                <td>{{ venta.hs_venta }}</td>
+                <td>{{ venta.monto_total }}</td>
+                <td>
+                    {% if venta.estado_venta == 0 %}
+                        Completada
+                    {% elif venta.estado_venta == 1 %}
+                        En Proceso
+                    {% elif venta.estado_venta == 2 %}
+                        No Completada
+                    {% endif %}
+                    </td>
+                <td>
+                    <a href="{% url 'lista_detalle_ventas' venta.id_venta %}">Ver Detalles</a>
+                </td>
+                <td>
                 {% if es_admin %}
                     <button type="button"><a href="{% url 'modificar_venta' venta.id_venta %}" class="btn btn-warning">Modificar</a></button>
                     <button type="button"><a href="{% url 'eliminar_venta' venta.id_venta %}" class="btn btn-danger">Eliminar</a></button>

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Registrar Cliente</h1>
+
+<!-- Mostrar datos del servicio seleccionado -->
+<div>
+    <h2>Servicio Seleccionado</h2>
+    <p>Nombre: {{ servicio.nombre_del_servicio }}</p>
+    <p>Descripción: {{ servicio.descripcion_del_servicio }}</p>
+    <p>Precio: {{ servicio.precio_del_servicio }}</p>
+    <p>Fecha del Turno: {{ fecha }}</p>
+    <p>Hora del Turno: {{ hora }}</p>
+</div>
+
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }} <!-- Muestra el formulario de cliente -->
+
+    <h2>Datos del Servicio</h2>
+    <p>Servicio: {{ servicio.nombre_del_servicio }}</p>
+    <p>Fecha: {{ fecha }}</p>
+    <p>Hora: {{ hora }}</p>
+    <p>Precio: {{ servicio.precio_del_servicio }}</p>
+
+    <a id="btn-pagar" href="URL_DEL_PAGO" target="_blank" class="button is-link">Pagar</a>
+    <div id="comprobante-container" style="display: none;">
+        <label for="comprobante">Sube el comprobante de pago:</label>
+        <input type="file" name="comprobante" required>
+    </div>
+
+    <button type="submit" id="btn-registrar" class="button is-primary" disabled>Registrar</button>
+</form>
+
+<script>
+    document.getElementById('btn-pagar').onclick = function() {
+        // Redirigir al enlace de la billetera virtual
+        this.style.display = 'none'; // Ocultar el botón de pago
+        document.getElementById('comprobante-container').style.display = 'block'; // Mostrar el campo para subir el comprobante
+    }
+
+    document.querySelector('input[type="file"]').onchange = function() {
+        // Habilitar el botón de registrar si se seleccionó un archivo
+        document.getElementById('btn-registrar').disabled = !this.files.length;
+    };
+</script>
+
+{% endblock %}
+

@@ -1,31 +1,40 @@
 {% extends "turnos.html" %}
 {% load static %}
 {% block content %}
-<div class="contenedor">
-<h1>Modificar Registro de Turno</h1>
+<div class="formulario">
     <form method="post">
         {% csrf_token %}
+        <label for="title"><h2>Modificar Turno</h2></label>
+
         <label for="fecha">Fecha:</label>
-        <input type="date" name="fecha" id="fecha" value=""><br>
+        <input type="date" name="fecha" id="fecha" value="{{ turno.fecha|date:'Y-m-d' }}"><br>
         <br>
+        <br>
+
         <label for="hora">Hora:</label>
-        <input type="time" name="hora" id="hora" value=""><br>
+        <input type="time" name="hora" id="hora" value="{{ turno.hora }}"><br>
         <br>
+
         <label for="estado_turno">Estado del Turno:</label>
-        <input type="checkbox" name="estado_turno" id="estado_turno" {% if form.estado_turno.value %}checked{% endif %}> <br>
+        <select name="estado_turno" id="estado_turno">
+             <option value="True" {% if turno.estado_turno %}selected{% endif %}>Disponible</option>
+             <option value="False" {% if not turno.estado_turno %}selected{% endif %}>Reservado</option>
+        </select><br>   
         <br>
+
         <input type="hidden" name="turno_id" value="{{ turno.id_turno }}">
 
         <label for="id_servicio">Servicio:</label><br>
-        <select name="id_servicio" id="id_servicio" required><br>
+        <select name="id_servicio" id="id_servicio" required>
             {% for servicio in servicios %}
             <option value="{{ servicio.id_servicio }}" {% if servicio.id_servicio == servicio_actual.id_servicio %}selected{% endif %}>
                {{ servicio.nombre_del_servicio }}
             </option>
             {% endfor %}
-         </select>
+        </select>
         <br>
         <br>
+
         <label for="id_empleado">Empleado:</label><br>
         <select name="id_empleado" id="id_empleado" required>
             {% for empleado in empleados %}
@@ -36,8 +45,10 @@
         </select>
         <br>
         <br>
+
         <button type="submit">Guardar</button>
     </form>
-    <a href="{% url 'listar_turnos' %}">Volver al Listado de Turnos</a>
 </div>
+
+<button><a href="{% url 'listar_turnos' %}">Cancelar</a></button>
 {% endblock %}

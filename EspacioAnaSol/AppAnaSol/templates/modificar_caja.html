@@ -1,15 +1,15 @@
 {% extends "caja.html" %}
 {% load static %}
 {% block content %}
-<div class="contenedor">
-<h1>Modificar Montos de Caja</h1>
+<div class="formulario">
 <form method="post">
     {% csrf_token %}
+    <label for="title"><h2>Modificar Caja</h2></label>
     <label for="monto_inicial">Monto Inicial:</label>
     <input type="number" name="monto_inicial" value="{{ caja.monto_inicial }}" required><br>
     <br> 
     <button type="submit">Actualizar Montos</button>
 </form>
-<a href="{% url 'listar_cajas' %}">Volver al Listado de Cajas</a>
 </div>
+<button><a href="{% url 'listar_cajas' %}">Cancelar</a></button>
 {% endblock %}

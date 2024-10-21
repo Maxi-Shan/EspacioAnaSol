@@ -1,5 +1,5 @@
 from django import forms
-from .models import Empleado, Caja, Servicios, Turno, Cliente, Venta
+from .models import Empleado, Caja, Servicios, Turno, Cliente, Venta, Reservas, DetalleVenta
 
 class LoginForm(forms.Form):
     dni = forms.IntegerField()
@@ -23,6 +23,13 @@ class ServiciosForm(forms.ModelForm):
         fields = ['nombre_del_servicio', 'imagen', 'descripcion_del_servicio', 'duracion', 'precio_del_servicio', 'valor_sello']
 
 class TurnoForm(forms.ModelForm):
+    ESTADO_TURNO_CHOICES = [
+        (True, 'Reservado'),
+        (False, 'Disponible')
+    ]
+
+    estado_turno = forms.ChoiceField(choices=ESTADO_TURNO_CHOICES, widget=forms.Select())
+
     class Meta:
         model = Turno
         fields = ['fecha', 'hora', 'estado_turno']
@@ -30,6 +37,7 @@ class TurnoForm(forms.ModelForm):
             'fecha': forms.DateInput(attrs={'type': 'date'}),
             'hora': forms.TimeInput(attrs={'type': 'time'}),
         }
+
 
 class ClienteForm(forms.ModelForm):
     class Meta:
@@ -47,3 +55,21 @@ class VentaForm(forms.ModelForm):
                 (2, 'No Completada')
             ])
         }
+
+class DetalleVentaForm(forms.ModelForm):
+    class Meta:
+        model = DetalleVenta
+        fields = ['metodo_pago', 'estado_reserva']
+
+class EstadoReservaForm(forms.ModelForm):
+    ESTADO_CHOICES = [
+        ('En Proceso', 'En Proceso'),
+        ('Confirmada', 'Confirmada'),
+        ('Cancelada', 'Cancelada'),
+    ]
+    
+    estado_reserva = forms.ChoiceField(choices=ESTADO_CHOICES)
+
+    class Meta:
+        model = Reservas
+        fields = ['estado_reserva'] 

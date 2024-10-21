@@ -1,10 +1,10 @@
 {% extends "empleados.html" %}
 {% load static %}
 {% block content %}
-<div class="contenedor">
-<h2>Crear Empleado</h2>
+<div class="formulario">
 <form method="POST">
     {% csrf_token %}
+    <label for="title"><h2>Nuevo Empleado</h2></label>
     <label for="dni">DNI:</label>
     <input type="text" name="dni" id="dni" value=""><br>
     <br>
@@ -34,6 +34,6 @@
     <br>
     <button type="submit">Guardar</button>
 </form>
-<a href="{% url 'listar_empleados' %}">Cancelar</a>
 </div>
+<button><a href="{% url 'listar_empleados' %}">Cancelar</a></button>
 {% endblock %}

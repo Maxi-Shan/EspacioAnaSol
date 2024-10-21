@@ -1,0 +1,60 @@
+{% extends "ventas.html" %}
+{% load static %}
+{% block content %}
+<header class="cabezera">
+    <label class="icon-menu"><a href="{% if es_admin %}{% url 'pagina_admin' %}{% else %}{% url 'pagina_principal' %}{% endif %}" class="title"></label>
+    <div class="cab_nav">
+        <img src="{% static 'imagenes/icono1.png' %}" alt="Logo" class="logo_img">
+        <ul>
+            <li class="marca"><a href="{% url 'listar_ventas' %}">Ventas</a></li>
+            <li class="boton"><a href="{% url 'listar_cajas' %}">Caja</a></li>
+            <li class="boton"><a href="{% url 'listar_turnos' %}">Turnos</a></li>
+            <li class="boton"><a href="{% url 'listar_servicios' %}">Servicios</a></li>
+            <li class="boton"><a href="{% url 'listar_clientes' %}">Clientes</a></li>
+            {% if es_admin %}
+            <li class="boton"><a href="{% url 'listar_empleados' %}">Empleados</a></li>
+            {% else %}
+            <li class="boton"><a href="{% if es_admin %}{% url 'pagina_admin' %}{% else %}{% url 'pagina_principal' %}{% endif %}">Inicio</a></li>
+            {% endif %}
+        </ul>
+    </div>
+</header>
+<div class="contenedor">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID Detalle Venta</th>
+                <th>ID Venta</th>
+                <th>ID Reserva</th>
+                <th>Método de Pago</th>
+                <th>Monto Subtotal</th>
+                <th>Comprobante</th>
+                <th>Estado de Reserva</th>
+                <th>Acciones</th> <!-- Nueva columna para acciones -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for detalle in detalles_ventas %}
+            <tr>
+                <td>{{ detalle.id_detalle_venta }}</td>
+                <td>{{ detalle.id_venta.id_venta }}</td>
+                <td><a href="{% url 'ver_reserva' detalle.id_reserva.id_reserva %}">{{ detalle.id_reserva.id_reserva }}</a></td>
+                <td>{{ detalle.metodo_pago }}</td>
+                <td>{{ detalle.monto_subtotal }}</td>
+                <td>
+                    {% if detalle.comprobante %}
+                        <img src="{{ detalle.comprobante.url }}" alt="Comprobante" width="100">
+                    {% else %}
+                        No disponible
+                    {% endif %}
+                </td>
+                <td>{{ detalle.estado_reserva|yesno:"Activa,Inactiva" }}</td>
+                <td>
+                    <a href="{% url 'modificar_detalle_venta' detalle.id_detalle_venta %}" class="btn btn-primary">Modificar</a> <!-- Botón de modificar -->
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -2,8 +2,9 @@
 {% load static %}
 {% block content %}
 <header class="cabezera">
-    <input type="checkbox" id="bar">
-    <label for="bar" class="icon-menu"><a href="{% if es_admin %}{% url 'pagina_admin' %}{% else %}{% url 'pagina_principal' %}{% endif %}" class="title"></label>
+    <label class="icon-menu">
+        <a href="{% if es_admin %}{% url 'pagina_admin' %}{% else %}{% url 'pagina_principal' %}{% endif %}" class="title"></a>
+    </label>
     <div class="cab_nav">
         <img src="{% static 'imagenes/icono1.png' %}" alt="Logo" class="logo_img">
         <ul>
@@ -11,21 +12,19 @@
             <li class="boton"><a href="{% url 'listar_cajas' %}">Caja</a></li>
             <li class="boton"><a href="{% url 'listar_turnos' %}">Turnos</a></li>
             <li class="marca"><a href="{% url 'listar_servicios' %}">Servicios</a></li>
-            <li class="boton"><a href="{% url 'listar_clientes' %}">Clientes</li>
-
-            <li class="boton">
-                {% if es_admin %}
-                <a href="{% url 'listar_empleados' %}">Empleados</a>
-                {% else %}
-                {% endif %}
-            </li>
+            <li class="boton"><a href="{% url 'listar_clientes' %}">Clientes</a></li>
+            {% if es_admin %}
+            <li class="boton"><a href="{% url 'listar_empleados' %}">Empleados</a></li>
+            {% else %}
+            <li class="boton"><a href="{% if es_admin %}{% url 'pagina_admin' %}{% else %}{% url 'pagina_principal' %}{% endif %}">Inicio</a></li>
+            {% endif %}
         </ul>
     </div>
 </header>
+
 <div class="contenedor">
-<h1>Listado de Servicios</h1>
     <a href="{% url 'crear_servicio' %}">Registrar Nuevo Servicio</a>
-    <table border="1">
+     <table border="1">
         <thead>
             <tr style="background-color: gray;">
                 <th>ID Servicio</th>

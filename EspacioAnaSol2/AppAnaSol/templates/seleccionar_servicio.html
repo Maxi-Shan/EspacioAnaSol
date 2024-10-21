@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seleccionar Servicio</title>
+    <link rel="stylesheet" href="{% static 'css/fondo.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style2.css' %}">
+</head>
+<body>
+    <div class="contenedor-servicios">
+        <h1>Seleccionar Servicio</h1>
+
+        <!-- Carrusel de Servicios -->
+        <div class="carousel-container">
+            <button class="carousel-prev" onclick="moverCarrusel(-1)">&#10094;</button>
+            <div class="carousel-wrapper">
+                <div class="carousel">
+                    {% for servicio in servicios %}
+                    <div class="tarjeta-servicio" onclick="seleccionarServicio('{{ servicio.id_servicio }}')">
+                        <img src="{% static servicio.imagen %}" alt="{{ servicio.nombre_del_servicio }}">
+                        <div class="titulo-servicio">{{ servicio.nombre_del_servicio }}</div>
+                        <div class="descripcion-servicio">
+                            <p>{{ servicio.descripcion_del_servicio }}</p>
+                            <div class="info-servicio">
+                                Duración: {{ servicio.duracion }}<br>
+                                Valor del Servicio: ${{ servicio.precio_del_servicio }}<br>
+                                Valor de la Reserva: ${{ servicio.valor_sello }}
+                            </div>
+                        </div>
+                        <button class="btn-escoger">Escoger</button>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <button class="carousel-next" onclick="moverCarrusel(1)">&#10095;</button>
+        </div>
+
+    </div>
+
+    <div class="botones-footer">
+        <a href="{% url 'inicio' %}" class="btn-cancelar">Cancelar Reserva</a>
+        <button id="btn-siguiente" class="btn-siguiente" disabled>Siguiente</button>
+    </div>
+
+    <script>
+        let servicioSeleccionado = null;
+
+        function seleccionarServicio(idServicio) {
+            servicioSeleccionado = idServicio;
+            document.getElementById('btn-siguiente').disabled = false;
+        }
+
+        document.getElementById('btn-siguiente').addEventListener('click', function() {
+            if (servicioSeleccionado) {
+                window.location.href = "{% url 'seleccionar_turno' 0 %}".replace('0', servicioSeleccionado);
+            }
+        });
+
+        const carousel = document.querySelector('.carousel');
+        const step = 300; // Ajusta el tamaño de desplazamiento en píxeles
+        let scrollAmount = 0;
+
+        function moverCarrusel(direccion) {
+            scrollAmount += step * direccion;
+            if (scrollAmount < 0) {
+                scrollAmount = 0; // Evitar scroll negativo
+            }
+            carousel.scrollTo({
+                left: scrollAmount,
+                behavior: 'smooth'
+            });
+        }
+    </script>
+</body>
+</html>
