@@ -1,0 +1,24 @@
+{% extends 'turnos.html' %}
+{% block content %}
+
+<h2>Modificar Turno</h2>
+
+<form method="post">
+    {% csrf_token %}
+    <div>
+        <label for="fecha">Fecha:</label>
+        {{ form.fecha }}  <!-- Selector de fecha -->
+    </div>
+    <div>
+        <label for="hora">Hora:</label>
+        {{ form.hora }}  <!-- Selector de hora -->
+    </div>
+    <div>
+        <label for="estado_turno">Estado:</label>
+        {{ form.estado_turno }}  <!-- Si decides incluir el estado -->
+    </div>
+    <button type="submit">Guardar Cambios</button>
+</form>
+<a href="{% url 'list_turnos' %}">Volver a la lista</a>
+
+{% endblock %}

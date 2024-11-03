@@ -1,0 +1,17 @@
+{% extends 'caja.html' %}
+
+{% block content %}
+    <h2>Modificar Caja</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        <label for="monto_inicial">Monto Inicial:</label>
+        <input type="text" name="monto_inicial" id="monto_inicial" value="{{ caja.monto_inicial }}" required>
+
+        <!-- Aquí puedes agregar otros campos que necesites modificar -->
+        
+        <button type="submit">Guardar Cambios</button>
+    </form>
+
+    <a href="{% url 'list_cajas' %}">Volver a la lista de cajas</a>
+{% endblock %}

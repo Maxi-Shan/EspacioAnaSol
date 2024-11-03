@@ -1,0 +1,37 @@
+{% extends 'turnos.html' %}
+{% block content %}
+<form method="post">
+    {% csrf_token %}
+    <div>
+        <label for="fecha">Fecha:</label>
+        {{ form.fecha }}<br><br>
+    </div>
+
+    <!-- Selección de empleados -->
+    <div>
+        <label>Empleados:</label><br>
+        {{ form.empleado1 }}<br>
+        {{ form.empleado2 }}<br>
+        {{ form.empleado3 }}<br>
+        {{ form.empleado4 }}<br><br>
+    </div>
+
+    <!-- Selección de un solo servicio -->
+    <div>
+        <label for="servicio">Servicio:</label>
+        {{ form.servicio }}<br><br>
+    </div>
+
+    <!-- Campos para seleccionar cuatro horas -->
+    <div>
+        <label>Horas:</label><br>
+        {{ form.hora1 }}<br>
+        {{ form.hora2 }}<br>
+        {{ form.hora3 }}<br>
+        {{ form.hora4 }}<br>
+    </div><br>
+
+    <button type="submit">Crear Turnos</button>
+</form>
+<a href="{% url 'list_turnos' %}">Volver a la lista</a>
+{% endblock %}

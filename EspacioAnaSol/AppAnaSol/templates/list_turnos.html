@@ -1,0 +1,38 @@
+{% extends 'turnos.html' %}
+{% block content %}
+
+<h2>Lista de Turnos</h2>
+
+<a href="{% url 'add_turno' %}">Agregar Turno</a>
+
+<table>
+    <tr>
+        <th>Fecha</th>
+        <th>Hora</th>
+        <th>Estado</th>
+        <th>Empleados</th>
+        <th>Servicios</th>
+        <th>Acciones</th>
+    </tr>
+    {% for data in turnos_data %}
+    <tr>
+        <td>{{ data.turno.fecha }}</td>
+        <td>{{ data.turno.hora }}</td>
+        <td>{{ data.turno.estado_turno }}</td>
+        <td>{{ data.empleados }}</td>
+        <td>{{ data.servicios }}</td>
+        <td>
+            <a href="{% url 'update_turno' data.turno.id_turno %}">Modificar</a>
+            <form action="{% url 'delete_turno' data.turno.id_turno %}" method="post" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" onclick="return confirm('¿Estás seguro de eliminar este turno?')">Eliminar</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+<a href="{% url 'pagina_principal' %}">Inicio</a>
+
+{% endblock %}
+
+

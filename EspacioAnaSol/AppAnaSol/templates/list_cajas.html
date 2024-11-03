@@ -1,0 +1,61 @@
+{% extends 'caja.html' %}
+
+{% block content %}
+    <h2>Lista de Cajas</h2>
+    <a href="{% url 'pagina_principal' %}">inicio</a>
+    <!-- Mostrar botón de "Abrir Caja" si no hay cajas abiertas -->
+    {% if not cajas_abiertas %}
+        <form action="{% url 'abrir_caja' %}" method="get">
+            <button type="submit">Abrir Caja</button>
+        </form>
+    {% endif %}
+
+    <table>
+        <tr>
+            <th>ID Caja</th>
+            <th>Empleado</th>
+            <th>Fecha Apertura</th>
+            <th>Monto Inicial</th>
+            <th>Monto Recaudado</th>
+            <th>Monto Total</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+        {% for caja in cajas %}
+            <tr>
+                <td>{{ caja.id_caja }}</td>
+                <td>{{ caja.empleado }}</td>
+                <td>{{ caja.fecha_apertura }}</td>
+                <td>{{ caja.monto_inicial }}</td>
+                <td>{{ caja.monto_recaudado }}</td>
+                <td>{{ caja.monto_total }}</td> <!-- Asegúrate de que esto está calculado correctamente -->
+                <td>
+                    {% if caja.estado %}
+                        Abierta
+                    {% else %}
+                        Cerrada
+                    {% endif %}
+                </td>
+                <td>
+                    {% if caja.estado %}
+                        <form action="{% url 'cerrar_caja' caja.id_caja %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit">Cerrar Caja</button>
+                        </form>
+                    {% endif %}
+                    {% if es_admin %}
+                <form action="{% url 'update_caja' caja.id_caja %}" method="get" style="display:inline;">
+                    <button type="submit">Modificar</button>
+                </form>
+                <form action="{% url 'delete_caja' caja.id_caja %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" onclick="return confirm('¿Está seguro de que desea eliminar este empleado?');">Eliminar</button>
+                </form>
+            {% else %}
+                <button type="button" disabled>Modificar</button>
+                <button type="button" disabled>Eliminar</button>
+            {% endif %}
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

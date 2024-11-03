@@ -1,0 +1,42 @@
+{% extends 'servicios.html' %}
+{% block content %}
+<h2>Lista de Servicios</h2>
+
+<a href="{% url 'add_servicio' %}">Agregar Servicio</a>
+
+<table>
+    <tr>
+        <th>Nombre</th>
+        <th>Descripción</th>
+        <th>Duración</th>
+        <th>Precio</th>
+        <th>Valor Sello</th>
+        <th>Imagen</th>
+        <th>Acciones</th>
+    </tr>
+    {% for servicio in servicios %}
+    <tr>
+        <td>{{ servicio.nombre_del_servicio }}</td>
+        <td>{{ servicio.descripcion_del_servicio }}</td>
+        <td>{{ servicio.duracion }}</td>
+        <td>{{ servicio.precio_del_servicio }}</td>
+        <td>{{ servicio.valor_sello }}</td>
+        <td>
+            {% if servicio.imagen %}
+            <img src="{{ servicio.imagen.url }}" width="50">
+            {% else %}
+            Sin imagen
+            {% endif %}
+        </td>
+        <td>
+            <a href="{% url 'update_servicio' servicio.id_servicio %}">Modificar</a>
+            <form action="{% url 'delete_servicio' servicio.id_servicio %}" method="post" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" onclick="return confirm('¿Estás seguro de eliminar este servicio?')">Eliminar</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+<a href="{% url 'pagina_principal' %}">inicio</a>
+{% endblock %}

@@ -20,25 +20,27 @@
                     {% csrf_token %}
                     <div class="caja3">
                         <label for="dni"><p class="title">DNI:</p></label>
-                        <input type="number" id="dni" name="dni" placeholder="Ingrese su DNI">
+                        <input type="number" id="dni" name="dni" placeholder="Ingrese su DNI" required>
                     </div>
                     <div class="caja4">
-                        <label for="password"><p class="title">Contraseña:</p></label>
-                        <input type="password" id="password" name="contraseña" placeholder="Ingrese su contraseña">
+                        <label for="contraseña"><p class="title">Contraseña:</p></label>
+                        <input type="password" id="contraseña" name="contraseña" placeholder="Ingrese su contraseña" required>
                     </div>
                     <div class="boton_enviar">
                         <button type="submit">Acceder</button>
                     </div>
                 </form>
-                {% if messages_to_display %}
-    <ul>
-        {% for message in messages_to_display %}
-            <li>{{ message }}</li>
-        {% endfor %}
-    </ul>
-{% endif %}
+                {% if messages %}
+                    <ul>
+                        {% for message in messages %}
+                            <li>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
             </div>
         </div>
     </div>
 </body>
 </html>
+
+

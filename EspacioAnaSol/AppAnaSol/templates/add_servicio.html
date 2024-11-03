@@ -1,0 +1,12 @@
+{% extends 'servicios.html' %}
+{% block content %}
+<h2>Agregar Servicio</h2>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Guardar</button>
+</form>
+
+<a href="{% url 'list_servicios' %}">Volver a la lista</a>
+{% endblock %}

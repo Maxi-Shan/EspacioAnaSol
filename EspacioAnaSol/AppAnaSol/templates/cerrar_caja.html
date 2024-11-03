@@ -1,12 +1,11 @@
-{% extends "caja.html" %}
+{% extends 'caja.html' %}
 
 {% block content %}
-<div class="contenedor">
-<p>¿Seguro Que quieres cerrar esta caja?</p>
-    <form method="post">
+<h2>Cerrar Caja {{ caja.id_caja }}</h2>
+    <form method="POST">
         {% csrf_token %}
+        <label for="monto_recaudado">Monto Recaudado:</label>
+        <input type="number" name="monto_recaudado" step="0.01" required>
         <button type="submit">Cerrar Caja</button>
     </form>
-    <a href="{% url 'listar_cajas' %}">Volver al Listado de Cajas</a>
-</div>
 {% endblock %}

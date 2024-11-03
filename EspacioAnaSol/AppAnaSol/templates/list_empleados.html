@@ -1,0 +1,54 @@
+{% extends 'empleados.html' %}
+
+{% block content %}
+<h1>Gestión de Empleados</h1>
+<nav>
+    <a href="{% url 'add_empleado' %}">Agregar Empleado</a>
+    <a href="{% url 'pagina_principal' %}">inicio</a>
+</nav>
+<hr>
+<h2>Lista de Empleados</h2>
+<table>
+    <tr>
+        <th>DNI</th>
+        <th>Nombre</th>
+        <th>Apellido</th>
+        <th>Domicilio</th>
+        <th>Correo Electrónico</th>
+        <th>Número de Teléfono</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+    </tr>
+    {% for empleado in empleados %}
+    <tr>
+        <td>{{ empleado.dni }}</td>
+        <td>{{ empleado.nombre }}</td>
+        <td>{{ empleado.apellido }}</td>
+        <td>{{ empleado.domicilio }}</td>
+        <td>{{ empleado.correo_electronico }}</td>
+        <td>{{ empleado.numero_telefono }}</td>
+        <td>
+            <form action="{% url 'update_empleado_status' empleado.dni %}" method="POST">
+                {% csrf_token %}
+                <select name="estado_empleado">
+                    <option value="activo" {% if empleado.estado_empleado == 'activo' %}selected{% endif %}>Activo</option>
+                    <option value="inactivo" {% if empleado.estado_empleado == 'inactivo' %}selected{% endif %}>Inactivo</option>
+                </select>
+                <select name="es_admin">
+                    <option value="False" {% if empleado.es_admin == False %}selected{% endif %}>No Admin</option>
+                    <option value="True" {% if empleado.es_admin == True %}selected{% endif %}>Admin</option>
+                </select>                
+                <button type="submit">Actualizar</button>
+            </form>
+        </td>
+        <td>
+            <button><a href="{% url 'update_empleado' empleado.dni %}">Modificar</a></button>
+            <form action="{% url 'delete_empleado' empleado.dni %}" method="POST">
+                {% csrf_token %}
+                <button type="submit" onclick="return confirm('¿Está seguro de que desea eliminar estA CAJA?');">Eliminar</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}
