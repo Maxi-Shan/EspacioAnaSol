@@ -1,5 +1,7 @@
 *{
     font-family: Arial, sans-serif;
+    padding: 0;
+    margin: 0;
 }
 
 /* General page styles */
@@ -16,6 +18,9 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+.header-primary span{
+    font-weight: 900;
 }
 .header-primary .logo {
     display: flex;
@@ -46,7 +51,7 @@ body {
 }
 /* Sidebar styles */
 .sidebar {
-    background-color: #f3e0f5;
+    background-color: #FCD3F6;
     padding: 20px;
     border-right: 1px solid #ddd;
     margin-top: 20px;
@@ -60,12 +65,13 @@ body {
     margin-top: 20px;
 }
 .sidebar .menu-section h4 {
-    background-color: #c776d0;
-    color: white;
+    background-color: #C16AA8;
+    color: black;
+    font-weight: bold;
     padding: 10px;
     font-size: 1rem;
     margin-bottom: 5px;
-    text-transform: uppercase;
+    text-transform: none;
 }
 .sidebar .menu-item {
     background-color: white;
@@ -143,4 +149,14 @@ body {
     padding: 5px 10px;
     border-radius: 5px;
     border: none;
+}
+.card-header{
+    background-color: #CD9AFE;
+}
+.card-header h2{
+    background-color: #CD9AFE;
+    font-weight: bold;
+}
+.card-footer{
+    margin-top: 200px;
 }

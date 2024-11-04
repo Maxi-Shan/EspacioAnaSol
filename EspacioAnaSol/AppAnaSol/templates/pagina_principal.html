@@ -20,20 +20,20 @@
             <span>EspacioAnaSol</span>
         </div>
         <div class="welcome-text">
-            Bienvenido, <strong>Usuario</strong> / <a href="#">Ver el Sitio</a> / <a href="#">Cerrar Sesión</a>
+            Bienvenido, <strong>Usuario</strong> / <a href="#">Ver el Sitio</a> /  {% if es_admin %} <a href="{% url 'backup_database' %}">Hacer copia de seguridad</a> / <a href="{% url 'restore_database' %}">Restaurar base de datos</a> {% endif %} / <a href="{% url 'logout' %}">Cerrar Sesión</a>
         </div>
     </header>
 
     <!-- Main content -->
     <div class="container-fluid">
-        <div class="row">
+        <div class="row"> 
             <!-- Sidebar -->
             <div class="col-md-6 sidebar">
                 <h3>Sitio de Empleados</h3>
 
                 <div class="menu-section">
                     <h4>Registro de Datos</h4>
-                    <a href="#"><div class="menu-item">
+                    <a href="{% url 'list_ventas' %}"><div class="menu-item">
                         Ventas <span class="plus-icon">+</span>
                     </div></a>
                     <a href="{% url 'list_cajas' %}"><div class="menu-item">

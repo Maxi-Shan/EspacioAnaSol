@@ -18,7 +18,7 @@
             <span>EspacioAnaSol</span>
         </div>
         <div class="welcome-text">
-            Bienvenido, <strong>Usuario</strong> / <a href="#">Ver el Sitio</a> / <a href="#">Cerrar Sesión</a>
+            Bienvenido, <strong>Usuario</strong> / <a href="#">Ver el Sitio</a> /  {% if es_admin %} <a href="{% url 'backup_database' %}">Hacer copia de seguridad</a> / <a href="{% url 'restore_database' %}">Restaurar base de datos</a> {% endif %} / <a href="{% url 'logout' %}">Cerrar Sesión</a>
         </div>
     </header>
     
@@ -37,15 +37,15 @@
                 <h3>Sitio de Empleados</h3>
                 <div class="menu-section">
                     <h4>Registro de Datos</h4>
-                    <a href="#"><div class="menu-item">Ventas <span class="plus-icon">+</span></div></a>
-                    <a href="{% url 'list_cajas' %}"><div class="menu-item">Caja <span class="plus-icon">+</span></div></a>
-                    <a href="{% url 'list_turnos' %}"><div class="menu-item">Turnos <span class="plus-icon">+</span></div></a>
-                    <a href="{% url 'list_servicios' %}"><div class="menu-item">Servicios <span class="plus-icon">+</span></div></a>
+                    <div class="menu-item"><a href="#">Ventas</a><a href="#"><span class="plus-icon">+</span></a></div>
+                    <div class="menu-item"><a href="{% url 'list_cajas' %}">Caja<a href="{% url 'abrir_caja' %}"><span class="plus-icon">+</span></a></div>
+                    <div class="menu-item"><a href="{% url 'list_turnos' %}">Turnos<a href="{% url 'add_turno' %}"><span class="plus-icon">+</span></a></div>
+                    <div class="menu-item"><a href="{% url 'list_servicios' %}">Servicios <a href="{% url 'add_servicio' %}"><span class="plus-icon">+</span></a></div>
                 </div>
                 <div class="menu-section mt-4">
                     <h4>Usuarios</h4>
-                    <a href="{% url 'list_clientes' %}"><div class="menu-item">Clientes Registrados</div></a>
-                    <a href="{% url 'list_empleados' %}"><div class="menu-item">Empleados Registrados</div></a>
+                    <div class="menu-item"><a href="{% url 'list_clientes' %}">Clientes Registrados</a></div>
+                    <div class="menu-item"><a href="{% url 'list_empleados' %}">Empleados Registrados</a></div>
                 </div>
             </div>
             {% block content %}{% endblock %}

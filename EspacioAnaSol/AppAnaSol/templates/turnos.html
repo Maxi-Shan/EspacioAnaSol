@@ -19,7 +19,7 @@
             <span>EspacioAnaSol</span>
         </div>
         <div class="welcome-text">
-            Bienvenido, <strong>Usuario</strong> / <a href="#">Ver el Sitio</a> / <a href="#">Cerrar Sesión</a>
+            Bienvenido, <strong>Usuario</strong> / <a href="#">Ver el Sitio</a> /  {% if es_admin %} <a href="{% url 'backup_database' %}">Hacer copia de seguridad</a> / <a href="{% url 'restore_database' %}">Restaurar base de datos</a> {% endif %} / <a href="{% url 'logout' %}">Cerrar Sesión</a>
         </div>
     </header>
         <!-- Secondary Header -->

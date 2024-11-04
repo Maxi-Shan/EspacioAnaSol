@@ -48,11 +48,11 @@
                     <td>
                         <form action="{% url 'update_turno' data.turno.id_turno %}" method="post" style="display:inline;">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-warning btn-sm">Modificar</button>
+                            <button type="button" class="btn btn-warning">Modificar</a></button>
                         </form>
                         <form action="{% url 'delete_turno' data.turno.id_turno %}" method="post" style="display:inline;">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de eliminar este turno?')">Eliminar</button>
+                            <button type="submit" class="btn btn-danger" onclick="return confirm('¿Estás seguro de eliminar este turno?')">Eliminar</button>
                         </form>
                     </td>
                 </tr>

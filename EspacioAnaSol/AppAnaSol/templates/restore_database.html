@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Restaurar Base de Datos</title>
+</head>
+<body>
+    <h1>Restaurar Base de Datos</h1>
+    
+    {% if messages %}
+        {% for message in messages %}
+            <p class="message {{ message.tags }}">{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="backup_file">Selecciona el archivo de copia de seguridad (.json):</label>
+        <input type="file" id="backup_file" name="backup_file" accept=".json" required>
+        <button type="submit">Restaurar Base de Datos</button>
+    </form>
+
+    <a href="{% url 'pagina_principal' %}">Volver a la Página Principal</a>
+</body>
+</html>

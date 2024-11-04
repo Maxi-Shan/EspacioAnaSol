@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Servicios</title>
+    <title>Listado de Ventas</title>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{% static 'css/style2.css' %}">
 </head>
@@ -18,13 +18,14 @@
             <span>EspacioAnaSol</span>
         </div>
         <div class="welcome-text">
-            Bienvenido, <strong>Usuario</strong> / <a href="#">Ver el Sitio</a> /  {% if es_admin %} <a href="{% url 'backup_database' %}">Hacer copia de seguridad</a> / <a href="{% url 'restore_database' %}">Restaurar base de datos</a> {% endif %} / <a href="{% url 'logout' %}">Cerrar Sesión</a>
+            Bienvenido, <strong>Usuario</strong> / <a href="#">Ver el Sitio</a> / {% if es_admin %} <a href="{% url 'backup_database' %}">Hacer copia de seguridad</a> / <a href="{% url 'restore_database' %}">Restaurar base de datos</a> {% endif %} / <a href="{% url 'logout' %}">Cerrar Sesión</a>
+        </div>
     </header>
-
+    
     <!-- Secondary Header -->
     <header class="header-secondary">
         <div class="menu-text">
-            <a href="{% url 'pagina_principal' %}">Inicio </a> / <a href="{% url 'list_servicios' %}">Servicios</a>
+            <a href="{% url 'pagina_principal' %}">Inicio </a> / <a href="{% url 'list_cajas' %}">Cajas</a>
         </div>
     </header>
 
@@ -48,8 +49,42 @@
                 </div>
             </div>
 
-            <!-- Main content area where the list_servicios will be displayed -->
-            {% block content %}{% endblock %}
+            <div class="col-md-8 main-content">
+                <div class="container mt-4">
+                    <h2>Lista de Ventas</h2>
+                    <a href="{% url 'registrar_cliente' %}" class="btn btn-primary mb-3">Registrar Venta</a>
+                    <table class="table table-bordered">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>ID Venta</th>
+                                <th>Cliente</th>
+                                <th>Fecha de Venta</th>
+                                <th>Hora de Venta</th>
+                                <th>Monto Total</th>
+                                <th>Estado</th>
+                                <th>Detalles</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for venta in ventas %}
+                            <tr>
+                                <td>{{ venta.id_venta }}</td>
+                                <td>{{ venta.id_cliente.nombre }} {{ venta.id_cliente.apellido }}</td>
+                                <td>{{ venta.fecha_venta }}</td>
+                                <td>{{ venta.hs_venta }}</td>
+                                <td>{{ venta.monto_total }}</td>
+                                <td>{{ venta.get_estado_venta_display }}</td>
+                                <td><a href="{% url 'detalle_venta' venta.id_venta %}" class="btn btn-info">Ver Detalles</a></td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center">No hay ventas registradas.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 

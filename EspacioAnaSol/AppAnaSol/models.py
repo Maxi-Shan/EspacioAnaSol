@@ -27,7 +27,7 @@ class Turno(models.Model):
     ])
 
     def __str__(self):
-        return f"{self.nombre} {self.apellido}"
+        return f'Turno {self.id_turno} - Fecha: {self.fecha} Hora: {self.hora} - Estado: {self.estado_turno}'  # Corrige el retorno
 
 class Servicios(models.Model):
     id_servicio = models.AutoField(primary_key=True)
@@ -103,7 +103,7 @@ class Venta(models.Model):
     estado_venta = models.IntegerField(choices=ESTADO_VENTA_CHOICES)
 
     def __str__(self):
-        return 
+        return f'Venta {self.id_venta} - Cliente: {self.id_cliente}'
 
 class EmpleadoXTurno(models.Model):
     id_emp_x_tur = models.AutoField(primary_key=True)
@@ -111,7 +111,7 @@ class EmpleadoXTurno(models.Model):
     id_turno = models.ForeignKey(Turno, on_delete=models.CASCADE)
 
     def __str__(self):
-        return 
+        return f'Empleado: {self.dni_emp} en Turno: {self.id_turno}'
 
 class ServicioXTurno(models.Model):
     id_serv_x_tur = models.AutoField(primary_key=True)
@@ -119,7 +119,7 @@ class ServicioXTurno(models.Model):
     id_turno = models.ForeignKey(Turno, on_delete=models.CASCADE)
 
     def __str__(self):
-        return 
+        return f'Servicio: {self.id_servicio} en Turno: {self.id_turno}'
 
 class Reservas(models.Model):
     ESTADO_OPCIONES = [
@@ -133,7 +133,7 @@ class Reservas(models.Model):
     estado_reserva = models.CharField(max_length=20, choices=ESTADO_OPCIONES, default='En Proceso')
 
     def __str__(self):
-        return 
+        return f'Reserva {self.id_reserva} - Cliente: {self.id_cliente}'
 
 class DetalleVenta(models.Model):
     id_detalle_venta = models.AutoField(primary_key=True)
@@ -145,7 +145,7 @@ class DetalleVenta(models.Model):
     estado_reserva = models.CharField(max_length=100)
 
     def __str__(self):
-        return 
+        return f'Detalle de Venta {self.id_detalle_venta} - Reserva: {self.id_reserva}'
 
 class D_VentaXServicio(models.Model):
     id_d_vent_x_serv = models.AutoField(primary_key=True)
@@ -153,4 +153,4 @@ class D_VentaXServicio(models.Model):
     id_servicio = models.ForeignKey(Servicios, on_delete=models.CASCADE)
 
     def __str__(self):
-        return 
+        return f'Detalle de Venta por Servicio {self.id_d_vent_x_serv} - Servicio: {self.id_servicio}'

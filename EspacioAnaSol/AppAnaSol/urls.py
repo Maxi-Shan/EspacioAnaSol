@@ -26,6 +26,15 @@ urlpatterns = [
     path('turnos/update/<int:turno_id>/', views.update_turno, name='update_turno'),
     path('turnos/delete/<int:turno_id>/', views.delete_turno, name='delete_turno'),
     path('clientes/', views.list_clientes, name='list_clientes'),
+    path('logout/', views.logout_view, name='logout'),
+    path('backup/', views.backup_database, name='backup_database'),    
+    path('restore/', views.restore_database, name='restore_database'),  # Ruta para la restauración de la base de datos
+    path('registrar_cliente/', views.registrar_cliente, name='registrar_cliente'),
+    path('seleccionar_servicio/<int:cliente_id>/', views.seleccionar_servicio, name='seleccionar_servicio'),
+    path('confirmar_registro/', views.confirmar_registro, name='confirmar_registro'),
+    path('cancelar_registro/', views.cancelar_registro, name='cancelar_registro'),
+    path('list_ventas/', views.list_ventas, name='list_ventas'),
+    path('detalle_venta/<int:venta_id>/', views.detalle_venta, name='detalle_venta'),
 ]
 
 if settings.DEBUG:

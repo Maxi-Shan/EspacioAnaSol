@@ -1,5 +1,5 @@
 from django import forms
-from .models import Empleado, Caja, Servicios, Turno, Cliente, Venta, Reservas, DetalleVenta
+from .models import Empleado, Caja, Servicios, Turno, Cliente, Reservas
 
 class LoginForm(forms.Form):
     dni = forms.IntegerField()
@@ -50,28 +50,9 @@ class MultipleTurnoForm(forms.Form):
 class ClienteForm(forms.ModelForm):
     class Meta:
         model = Cliente
-        fields = ['nombre', 'apellido', 'correo_electronico', 'numero_telefono']
+        fields = ['nombre', 'apellido', 'correo_electronico', 'numero_telefono', 'diseño_uñas']
 
-
-class VentaForm(forms.ModelForm):
-    class Meta:
-        model = Venta
-        fields = ['id_cliente', 'id_caja', 'monto_total']
-
-class DetalleVentaForm(forms.ModelForm):
-    class Meta:
-        model = DetalleVenta
-        fields = ['metodo_pago', 'estado_reserva']
-
-class EstadoReservaForm(forms.ModelForm):
-    ESTADO_CHOICES = [
-        ('En Proceso', 'En Proceso'),
-        ('Confirmada', 'Confirmada'),
-        ('Cancelada', 'Cancelada'),
-    ]
-    
-    estado_reserva = forms.ChoiceField(choices=ESTADO_CHOICES)
-
+class ReservasForm(forms.ModelForm):
     class Meta:
         model = Reservas
-        fields = ['estado_reserva'] 
+        fields = ['id_serv_x_tur', 'estado_reserva']
