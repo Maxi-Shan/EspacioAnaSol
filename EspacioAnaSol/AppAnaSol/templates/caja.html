@@ -1,11 +1,59 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Caja</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style2.css' %}">
 </head>
 <body>
-    {% block content %}{% endblock %}
+    <!-- Primary Header -->
+    <header class="header-primary">
+        <div class="logo">
+            <a href="{% url 'pagina_principal' %}">
+                <img src="{% static 'imagenes/icono1.png' %}" alt="Logo"> <!-- Replace with actual logo URL -->
+            </a>
+            <span>EspacioAnaSol</span>
+        </div>
+        <div class="welcome-text">
+            Bienvenido, <strong>Usuario</strong> / <a href="#">Ver el Sitio</a> / <a href="#">Cerrar Sesión</a>
+        </div>
+    </header>
+    
+    <!-- Secondary Header -->
+    <header class="header-secondary">
+        <div class="menu-text">
+            <a href="{% url 'pagina_principal' %}">Inicio </a> / <a href="{% url 'list_cajas' %}">Cajas</a>
+        </div>
+    </header>
+
+    <!-- Main content -->
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-4 sidebar">
+                <h3>Sitio de Empleados</h3>
+                <div class="menu-section">
+                    <h4>Registro de Datos</h4>
+                    <a href="#"><div class="menu-item">Ventas <span class="plus-icon">+</span></div></a>
+                    <a href="{% url 'list_cajas' %}"><div class="menu-item">Caja <span class="plus-icon">+</span></div></a>
+                    <a href="{% url 'list_turnos' %}"><div class="menu-item">Turnos <span class="plus-icon">+</span></div></a>
+                    <a href="{% url 'list_servicios' %}"><div class="menu-item">Servicios <span class="plus-icon">+</span></div></a>
+                </div>
+                <div class="menu-section mt-4">
+                    <h4>Usuarios</h4>
+                    <a href="{% url 'list_clientes' %}"><div class="menu-item">Clientes Registrados</div></a>
+                    <a href="{% url 'list_empleados' %}"><div class="menu-item">Empleados Registrados</div></a>
+                </div>
+            </div>
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

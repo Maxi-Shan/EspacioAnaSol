@@ -1,19 +1,66 @@
 {% extends 'servicios.html' %}
+
 {% block content %}
-<h2>Modificar Servicio</h2>
+<!-- Form Section -->
+<div class="col-md-8 p-0" style="margin-top: 21px;">
+    <div class="card border-0 h-100">
+        <div class="card-header bg-primary text-white text-left">
+            <h2>Modificar Servicio</h2>
+        </div>
+        <div class="card-body">
+            {% if servicio.imagen %}
+                <p>Imagen actual:</p>
+                <img src="{{ servicio.imagen.url }}" width="100" alt="Imagen del servicio">
+            {% else %}
+                <p>Sin imagen actual.</p>
+            {% endif %}
 
-{% if servicio.imagen %}
-    <p>Imagen actual:</p>
-    <img src="{{ servicio.imagen.url }}" width="100" alt="Imagen del servicio">
-{% else %}
-    <p>Sin imagen actual.</p>
-{% endif %}
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group row">
+                    <label for="nombre_del_servicio" class="col-md-4 col-form-label">Nombre del Servicio:</label>
+                    <div class="col-md-8">
+                        {{ form.nombre_del_servicio }} <!-- Campo de nombre del servicio -->
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="descripcion_del_servicio" class="col-md-4 col-form-label">Descripción del Servicio:</label>
+                    <div class="col-md-8">
+                        {{ form.descripcion_del_servicio }} <!-- Campo de descripción del servicio -->
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="duracion" class="col-md-4 col-form-label">Duración:</label>
+                    <div class="col-md-8">
+                        {{ form.duracion }} <!-- Campo de duración -->
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="precio_del_servicio" class="col-md-4 col-form-label">Precio del Servicio:</label>
+                    <div class="col-md-8">
+                        {{ form.precio_del_servicio }} <!-- Campo de precio del servicio -->
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="valor_sello" class="col-md-4 col-form-label">Valor Sello:</label>
+                    <div class="col-md-8">
+                        {{ form.valor_sello }} <!-- Campo de valor sello -->
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="imagen" class="col-md-4 col-form-label">Nueva Imagen:</label>
+                    <div class="col-md-8">
+                        {{ form.imagen }} <!-- Campo para subir una nueva imagen -->
+                    </div>
+                </div>
 
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Guardar cambios</button>
-</form>
+                <div class="card-footer bg-danger">
+                    <button type="submit" class="btn btn-light btn-sm">Guardar cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
-<a href="{% url 'list_servicios' %}">Volver a la lista</a>
+<a href="{% url 'list_servicios' %}">Volver a la lista de servicios</a>
 {% endblock %}

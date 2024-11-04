@@ -25,6 +25,7 @@ urlpatterns = [
     path('turnos/add/', views.add_turno, name='add_turno'),
     path('turnos/update/<int:turno_id>/', views.update_turno, name='update_turno'),
     path('turnos/delete/<int:turno_id>/', views.delete_turno, name='delete_turno'),
+    path('clientes/', views.list_clientes, name='list_clientes'),
 ]
 
 if settings.DEBUG:

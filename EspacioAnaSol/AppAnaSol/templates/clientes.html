@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Turnos</title>
+    <title>Clientes</title>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{% static 'css/style2.css' %}">
-    
 </head>
 <body>
     <!-- Primary Header -->
@@ -22,10 +21,10 @@
             Bienvenido, <strong>Usuario</strong> / <a href="#">Ver el Sitio</a> / <a href="#">Cerrar Sesión</a>
         </div>
     </header>
-        <!-- Secondary Header -->
+    <!-- Secondary Header -->
     <header class="header-secondary">
         <div class="menu-text">
-        <a href="{% url 'pagina_principal' %}">Inicio </a> / <a href="{% url 'list_servicios' %}">Turnos</a>
+        <a href="{% url 'pagina_principal' %}">Inicio </a> / <a href="{% url 'list_clientes' %}">Clientes</a>
         </div>
     </header>
 

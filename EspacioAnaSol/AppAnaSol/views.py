@@ -101,16 +101,19 @@ def add_empleado(request):
     return render(request, 'add_empleado.html', {'form': form})
 
 @admin_required
+@login_required  # Asegúrate de usar el decorador correcto
 def update_empleado(request, dni):
-    empleado = get_object_or_404(Empleado, dni=dni)
+    empleado = get_object_or_404(Empleado, dni=dni)  # Verifica que este DNI exista
     if request.method == "POST":
         form = EmpleadoForm(request.POST, instance=empleado)
         if form.is_valid():
             form.save()
-            return redirect('list_empleados')
+            return redirect('list_empleados')  # Asegúrate de tener esta URL definida
     else:
         form = EmpleadoForm(instance=empleado)
-    return render(request, 'update_empleado.html', {'form': form})
+
+    return render(request, 'update_empleado.html', {'form': form, 'empleado': empleado})  # Asegúrate de pasar el empleado
+
 
 @requerir_autenticacion
 def abrir_caja(request):
@@ -207,10 +210,22 @@ def delete_caja(request, id_caja):
     
     return render(request, 'delete_caja.html', {'caja': caja})
 
+
+@requerir_autenticacion
 def list_servicios(request):
     servicios = Servicios.objects.all()
-    return render(request, 'list_servicios.html', {'servicios': servicios})
+    empleado = obtener_empleado_autenticado(request)
 
+    # Verificar si el empleado es admin
+    es_admin = empleado.es_admin
+
+    return render(request, 'list_servicios.html', {
+        'servicios': servicios,
+        'es_admin': es_admin,
+        })
+
+
+@requerir_autenticacion
 def add_servicio(request):
     if request.method == 'POST':
         form = ServiciosForm(request.POST, request.FILES)
@@ -222,6 +237,8 @@ def add_servicio(request):
         form = ServiciosForm()
     return render(request, 'add_servicio.html', {'form': form})
 
+
+@requerir_autenticacion
 def update_servicio(request, id_servicio):
     servicio = get_object_or_404(Servicios, id_servicio=id_servicio)
     if request.method == 'POST':
@@ -234,6 +251,8 @@ def update_servicio(request, id_servicio):
         form = ServiciosForm(instance=servicio)
     return render(request, 'update_servicio.html', {'form': form, 'servicio': servicio})
 
+
+@requerir_autenticacion
 def delete_servicio(request, id_servicio):
     servicio = get_object_or_404(Servicios, id_servicio=id_servicio)
     if request.method == 'POST':
@@ -243,6 +262,7 @@ def delete_servicio(request, id_servicio):
     return render(request, 'delete_servicio.html', {'servicio': servicio})
 
 # Crear cuatro turnos a la vez
+@requerir_autenticacion
 def add_turno(request):
     if request.method == 'POST':
         form = MultipleTurnoForm(request.POST)
@@ -286,6 +306,7 @@ def add_turno(request):
     return render(request, 'add_turno.html', {'form': form})
 
 # Listar turnos
+@requerir_autenticacion
 def list_turnos(request):
     turnos = Turno.objects.all().prefetch_related('empleadoxturno_set', 'servicioxturno_set')  # Carga los turnos y sus relaciones
 
@@ -308,6 +329,7 @@ def list_turnos(request):
     return render(request, 'list_turnos.html', {'turnos_data': turnos_data})
 
 # Modificar un turno
+@requerir_autenticacion
 def update_turno(request, turno_id):
     turno = get_object_or_404(Turno, id_turno=turno_id)
     if request.method == 'POST':
@@ -335,6 +357,7 @@ def update_turno(request, turno_id):
     return render(request, 'update_turno.html', {'form': form, 'turno': turno})  # Renderizar el template
 
 # Eliminar un turno
+@requerir_autenticacion
 def delete_turno(request, turno_id):
     turno = get_object_or_404(Turno, id_turno=turno_id)  # Obtener el turno específico
     if request.method == 'POST':
@@ -343,3 +366,7 @@ def delete_turno(request, turno_id):
         return redirect('list_turnos')  # Redirigir a la lista de turnos
 
     return render(request, 'delete_turno_confirm.html', {'turno': turno})  # Confirmación de eliminación
+
+def list_clientes(request):
+    clientes = Cliente.objects.all()  # Retrieve all clients
+    return render(request, 'list_clientes.html', {'clientes': clientes})

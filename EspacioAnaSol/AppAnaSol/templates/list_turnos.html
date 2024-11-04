@@ -1,38 +1,64 @@
 {% extends 'turnos.html' %}
+
+{% load static %}
 {% block content %}
+<!-- Main Content Section -->
+<div class="col-md-8 main-content">
+    <div class="title-section">
+        <h2>Lista de Turnos</h2>
+        {% if not cajas_abiertas %}
+        <form action="{% url 'add_turno' %}" method="get">
+            <button type="submit" class="btn btn-insert">Agregar Turno +</button>
+        </form>
+        {% endif %}
+    </div>
+    
+    <div class="action-bar">
+        Acción
+        <select class="form-control">
+            <option>Seleccionar</option>
+            <option>Opción 1</option>
+            <option>Opción 2</option>
+        </select>
+        <button class="btn btn-filter btn-light ml-2">Filtrar</button>
+    </div>
 
-<h2>Lista de Turnos</h2>
-
-<a href="{% url 'add_turno' %}">Agregar Turno</a>
-
-<table>
-    <tr>
-        <th>Fecha</th>
-        <th>Hora</th>
-        <th>Estado</th>
-        <th>Empleados</th>
-        <th>Servicios</th>
-        <th>Acciones</th>
-    </tr>
-    {% for data in turnos_data %}
-    <tr>
-        <td>{{ data.turno.fecha }}</td>
-        <td>{{ data.turno.hora }}</td>
-        <td>{{ data.turno.estado_turno }}</td>
-        <td>{{ data.empleados }}</td>
-        <td>{{ data.servicios }}</td>
-        <td>
-            <a href="{% url 'update_turno' data.turno.id_turno %}">Modificar</a>
-            <form action="{% url 'delete_turno' data.turno.id_turno %}" method="post" style="display:inline;">
-                {% csrf_token %}
-                <button type="submit" onclick="return confirm('¿Estás seguro de eliminar este turno?')">Eliminar</button>
-            </form>
-        </td>
-    </tr>
-    {% endfor %}
-</table>
-<a href="{% url 'pagina_principal' %}">Inicio</a>
-
+    <!-- Scrollable Table Wrapper -->
+    <div class="table-responsive" style="max-height: 400px; overflow-y: auto; margin-top: 15px;">
+        <!-- Table for content -->
+        <table class="table table-borderless">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Estado</th>
+                    <th>Empleados</th>
+                    <th>Servicios</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for data in turnos_data %}
+                <tr>
+                    <td>{{ data.turno.fecha }}</td>
+                    <td>{{ data.turno.hora }}</td>
+                    <td>{{ data.turno.estado_turno }}</td>
+                    <td>{{ data.empleados }}</td>
+                    <td>{{ data.servicios }}</td>
+                    <td>
+                        <form action="{% url 'update_turno' data.turno.id_turno %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-warning btn-sm">Modificar</button>
+                        </form>
+                        <form action="{% url 'delete_turno' data.turno.id_turno %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de eliminar este turno?')">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 {% endblock %}
-
-

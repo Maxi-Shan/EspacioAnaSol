@@ -1,3 +1,15 @@
+*{
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+    padding: auto;
+}
+
+body{
+    background-image: url(../imagenes/fondo.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
 .boton-volver {
     display: inline-block;
     background: linear-gradient(90deg, #fa8dfa 0%, #b033bb 100%);

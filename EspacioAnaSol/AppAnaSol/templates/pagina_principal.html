@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     {% load static %}
     <meta charset="UTF-8">
@@ -7,16 +7,68 @@
     <link rel="stylesheet" type="text/css" href="">
     <link rel="stylesheet" type="text/css" href="">
     <title>Página Principal</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
 </head>
 <body>
-    <div>
-        <button><a href="#"><p>>Ventas</p></a></button>
-        <button><a href="{% url 'list_cajas' %}"><p>>Cajas</p></a></button>
-        <button><a href="{% url 'list_turnos' %}"><p>>Turnos</p></a></button>
-        <button><a href="{% url 'list_servicios' %}"><p>>Servicios</p></a></button>
-        <button><a href="#"><p>>Clientes</p></a></button>
-        <button><a href="{% url 'list_empleados' %}"><p>>Empleados</p></a></button>  <!-- Enlace a la lista de empleados -->
-    </div> 
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <a href="{% url 'pagina_principal' %}">
+            <img src="{% static 'imagenes/icono1.png' %}" alt="Logo"> <!-- Replace with actual logo URL -->
+            </a>
+            <span>EspacioAnaSol</span>
+        </div>
+        <div class="welcome-text">
+            Bienvenido, <strong>Usuario</strong> / <a href="#">Ver el Sitio</a> / <a href="#">Cerrar Sesión</a>
+        </div>
+    </header>
+
+    <!-- Main content -->
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-6 sidebar">
+                <h3>Sitio de Empleados</h3>
+
+                <div class="menu-section">
+                    <h4>Registro de Datos</h4>
+                    <a href="#"><div class="menu-item">
+                        Ventas <span class="plus-icon">+</span>
+                    </div></a>
+                    <a href="{% url 'list_cajas' %}"><div class="menu-item">
+                        Caja <span class="plus-icon">+</span>
+                    </div></a>
+                    <a href="{% url 'list_turnos' %}"><div class="menu-item">
+                        Turnos <span class="plus-icon">+</span>
+                    </div></a>
+                    <a href="{% url 'list_servicios' %}"><div class="menu-item">
+                        Servicios <span class="plus-icon">+</span>
+                    </div></a>
+                </div>
+
+                <div class="menu-section mt-4">
+                    <h4>Usuarios</h4>
+                    <a href="#"><div class="menu-item">
+                        Clientes Registrados
+                    </div></a>
+                    <a href="{% url 'list_empleados' %}"><div class="menu-item">
+                        Empleados Registrados
+                    </div></a>
+                </div>
+            </div>
+
+            <!-- Welcome Section -->
+            <div class="col-md-6 welcome-section">
+                <h2 style="font-size: 60px;">Bienvenido/a</h2>
+                <h3 style="font-size: 30px;">A Espacio AnaSol</h3>
+                <img src="{% static 'imagenes/Logo1.png' %}" alt="Secondary Logo" class="mt-4" style="max-width: 400px;"> <!-- Replace with actual secondary logo URL -->
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
-

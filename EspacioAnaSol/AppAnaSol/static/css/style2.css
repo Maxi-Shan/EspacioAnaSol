@@ -1,0 +1,146 @@
+*{
+    font-family: Arial, sans-serif;
+}
+
+/* General page styles */
+body {
+    background-image: url(../imagenes/fondo.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+/* Primary Header styling */
+.header-primary {
+    background-color: #ffffff;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.header-primary .logo {
+    display: flex;
+    align-items: center;
+}
+.header-primary img {
+    height: 50px;
+    margin-right: 10px;
+}
+.header-primary .welcome-text {
+    font-size: 14px;
+}
+
+/* Secondary Header styling */
+.header-secondary {
+    background-color: #f1f1f1;
+    padding: 10px;
+    text-align: center;
+    font-size: 14px;
+    border-bottom: 1px solid #ddd;
+}
+
+.header-secondary .menu-text{
+    margin-right: 1200px;
+}
+.container-fluid{
+    height: 100%;
+}
+/* Sidebar styles */
+.sidebar {
+    background-color: #f3e0f5;
+    padding: 20px;
+    border-right: 1px solid #ddd;
+    margin-top: 20px;
+}
+.sidebar h3 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #5e2a6f;
+}
+.sidebar .menu-section {
+    margin-top: 20px;
+}
+.sidebar .menu-section h4 {
+    background-color: #c776d0;
+    color: white;
+    padding: 10px;
+    font-size: 1rem;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+}
+.sidebar .menu-item {
+    background-color: white;
+    padding: 10px;
+    margin-bottom: 5px;
+    border: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.sidebar .menu-item .plus-icon {
+    font-size: 1.2rem;
+    color: #28a745;
+}
+
+/* Main Content Section */
+.main-content {
+    background-color: white;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-top: 20px;
+}
+.main-content .title-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.main-content .title-section h2 {
+    font-size: 1.5rem;
+    color: #333;
+}
+.main-content .title-section .btn-insert {
+    background-color: #28a745;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+.main-content .action-bar {
+    background-color: #c776d0;
+    padding: 10px;
+    color: white;
+    display: flex;
+    align-items: center;
+    margin-top: 15px;
+    border-radius: 5px;
+}
+.main-content .action-bar select,
+.main-content .action-bar .btn-filter {
+    margin-left: 10px;
+}
+
+ /* Table styles */
+.table {
+    margin-top: 15px;
+}
+.table th {
+    color: #5e2a6f;
+    font-weight: bold;
+}
+.table td {
+    font-size: 15px;
+}
+.table .btn-modify {
+    background-color: #ffc107;
+    color: white;
+    margin-right: 5px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: none;
+}
+.table .btn-delete {
+    background-color: #dc3545;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: none;
+}

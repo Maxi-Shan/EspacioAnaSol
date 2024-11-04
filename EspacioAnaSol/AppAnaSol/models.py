@@ -13,7 +13,7 @@ class Cliente(models.Model):
     diseño_uñas = models.ImageField(upload_to='diseño_uñas/', blank=True, null=True)
 
     def __str__(self):
-        return f"{self.nombre} {self.apellido}"  # En Cliente
+        return f"{self.nombre} {self.apellido}" 
 
 
 class Turno(models.Model):

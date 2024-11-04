@@ -1,17 +1,31 @@
 {% extends 'caja.html' %}
 
 {% block content %}
-    <h2>Modificar Caja</h2>
+<!-- Form Section -->
+<div class="col-md-8 p-0" style="margin-top: 21px;">
+    <div class="card border-0 h-100">
+        <div class="card-header bg-primary text-white text-left">
+            <h2>Modificar Caja</h2>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group row">
+                    <label for="monto_inicial" class="col-md-4 col-form-label">Monto Inicial:</label>
+                    <div class="col-md-8">
+                        <input type="text" name="monto_inicial" id="monto_inicial" class="form-control" value="{{ caja.monto_inicial }}" required>
+                    </div>
+                </div>
 
-    <form method="post">
-        {% csrf_token %}
-        <label for="monto_inicial">Monto Inicial:</label>
-        <input type="text" name="monto_inicial" id="monto_inicial" value="{{ caja.monto_inicial }}" required>
-
-        <!-- Aquí puedes agregar otros campos que necesites modificar -->
-        
-        <button type="submit">Guardar Cambios</button>
-    </form>
-
-    <a href="{% url 'list_cajas' %}">Volver a la lista de cajas</a>
+                <!-- Aquí puedes agregar otros campos que necesites modificar -->
+                
+                <div class="card-footer bg-danger" style="margin-top: 300px;">
+                    <button type="submit" class="btn btn-light btn-sm mr-2">Guardar</button>
+                    <button type="button" class="btn btn-light btn-sm mr-2">Guardar y agregar nuevo</button>
+                    <button type="button" class="btn btn-light btn-sm">Guardar y modificar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}

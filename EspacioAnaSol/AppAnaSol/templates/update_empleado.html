@@ -1,10 +1,81 @@
 {% extends 'empleados.html' %}
 
 {% block content %}
-<h2>Modificar Empleado</h2>
-<form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Modificar</button>
-</form>
+<div class="col-md-8 p-0" style="margin-top: 21px;">
+    <div class="card border-0 h-100">
+        <div class="card-header bg-primary text-white text-left">
+            <h2>Modificar Empleado</h2>
+        </div>
+        <div class="card-body">
+            <form method="POST">
+                {% csrf_token %}
+                
+                <div class="form-group row">
+                    <label for="dni" class="col-md-4 col-form-label">DNI:</label>
+                    <div class="col-md-8">
+                        <input type="number" class="form-control" id="dni" name="dni" value="{{ empleado.dni }}" readonly required>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="nombre" class="col-md-4 col-form-label">Nombre:</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" id="nombre" name="nombre" value="{{ empleado.nombre }}" required>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="apellido" class="col-md-4 col-form-label">Apellido:</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" id="apellido" name="apellido" value="{{ empleado.apellido }}" required>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="domicilio" class="col-md-4 col-form-label">Domicilio:</label>
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" id="domicilio" name="domicilio" value="{{ empleado.domicilio }}">
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="correo_electronico" class="col-md-4 col-form-label">Correo Electrónico:</label>
+                    <div class="col-md-8">
+                        <input type="email" class="form-control" id="correo_electronico" name="correo_electronico" value="{{ empleado.correo_electronico }}">
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="numero_telefono" class="col-md-4 col-form-label">Número de Teléfono:</label>
+                    <div class="col-md-8">
+                        <input type="tel" class="form-control" id="numero_telefono" name="numero_telefono" value="{{ empleado.numero_telefono }}">
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="estado_empleado" class="col-md-4 col-form-label">Estado del Empleado:</label>
+                    <div class="col-md-8">
+                        <select class="form-control" id="estado_empleado" name="estado_empleado">
+                            <option value="activo" {% if empleado.estado_empleado == 'activo' %}selected{% endif %}>Activo</option>
+                            <option value="inactivo" {% if empleado.estado_empleado == 'inactivo' %}selected{% endif %}>Inactivo</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="es_admin" class="col-md-4 col-form-label">¿Es Admin?</label>
+                    <div class="col-md-8">
+                        <input type="checkbox" id="es_admin" name="es_admin" {% if empleado.es_admin %}checked{% endif %}>
+                    </div>
+                </div>
+
+                <div class="card-footer bg-danger">
+                    <button type="submit" class="btn btn-light btn-sm">Modificar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<a href="{% url 'list_empleados' %}">Volver a la lista de empleados</a>
 {% endblock %}
