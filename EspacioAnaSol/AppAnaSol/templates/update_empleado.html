@@ -1,4 +1,4 @@
-{% extends 'empleados.html' %}
+{% extends 'empleados3.html' %}
 
 {% block content %}
 <div class="col-md-8 p-0" style="margin-top: 21px;">
@@ -7,72 +7,90 @@
             <h2>Modificar Empleado</h2>
         </div>
         <div class="card-body">
-            <form method="POST">
+            <form method="post">
                 {% csrf_token %}
                 
+                <!-- DNI (Readonly) -->
                 <div class="form-group row">
                     <label for="dni" class="col-md-4 col-form-label">DNI:</label>
                     <div class="col-md-8">
-                        <input type="number" class="form-control" id="dni" name="dni" value="{{ empleado.dni }}" readonly required>
+                        <input type="text" id="dni" name="dni" value="{{ empleado.dni }}" class="form-control" readonly>
                     </div>
                 </div>
 
+                <!-- Nombre -->
                 <div class="form-group row">
                     <label for="nombre" class="col-md-4 col-form-label">Nombre:</label>
                     <div class="col-md-8">
-                        <input type="text" class="form-control" id="nombre" name="nombre" value="{{ empleado.nombre }}" required>
+                        <input type="text" id="nombre" name="nombre" value="{{ empleado.nombre }}" class="form-control">
                     </div>
                 </div>
 
+                <!-- Apellido -->
                 <div class="form-group row">
                     <label for="apellido" class="col-md-4 col-form-label">Apellido:</label>
                     <div class="col-md-8">
-                        <input type="text" class="form-control" id="apellido" name="apellido" value="{{ empleado.apellido }}" required>
+                        <input type="text" id="apellido" name="apellido" value="{{ empleado.apellido }}" class="form-control">
                     </div>
                 </div>
 
+                <!-- Domicilio -->
                 <div class="form-group row">
                     <label for="domicilio" class="col-md-4 col-form-label">Domicilio:</label>
                     <div class="col-md-8">
-                        <input type="text" class="form-control" id="domicilio" name="domicilio" value="{{ empleado.domicilio }}">
+                        <input type="text" id="domicilio" name="domicilio" value="{{ empleado.domicilio }}" class="form-control">
                     </div>
                 </div>
 
+                <!-- Correo Electrónico -->
                 <div class="form-group row">
                     <label for="correo_electronico" class="col-md-4 col-form-label">Correo Electrónico:</label>
                     <div class="col-md-8">
-                        <input type="email" class="form-control" id="correo_electronico" name="correo_electronico" value="{{ empleado.correo_electronico }}">
+                        <input type="email" id="correo_electronico" name="correo_electronico" value="{{ empleado.correo_electronico }}" class="form-control">
                     </div>
                 </div>
 
+                <!-- Número de Teléfono -->
                 <div class="form-group row">
                     <label for="numero_telefono" class="col-md-4 col-form-label">Número de Teléfono:</label>
                     <div class="col-md-8">
-                        <input type="tel" class="form-control" id="numero_telefono" name="numero_telefono" value="{{ empleado.numero_telefono }}">
+                        <input type="text" id="numero_telefono" name="numero_telefono" value="{{ empleado.numero_telefono }}" class="form-control">
                     </div>
                 </div>
 
+                <!-- Contraseña -->
+                <div class="form-group row">
+                    <label for="contraseña" class="col-md-4 col-form-label">Contraseña:</label>
+                    <div class="col-md-8">
+                        <input type="password" id="contraseña" name="contraseña" value="{{ empleado.contraseña }}" class="form-control">
+                    </div>
+                </div>
+
+                <!-- Estado del Empleado -->
                 <div class="form-group row">
                     <label for="estado_empleado" class="col-md-4 col-form-label">Estado del Empleado:</label>
                     <div class="col-md-8">
-                        <select class="form-control" id="estado_empleado" name="estado_empleado">
+                        <select id="estado_empleado" name="estado_empleado" class="form-control">
                             <option value="activo" {% if empleado.estado_empleado == 'activo' %}selected{% endif %}>Activo</option>
                             <option value="inactivo" {% if empleado.estado_empleado == 'inactivo' %}selected{% endif %}>Inactivo</option>
                         </select>
                     </div>
                 </div>
 
+                <!-- Es Admin -->
                 <div class="form-group row">
                     <label for="es_admin" class="col-md-4 col-form-label">¿Es Admin?</label>
                     <div class="col-md-8">
-                        <input type="checkbox" id="es_admin" name="es_admin" {% if empleado.es_admin %}checked{% endif %}>
+                        <select id="es_admin" name="es_admin" class="form-control">
+                            <option value="True" {% if empleado.es_admin %}selected{% endif %}>Sí</option>
+                            <option value="False" {% if not empleado.es_admin %}selected{% endif %}>No</option>
+                        </select>
                     </div>
                 </div>
 
                 <div class="card-footer bg-danger">
                     <button type="submit" class="btn btn-sm mr-2 text-white" style="background-color: #701C7E;">Guardar</button>
-                    <button type="button" class="btn btn-sm mr-2 text-white" style="background-color: #A964BF;">Guardar y agregar nuevo</button>
-                    <button type="button" class="btn btn-sm text-white" style="background-color: #A964BF;">Guardar y modificar</button>
+                    <a href="{% url 'list_empleados' %}" class="btn btn-secondary">Cancelar</a>
                 </div>
             </form>
         </div>

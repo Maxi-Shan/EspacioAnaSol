@@ -1,0 +1,28 @@
+<!-- modificar_venta.html -->
+{% extends 'venta.html' %}
+{% block content %}
+
+<div class="col-md-8 p-0" style="margin-top: 21px;">
+    <div class="card border-0 h-100">
+        <div class="card-header text-black text-left">
+            <h2>Modificar Venta</h2>
+        </div>
+    <div class="card-body">
+
+    <form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="id_monto_total">Monto Total</label>
+        {{ form.monto_total }}
+    </div>
+    <div class="form-group">
+        <label for="id_estado_venta">Estado de Venta</label>
+        {{ form.estado_venta }}
+    </div>
+    <button type="submit" class="btn btn-success">Guardar</button>
+    <a href="{% url 'list_ventas' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+        </div>
+    </div>
+</div>
+{% endblock %}

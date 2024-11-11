@@ -25,7 +25,6 @@
                     <th>Apellido</th>
                     <th>Correo Electrónico</th>
                     <th>Número de Teléfono</th>
-                    <th>Diseño de Uñas</th>
                 </tr>
             </thead>
             <tbody>
@@ -36,13 +35,6 @@
                     <td>{{ cliente.apellido }}</td>
                     <td>{{ cliente.correo_electronico }}</td>
                     <td>{{ cliente.numero_telefono }}</td>
-                    <td>
-                        {% if cliente.diseño_uñas %}
-                        <img src="{{ cliente.diseño_uñas.url }}" alt="Diseño de Uñas" width="50">
-                        {% else %}
-                        Sin imagen
-                        {% endif %}
-                    </td>
                 </tr>
                 {% endfor %}
             </tbody>

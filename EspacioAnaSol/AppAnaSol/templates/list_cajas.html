@@ -6,22 +6,30 @@
 <div class="col-md-8 main-content">
     <div class="title-section">
         <h2>Lista de Cajas</h2>
+        
         {% if not cajas_abiertas %}
         <form action="{% url 'abrir_caja' %}" method="get">
-            <button type="submit" class="btn btn-insert">Abrir Caja</button>
+            <button type="submit" class="btn btn-success">Abrir Caja</button>
+        </form>
+        {% else %}
+        <form action="{% url 'abrir_caja' %}" method="get">
+            <button type="submit" class="btn btn-success" disabled>Abrir Caja</button>
         </form>
         {% endif %}
     </div>
     
     <div class="action-bar">
-        Acción
-        <select class="form-control">
-            <option>Seleccionar</option>
-            <option>Opción 1</option>
-            <option>Opción 2</option>
-        </select>
-        <button class="btn btn-filter btn-light ml-2">Filtrar</button>
+        <label for="date-filter">Filtrar por:</label>
+        <form method="get" style="display: inline;">
+            <select name="date_filter" id="date-filter" class="form-control" onchange="this.form.submit()">
+                <option value="today" {% if date_filter == 'today' %}selected{% endif %}>Hoy</option>
+                <option value="week" {% if date_filter == 'week' %}selected{% endif %}>Esta Semana</option>
+                <option value="month" {% if date_filter == 'month' %}selected{% endif %}>Este Mes</option>
+                <option value="all" {% if date_filter == 'all' %}selected{% endif %}>Todos</option>
+            </select>
+        </form>
     </div>
+    
 
     <!-- Scrollable Table Wrapper -->
     <div class="table-responsive" style="max-height: 400px; overflow-y: auto; margin-top: 15px;">
@@ -30,9 +38,8 @@
             <thead>
                 <tr>
                     <th>ID Caja</th>
-                    <th>Empleado</th>
-                    <th>Fecha Apertura</th>
-                    <th>Fecha Cierre</th>
+                    <th colspan="2">Apertura de Caja</th>
+                    <th colspan="2">Cierre de Caja</th>
                     <th>Monto Inicial</th>
                     <th>Monto Recaudado</th>
                     <th>Monto Total</th>
@@ -44,14 +51,33 @@
                 {% for caja in cajas %}
                 <tr>
                     <td>{{ caja.id_caja }}</td>
-                    <td>{{ caja.empleado }}</td>
+                    <td>{{ caja.empleado.nombre }}</td>
                     <td>{{ caja.fecha_apertura }}</td>
-                    <td>{{ caja.fecha_cierre }}</td>
-                    <td>${{ caja.monto_inicial }}</td>
-                    <td>${{ caja.monto_recaudado }}</td>
-                    <td>${{ caja.monto_total }}</td> <!-- Ensure this is calculated correctly -->
                     <td>
-                        {% if caja.estado %}
+                        {% if caja.fecha_cierre %}
+                        {{ caja.empleado_cierre.nombre }}
+                        {% else %}
+                            ---
+                        {% endif %}    
+                    </td>
+                    <td>
+                        {% if caja.fecha_cierre %}
+                            {{ caja.fecha_cierre }}
+                        {% else %}
+                            ---
+                        {% endif %}
+                    </td>
+                    
+                    <td>${{ caja.monto_inicial }}</td>
+                    <td>
+                    {% if caja.fecha_cierre %}
+                        ${{ caja.monto_recaudado }}
+                    {% else %}
+                        ---
+                    {% endif %}
+                    </td>
+                    <td>${{ caja.monto_total }}</td>
+                    <td>{% if caja.estado %}
                             Abierta
                         {% else %}
                             Cerrada
@@ -68,13 +94,13 @@
                             <form action="{% url 'update_caja' caja.id_caja %}" method="get" style="display:inline;">
                                 <button type="submit" class="btn btn-modify">Modificar</button>
                             </form>
-                            <form action="{% url 'delete_caja' caja.id_caja %}" method="post" style="display:inline;">
+                            <!-- <form action="{% url 'delete_caja' caja.id_caja %}" method="post" style="display:inline;">
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-delete" onclick="return confirm('¿Está seguro de que desea eliminar este empleado?');">Eliminar</button>
-                            </form>
+                            </form> -->
                         {% else %}
                             <button type="button" class="btn btn-modify" disabled>Modificar</button>
-                            <button type="button" class="btn btn-delete" disabled>Eliminar</button>
+                            <!-- <button type="button" class="btn btn-delete" disabled>Eliminar</button> -->
                         {% endif %}
                     </td>
                 </tr>

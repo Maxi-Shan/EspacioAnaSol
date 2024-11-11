@@ -1,4 +1,4 @@
-{% extends 'turnos.html' %}
+{% extends 'turnos3.html' %}
 
 {% block content %}
 <!-- Form Section -->
@@ -10,35 +10,40 @@
         <div class="card-body">
             <form method="post">
                 {% csrf_token %}
-                
+
                 <div class="form-group row">
                     <label for="fecha" class="col-md-4 col-form-label">Fecha:</label>
                     <div class="col-md-8">
-                        {{ form.fecha }}  <!-- Selector de fecha -->
+                        <input type="date" name="fecha" id="fecha" value="{{ turno.fecha|date:'Y-m-d' }}" class="form-control">
                     </div>
                 </div>
-                
+
                 <div class="form-group row">
                     <label for="hora" class="col-md-4 col-form-label">Hora:</label>
                     <div class="col-md-8">
-                        {{ form.hora }}  <!-- Selector de hora -->
+                        <input type="time" name="hora" id="hora" value="{{ turno.hora|time:'H:i' }}" class="form-control">
                     </div>
                 </div>
-                
+
                 <div class="form-group row">
                     <label for="estado_turno" class="col-md-4 col-form-label">Estado:</label>
                     <div class="col-md-8">
-                        {{ form.estado_turno }}  <!-- Selector de estado -->
+                        <select name="estado_turno" id="estado_turno" class="form-control">
+                            <option value="Disponible" {% if turno.estado_turno == 'Cisponible' %} selected {% endif %}>Disponible</option>
+                            <option value="Pendiente" {% if turno.estado_turno == 'Cendiente' %} selected {% endif %}>Pendiente</option>
+                            <option value="Confirmado" {% if turno.estado_turno == 'Confirmado' %} selected {% endif %}>Confirmado</option>
+                            <option value="Cancelado" {% if turno.estado_turno == 'Cancelado' %} selected {% endif %}>Cancelado</option>
+                        </select>
                     </div>
                 </div>
 
                 <div class="card-footer bg-danger">
                     <button type="submit" class="btn btn-sm mr-2 text-white" style="background-color: #701C7E;">Guardar</button>
-                    <button type="button" class="btn btn-sm mr-2 text-white" style="background-color: #A964BF;">Guardar y agregar nuevo</button>
-                    <button type="button" class="btn btn-sm text-white" style="background-color: #A964BF;">Guardar y modificar</button>
+                    <a href="{% url 'list_turnos' %}" class="btn btn-secondary">Cancelar</a>
                 </div>
             </form>
         </div>
     </div>
 </div>
 {% endblock %}
+

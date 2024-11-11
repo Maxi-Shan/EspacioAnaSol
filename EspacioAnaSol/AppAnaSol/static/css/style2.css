@@ -44,8 +44,16 @@ body {
 }
 
 .header-secondary .menu-text{
-    margin-right: 1200px;
+    margin-right: 100px;
+    display: flex;
 }
+
+.header-secondary .menu-text a{
+    display: flex;
+    margin-right: 10px;
+    margin-left: 10px;
+}
+
 .container-fluid{
     height: 100%;
 }
@@ -55,6 +63,7 @@ body {
     padding: 20px;
     border-right: 1px solid #ddd;
     margin-top: 20px;
+    height: 542px;
 }
 .sidebar h3 {
     font-size: 1.5rem;

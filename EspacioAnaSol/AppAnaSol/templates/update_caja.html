@@ -1,7 +1,6 @@
 {% extends 'caja.html' %}
 
 {% block content %}
-<!-- Form Section -->
 <div class="col-md-8 p-0" style="margin-top: 21px;">
     <div class="card border-0 h-100">
         <div class="card-header text-black text-left">
@@ -16,14 +15,15 @@
                         <input type="text" name="monto_inicial" id="monto_inicial" class="form-control" value="{{ caja.monto_inicial }}" required>
                     </div>
                 </div>
-
-                <!-- Aquí puedes agregar otros campos que necesites modificar -->
-                
+            
                 <div class="card-footer bg-danger" style="margin-top: 300px;">
                     <button type="submit" class="btn btn-sm mr-2 text-white" style="background-color: #701C7E;">Guardar</button>
+                    <a href="{% url 'list_cajas' %}" class="btn btn-secondary">Cancelar</a>
                 </div>
             </form>
+            
         </div>
     </div>
 </div>
 {% endblock %}
+

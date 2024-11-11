@@ -1,4 +1,4 @@
-{% extends 'servicios.html' %}
+{% extends 'servicios3.html' %}
 
 {% block content %}
 <!-- Form Section -->
@@ -20,46 +20,46 @@
                 <div class="form-group row">
                     <label for="nombre_del_servicio" class="col-md-4 col-form-label">Nombre del Servicio:</label>
                     <div class="col-md-8">
-                        {{ form.nombre_del_servicio }} <!-- Campo de nombre del servicio -->
+                        <input type="text" class="form-control" id="nombre_del_servicio" name="nombre_del_servicio" value="{{ servicio.nombre_del_servicio }}">
                     </div>
                 </div>
                 <div class="form-group row">
                     <label for="descripcion_del_servicio" class="col-md-4 col-form-label">Descripción del Servicio:</label>
                     <div class="col-md-8">
-                        {{ form.descripcion_del_servicio }} <!-- Campo de descripción del servicio -->
+                        <input type="text" class="form-control" id="descripcion_del_servicio" name="descripcion_del_servicio" value="{{ servicio.descripcion_del_servicio }}">
                     </div>
                 </div>
                 <div class="form-group row">
                     <label for="duracion" class="col-md-4 col-form-label">Duración:</label>
                     <div class="col-md-8">
-                        {{ form.duracion }} <!-- Campo de duración -->
+                        <input type="text" class="form-control" id="duracion" name="duracion" value="{{ servicio.duracion }}">
                     </div>
                 </div>
                 <div class="form-group row">
                     <label for="precio_del_servicio" class="col-md-4 col-form-label">Precio del Servicio:</label>
                     <div class="col-md-8">
-                        {{ form.precio_del_servicio }} <!-- Campo de precio del servicio -->
+                        <input type="number" step="0.01" class="form-control" id="precio_del_servicio" name="precio_del_servicio" value="{{ servicio.precio_del_servicio }}">
                     </div>
                 </div>
                 <div class="form-group row">
                     <label for="valor_sello" class="col-md-4 col-form-label">Valor Sello:</label>
                     <div class="col-md-8">
-                        {{ form.valor_sello }} <!-- Campo de valor sello -->
+                        <input type="number" step="0.01" class="form-control" id="valor_sello" name="valor_sello" value="{{ servicio.valor_sello }}">
                     </div>
                 </div>
                 <div class="form-group row">
                     <label for="imagen" class="col-md-4 col-form-label">Nueva Imagen:</label>
                     <div class="col-md-8">
-                        {{ form.imagen }} <!-- Campo para subir una nueva imagen -->
+                        <input type="file" class="form-control" id="imagen" name="imagen">
                     </div>
                 </div>
-
+            
                 <div class="card-footer bg-danger">
                     <button type="submit" class="btn btn-sm mr-2 text-white" style="background-color: #701C7E;">Guardar</button>
-                    <button type="button" class="btn btn-sm mr-2 text-white" style="background-color: #A964BF;">Guardar y agregar nuevo</button>
-                    <button type="button" class="btn btn-sm text-white" style="background-color: #A964BF;">Guardar y modificar</button>
+                    <a href="{% url 'list_servicios' %}" class="btn btn-secondary">Cancelar</a>
                 </div>
             </form>
+            
         </div>
     </div>
 </div>

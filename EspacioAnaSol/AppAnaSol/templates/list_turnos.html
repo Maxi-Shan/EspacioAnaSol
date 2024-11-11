@@ -1,8 +1,8 @@
 {% extends 'turnos.html' %}
 
 {% load static %}
+
 {% block content %}
-<!-- Main Content Section -->
 <div class="col-md-8 main-content">
     <div class="title-section">
         <h2>Lista de Turnos</h2>
@@ -25,10 +25,12 @@
 
     <!-- Scrollable Table Wrapper -->
     <div class="table-responsive" style="max-height: 400px; overflow-y: auto; margin-top: 15px;">
-        <!-- Table for content -->
         <table class="table table-borderless">
             <thead>
                 <tr>
+                    <th>ID</th>
+                    <th>Cliente</th>
+                    <th>Diseño de Uñas</th>
                     <th>Fecha</th>
                     <th>Hora</th>
                     <th>Estado</th>
@@ -40,6 +42,21 @@
             <tbody>
                 {% for data in turnos_data %}
                 <tr>
+                    <td>{{ data.turno.id_turno }}</td>
+                    <td>
+                        {% if data.id_cliente %}
+                            {{ data.id_cliente.nombre }} {{ data.id_cliente.apellido }}
+                        {% else %}
+                            Sin cliente
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if data.diseño_uñas %}
+                            <img src="{{ data.diseño_uñas.url }}" alt="Diseño de uñas" width="100">
+                        {% else %}
+                            No disponible
+                        {% endif %}
+                    </td>
                     <td>{{ data.turno.fecha }}</td>
                     <td>{{ data.turno.hora }}</td>
                     <td>{{ data.turno.estado_turno }}</td>
@@ -48,7 +65,7 @@
                     <td>
                         <form action="{% url 'update_turno' data.turno.id_turno %}" method="post" style="display:inline;">
                             {% csrf_token %}
-                            <button type="button" class="btn btn-warning">Modificar</a></button>
+                            <button type="submit" class="btn btn-warning">Modificar</button>
                         </form>
                         <form action="{% url 'delete_turno' data.turno.id_turno %}" method="post" style="display:inline;">
                             {% csrf_token %}

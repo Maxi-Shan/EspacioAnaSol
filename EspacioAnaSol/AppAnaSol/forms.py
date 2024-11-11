@@ -1,5 +1,6 @@
 from django import forms
-from .models import Empleado, Caja, Servicios, Turno, Cliente, Reservas
+from .models import Empleado, Caja, Servicios, Turno, Cliente, Reservas, Venta, DetalleVenta
+from django.forms import ModelForm
 
 class LoginForm(forms.Form):
     dni = forms.IntegerField()
@@ -46,13 +47,31 @@ class MultipleTurnoForm(forms.Form):
     hora3 = forms.TimeField(widget=forms.TimeInput(attrs={'type': 'time'}), label="Hora 3")
     hora4 = forms.TimeField(widget=forms.TimeInput(attrs={'type': 'time'}), label="Hora 4")
 
-
-class ClienteForm(forms.ModelForm):
+class ClienteForm(ModelForm):
     class Meta:
         model = Cliente
-        fields = ['nombre', 'apellido', 'correo_electronico', 'numero_telefono', 'diseño_uñas']
+        fields = ['nombre', 'apellido', 'correo_electronico', 'numero_telefono']
 
-class ReservasForm(forms.ModelForm):
+class ReservaForm(forms.Form):
+    servicio = forms.ModelChoiceField(queryset=Servicios.objects.all(), required=True)
+    fecha = forms.DateField(required=True)
+    hora = forms.TimeField(required=True)
+
+class VentaForm(forms.ModelForm):
     class Meta:
-        model = Reservas
-        fields = ['id_serv_x_tur', 'estado_reserva']
+        model = Venta
+        fields = ['id_caja', 'id_cliente', 'fecha_venta', 'hs_venta', 'monto_total', 'estado_venta']
+
+class DetalleVentaForm(forms.ModelForm):
+    class Meta:
+        model = DetalleVenta
+        fields = ['id_venta', 'id_reserva', 'metodo_pago', 'monto_subtotal', 'comprobante', 'estado_reserva']
+
+class VentaForm(forms.ModelForm):
+    class Meta:
+        model = Venta
+        fields = ['monto_total', 'estado_venta']
+        widgets = {
+            'monto_total': forms.NumberInput(attrs={'class': 'form-control'}),
+            'estado_venta': forms.Select(attrs={'class': 'form-control'}),
+        }

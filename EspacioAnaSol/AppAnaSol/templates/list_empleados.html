@@ -34,6 +34,7 @@
                     <th>Domicilio</th>
                     <th>Correo Electrónico</th>
                     <th>Número de Teléfono</th>
+                    <th>Contraseña</th>
                     <th>Estado</th>
                     <th>Acciones</th>
                 </tr>
@@ -47,6 +48,7 @@
                     <td>{{ empleado.domicilio }}</td>
                     <td>{{ empleado.correo_electronico }}</td>
                     <td>{{ empleado.numero_telefono }}</td>
+                    <td>{{ empleado.contraseña }}</td>
                     <td>
                         <form action="{% url 'update_empleado_status' empleado.dni %}" method="POST">
                             {% csrf_token %}
@@ -62,7 +64,7 @@
                         </form>
                     </td>
                     <td>
-                        <form action="{% url 'update_empleado' empleado.dni %}" method="post" style="display:inline;">
+                        <form action="{% url 'update_empleado' empleado.dni %}" method="POST" style="display:inline;">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-modify">Modificar</button>
                         </form>

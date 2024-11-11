@@ -1,33 +1,43 @@
 from django.db import models
 from django.utils import timezone
 from django.db.models import Sum
-from django.contrib.auth.hashers import make_password, check_password
-from django.core.validators import EmailValidator, RegexValidator, MaxLengthValidator
+from django.contrib.auth.hashers import make_password
+from django.core.validators import EmailValidator, RegexValidator
 
 class Cliente(models.Model):
     id_cliente = models.AutoField(primary_key=True)
-    nombre = models.CharField(max_length=255, validators=[MaxLengthValidator(255)], blank=True, null=True)
-    apellido = models.CharField(max_length=255, validators=[MaxLengthValidator(255)], blank=True, null=True)
+    nombre = models.CharField(max_length=255)
+    apellido = models.CharField(max_length=255)
     correo_electronico = models.EmailField(max_length=255, validators=[EmailValidator()])
     numero_telefono = models.CharField(max_length=15, validators=[RegexValidator(regex='^[0-9]*$', message='El número de teléfono debe contener solo dígitos.')])
-    diseño_uñas = models.ImageField(upload_to='diseño_uñas/', blank=True, null=True)
 
-    def __str__(self):
+    def _str_(self):
         return f"{self.nombre} {self.apellido}" 
 
 
 class Turno(models.Model):
     id_turno = models.AutoField(primary_key=True)
+    id_cliente = models.ForeignKey(Cliente, null=True, blank=True, on_delete=models.CASCADE)
     fecha = models.DateField(blank=True, null=True)
     hora = models.TimeField(blank=True, null=True)
+    diseño_uñas = models.ImageField(upload_to='diseño_uñas/', blank=True, null=True)
+    fecha_registro = models.DateTimeField(blank=True, null=True)
     estado_turno = models.CharField(max_length=20, choices=[
-        ('reservado', 'Reservado'),
-        ('disponible', 'Disponible'),
-        ('no_disponible', 'No Disponible'),
-    ])
+        ('Disponible', 'Disponible'),
+        ('Pendiente', 'Pendiente'),
+        ('Confirmado', 'Confirmado'),
+        ('Cancelado', 'Cancelado'),
+    ], default='Disponible') 
 
     def __str__(self):
-        return f'Turno {self.id_turno} - Fecha: {self.fecha} Hora: {self.hora} - Estado: {self.estado_turno}'  # Corrige el retorno
+        return f'Turno {self.id_turno} - Fecha: {self.fecha} Hora: {self.hora} - Estado: {self.estado_turno}'
+
+    
+    def convertir_a_reserva(self):
+        if not Reservas.objects.filter(id_turno=self).exists():
+            reserva = Reservas.objects.create(id_turno=self, id_cliente=self.id_cliente, estado_turno='Confirmado')
+            return reserva
+        return None
 
 class Servicios(models.Model):
     id_servicio = models.AutoField(primary_key=True)
@@ -38,13 +48,13 @@ class Servicios(models.Model):
     valor_sello = models.DecimalField(max_digits=10, decimal_places=2)
     imagen = models.ImageField(upload_to='servicios/', blank=True, null=True)
 
-    def __str__(self):
+    def _str_(self):
         return self.nombre_del_servicio
     
 class Empleado(models.Model):
     dni = models.IntegerField(primary_key=True, validators=[RegexValidator(regex='^[0-9]+$', message='El DNI debe contener solo dígitos.')])
-    nombre = models.CharField(max_length=255, validators=[MaxLengthValidator(255)], blank=True, null=True)
-    apellido = models.CharField(max_length=255, validators=[MaxLengthValidator(255)], blank=True, null=True)
+    nombre = models.CharField(max_length=255)
+    apellido = models.CharField(max_length=255)
     domicilio = models.CharField(max_length=255, blank=True, null=True)
     correo_electronico = models.EmailField(max_length=255, validators=[EmailValidator()], blank=True, null=True, unique=True)
     numero_telefono = models.CharField(max_length=20, blank=True, null=True, validators=[RegexValidator(regex='^[0-9]*$', message='El número de teléfono debe contener solo dígitos.')])
@@ -60,7 +70,7 @@ class Empleado(models.Model):
     def verificar_contraseña(self, contraseña):
         return make_password(contraseña, self.contraseña)
 
-    def __str__(self):
+    def _str_(self):
         return f"{self.nombre} {self.apellido}"
 
 class Caja(models.Model):
@@ -85,7 +95,7 @@ class Caja(models.Model):
         self.estado = False  
         self.save()
 
-    def __str__(self):
+    def _str_(self):
         return f'Caja {self.id_caja} - Estado: {"Abierta" if self.estado else "Cerrada"}'
 
 class Venta(models.Model):
@@ -102,7 +112,7 @@ class Venta(models.Model):
     monto_total = models.DecimalField(max_digits=10, decimal_places=2)
     estado_venta = models.IntegerField(choices=ESTADO_VENTA_CHOICES)
 
-    def __str__(self):
+    def _str_(self):
         return f'Venta {self.id_venta} - Cliente: {self.id_cliente}'
 
 class EmpleadoXTurno(models.Model):
@@ -110,7 +120,7 @@ class EmpleadoXTurno(models.Model):
     dni_emp = models.ForeignKey(Empleado, on_delete=models.CASCADE)
     id_turno = models.ForeignKey(Turno, on_delete=models.CASCADE)
 
-    def __str__(self):
+    def _str_(self):
         return f'Empleado: {self.dni_emp} en Turno: {self.id_turno}'
 
 class ServicioXTurno(models.Model):
@@ -118,22 +128,23 @@ class ServicioXTurno(models.Model):
     id_servicio = models.ForeignKey(Servicios, on_delete=models.CASCADE)
     id_turno = models.ForeignKey(Turno, on_delete=models.CASCADE)
 
-    def __str__(self):
+    def _str_(self):
         return f'Servicio: {self.id_servicio} en Turno: {self.id_turno}'
 
 class Reservas(models.Model):
     ESTADO_OPCIONES = [
-        ('Confirmada', 'Confirmada'),
-        ('En Proceso', 'En Proceso'),
-        ('Cancelada', 'Cancelada'),
+        ('confirmada', 'Confirmada'),
+        ('pendiente', 'Pendiente'),
+        ('cancelada', 'Cancelada'),
     ]
     id_reserva = models.AutoField(primary_key=True)
     id_cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
+    id_turno = models.ForeignKey(Turno, on_delete=models.CASCADE)
     id_serv_x_tur = models.ForeignKey(ServicioXTurno, on_delete=models.CASCADE)
-    estado_reserva = models.CharField(max_length=20, choices=ESTADO_OPCIONES, default='En Proceso')
+    estado_reserva = models.CharField(max_length=20, choices=ESTADO_OPCIONES, default='Confirmada')
 
-    def __str__(self):
-        return f'Reserva {self.id_reserva} - Cliente: {self.id_cliente}'
+    def _str_(self):
+        return f'Reserva {self.id_reserva} - Cliente: {self.id_cliente} - Estado: {self.estado_reserva} - Servicio: {self.id_serv_x_tur.id_servicio}'
 
 class DetalleVenta(models.Model):
     id_detalle_venta = models.AutoField(primary_key=True)
@@ -144,13 +155,5 @@ class DetalleVenta(models.Model):
     comprobante = models.ImageField(upload_to='detalleventa/', blank=True, null=True)
     estado_reserva = models.CharField(max_length=100)
 
-    def __str__(self):
+    def _str_(self):
         return f'Detalle de Venta {self.id_detalle_venta} - Reserva: {self.id_reserva}'
-
-class D_VentaXServicio(models.Model):
-    id_d_vent_x_serv = models.AutoField(primary_key=True)
-    id_d_venta = models.ForeignKey(DetalleVenta, on_delete=models.CASCADE)
-    id_servicio = models.ForeignKey(Servicios, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f'Detalle de Venta por Servicio {self.id_d_vent_x_serv} - Servicio: {self.id_servicio}'

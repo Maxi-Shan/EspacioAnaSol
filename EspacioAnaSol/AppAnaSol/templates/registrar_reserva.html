@@ -1,0 +1,74 @@
+{% extends 'venta3.html' %}
+{% block content %}
+<div class="col-md-8 p-0" style="margin-top: 21px;">
+    <div class="card border-0 h-100">
+        <div class="card-header text-black text-left">
+        <h1>Registrar Reserva</h1>
+        <h2>Cliente: {{ cliente.nombre }} {{ cliente.apellido }}</h2>
+        </div>
+    <div class="card-body">
+    <form method="POST" enctype="multipart/form-data">  <!-- Se añade enctype para permitir carga de archivos -->
+        {% csrf_token %}
+        
+        <label for="servicio">Selecciona el Servicio:</label>
+        <select name="servicio" required>
+            {% for servicio in servicios %}
+                <option value="{{ servicio.id_servicio }}">{{ servicio.nombre_del_servicio }}</option>
+            {% endfor %}
+        </select>
+
+        <br><br>
+
+        <label for="fecha">Selecciona la Fecha:</label>
+        <input type="date" name="fecha" id="fecha" required onchange="actualizarHorasDisponibles()">
+        
+        <br><br>
+
+        <label for="hora">Selecciona la Hora:</label>
+        <select name="hora" id="hora" required>
+            {% for hora in horas_disponibles %}
+                <option value="{{ hora }}">{{ hora }}</option>
+            {% endfor %}
+        </select>
+
+        <br><br>
+
+        <label for="comprobante">Comprobante (opcional):</label>
+        <input type="file" name="comprobante" accept="image/*, application/pdf">
+        
+        <br><br>
+
+        <label for="metodo_pago">Método de Pago:</label>
+        <select name="metodo_pago" required>
+            <option value="Efectivo">Efectivo</option>
+            <option value="Transferencia">Transferencia</option>
+        </select>
+
+        <br><br>
+
+        <button type="submit">Siguiente</button>
+    </form>
+    </div>
+  </div>
+</div>   
+    <script>
+    function actualizarHorasDisponibles() {
+        var fecha = document.getElementById('fecha').value;
+    
+        fetch(`?fecha=${fecha}`)
+            .then(response => response.json())
+            .then(data => {
+                var horasSelect = document.getElementById('hora');
+                horasSelect.innerHTML = ''; // Limpiar las horas existentes
+    
+                // Agregar nuevas horas disponibles
+                data.horas.forEach(function(hora) {
+                    var option = document.createElement('option');
+                    option.value = hora;
+                    option.textContent = hora;
+                    horasSelect.appendChild(option);
+                });
+            });
+    }
+    </script>
+{% endblock %}

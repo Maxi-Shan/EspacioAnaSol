@@ -1,0 +1,44 @@
+{% extends 'venta4.html' %}
+{% block content %}
+<div class="col-md-8 p-0" style="margin-top: 21px;">
+    <div class="card border-0 h-100">
+        <div class="card-header text-black text-left">
+            <h2>Confirmar Reserva</h2>
+        </div>
+        <div class="card-body">
+    <form method="post" action="{% url 'confirmar_reserva' reserva.id_reserva %}">
+        {% csrf_token %}
+        
+        <h3>Datos del Cliente:</h3>
+        <p><strong>Cliente:</strong> {{ cliente.nombre }} {{ cliente.apellido }}</p>
+        <p><strong>Correo:</strong> {{ cliente.correo_electronico }}</p>
+        
+        <h3>Datos del Servicio:</h3>
+        <p><strong>Servicio:</strong> {{ servicio.nombre_del_servicio }}</p>
+        <p><strong>Descripción:</strong> {{ servicio.descripcion_del_servicio }}</p>
+        <p><strong>Precio:</strong> ${{ monto_subtotal }}</p>
+        
+        <h3>Datos del Turno:</h3>
+        <p><strong>Fecha:</strong> {{ turno.fecha }}</p>
+        <p><strong>Hora:</strong> {{ turno.hora }}</p>
+        
+        <h3>Método de Pago:</h3>
+        <p>{{ metodo_pago }}</p>
+
+        <h3>Diseño de Uñas:</h3>
+        {% if diseño_uñas %}
+            <img src="{{ diseño_uñas.url }}" alt="Diseño de uñas" width="200">
+        {% else %}
+            <p>No se ha subido ningún diseño de uñas.</p>
+        {% endif %}
+
+        <h3>Comprobante:</h3>
+        {% if comprobante %}
+            <img src="{{ comprobante.url }}" alt="Comprobante de pago" width="200">
+        {% else %}
+            <p>No se ha subido ningún comprobante.</p>
+        {% endif %}
+
+        <button type="submit">Registrar Venta</button>
+    </form>
+{% endblock %}
