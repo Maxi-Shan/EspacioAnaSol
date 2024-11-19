@@ -1,0 +1,296 @@
+.container {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+}
+
+.tarjeta-servicio {
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    margin: 10px;
+    padding: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.tarjeta-servicio img {
+    width: 100%;
+    height: auto;
+}
+
+.titulo-servicio {
+    font-size: 18px;
+    font-weight: bold;
+    background-color: #000000;
+    color: #ffffff;
+    padding: 10px;
+}
+
+.descripcion-servicio {
+    padding: 10px;
+    text-align: justify;
+}
+
+.info-servicio {
+    font-size: 15px;
+    color: #313030;
+    background-color: #9e9c9c;
+    padding: 10px;
+}
+
+.boton-reservar {
+    background-color: #0f0207;
+    color: white;
+    padding: 10px 15px;
+    margin: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.boton-reservar:hover {
+    background-color: #a3fa81;
+}
+
+.dia-seleccionado {
+    background-color: #fff;
+    border: 1px solid #1f1d1d;
+    border-width: 3px;
+    padding: 50px;
+    width: 200px;
+    height: 300px;
+    margin: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+    padding-top: 30px;
+}
+.titulo-dia {
+    font-size: 18px;
+    font-weight: bold;
+    background-color: #000000;
+    color: #ffffff;
+    padding: 5px;
+    margin: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    align-items: center;
+}
+
+.turno-reservado {
+    background-color: #f8c7c7; 
+    border: 1px solid #000000;
+    color: black;
+    padding: 10px;
+    margin: 5px 0;
+    text-align: center;
+}
+
+.turno.disponible {
+    background-color: #ffffff; 
+    color: black;
+    padding: 10;
+    margin: 5px 0;
+    border: 2px solid #0f0f0f;
+    text-align: center;
+}
+
+.turno.disponible.seleccionado {
+    border: 2px solid #d39fea; 
+    background-color: #f7f0fc;
+    color: black;
+}
+
+.turno p {
+    margin: 0;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.tarjeta-calendario {
+        background-color: white;
+        border: 1px solid #1f1d1d;
+        border-width: 3px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        width: 400px;
+        height: 400px;
+        margin: 10px;
+        padding: 15px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        position: relative;
+        padding-top: 0;
+    }
+
+.mes-anterior {
+    font-size: 18px;
+    font-weight: bold;
+    background-color: #000000;
+    color: #ffffff;
+    text-align: center;
+    margin: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    padding: 5px;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    align-items: center;
+}
+
+.btn-mes{
+    background-color: #f7f2f2;
+    border: none;
+    padding: 10px;
+    font-size: 20px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.imagen {
+    width: 100%;
+    border-radius: 10px;
+}
+
+.descripcion {
+    margin-top: 15px;
+}
+
+.volver, .continuar {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #d08a9f;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.volver:hover, .continuar:hover {
+    background-color: #b06a7c;
+}
+
+.mes {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.dias {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+    margin: 20px auto;
+    justify-content: center;
+}
+
+.dia {
+    padding: 15px;
+    background-color: #f4d9e2;
+    border-radius: 10px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    text-align: center;
+}
+
+.seleccionado {
+    background-color: #d08a9f;
+    color: white;
+}
+
+.dia:hover {
+    background-color: #e0e0e0;
+}
+
+.horarios {
+    margin-top: 20px;
+}
+
+.horario {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+
+.horario.reservado {
+    background-color: #f8c2c6;
+    color: #fff;
+}
+
+.horario.disponible {
+    background-color: #e6f5e6;
+    color: #333;
+    cursor: pointer;
+}
+
+.horario.disponible:hover {
+    background-color: #c2f1c2;
+}
+
+#reservar-turno {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+#reservar-turno:hover {
+    background-color: #45a049;
+}
+
+/* Estilos básicos para el modal */
+#modal-confirmacion {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 300px;
+    text-align: center;
+}
+
+#modal-confirmacion.active {
+    display: flex; /* Lo mostramos con flexbox */
+}
+
+#formulario-reserva input {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+}
+
+#confirmar-turno {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}

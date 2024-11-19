@@ -14,13 +14,13 @@
     <!-- Header -->
     <header class="header">
         <div class="logo">
-            <a href="{% url 'pagina_principal' %}">
+            <a class="text-dark text-decoration-none" href="{% url 'pagina_principal' %}">
             <img src="{% static 'imagenes/icono1.png' %}" alt="Logo"> <!-- Replace with actual logo URL -->
             </a>
             <span>EspacioAnaSol</span>
         </div>
         <div class="welcome-text">
-            Bienvenido, <strong>Usuario</strong> / <a href="#">Ver el Sitio</a> / <a href="{% url 'backup_database' %}">Hacer copia de seguridad</a> / {% if es_admin %} <a href="{% url 'restore_database' %}">Restaurar base de datos</a>  / {% endif %} <a href="{% url 'logout' %}">Cerrar Sesión</a>
+            Bienvenido, <strong> {{ nombre.nombre }}  </strong> / <a class="text-dark text-decoration-none" href="#">Ver el Sitio</a> / <a class="text-dark text-decoration-none" href="{% url 'backup_database' %}">Hacer copia de seguridad</a> / {% if es_admin %} <a class="text-dark text-decoration-none" href="{% url 'restore_database' %}">Restaurar base de datos</a>  / {% endif %} <a class="text-dark text-decoration-none" href="{% url 'logout' %}">Cerrar Sesión</a>
         </div>
     </header>
 
@@ -34,32 +34,33 @@
                 <div class="menu-section">
                     <h4>Registro de Datos</h4>
                     <div class="menu-item">
-                        <a href="{% url 'list_ventas' %}">Ventas</a> <span class="plus-icon"><a href="">+</a></span>
+                        <a class="text-dark text-decoration-none" href="{% url 'list_ventas' %}">Ventas</a> <span class="plus-icon"></span>
                     </div>
                     <div class="menu-item">
-                        <a href="{% url 'list_cajas' %}">Caja
+                        <a class="text-dark text-decoration-none" href="{% url 'list_cajas' %}">Caja
                         {% if not cajas_abiertas %}
-                        <a href="{% url 'abrir_caja' %}"><span class="plus-icon">+</span></a>
+                        <a class="text-decoration-none" href="{% url 'abrir_caja' %}"><span class="plus-icon">+</span></a>
                         {% else %}
-                        <a href="{% url 'list_cajas' %}" disabled><span class="plus-icon">+</span></a>
+                        <a class="text-decoration-none" href="{% url 'list_cajas' %}" disabled><span class="plus-icon">+</span></a>
                         {% endif %}
                     </div>
-                    <a href="{% url 'list_turnos' %}"><div class="menu-item">
-                        Turnos <span class="plus-icon"><a href="{% url 'add_turno' %}">+</a></span>
+                    <a class="text-dark text-decoration-none" href="{% url 'list_turnos' %}"><div class="menu-item">
+                        Turnos </a><a class="text-decoration-none" href="{% url 'registrar_cliente' %}"><span class="plus-icon">+</span></a>
                     </div>
-                    <a href="{% url 'list_servicios' %}"><div class="menu-item">
-                        Servicios <span class="plus-icon"><a href="{% url 'add_servicio' %}">+</a></span>
+                    <a class="text-dark text-decoration-none" href="{% url 'list_servicios' %}"><div class="menu-item">
+                        Servicios </a><a class="text-decoration-none" href="{% url 'add_servicio' %}"><span class="plus-icon">+</span></a>
+                    </div>
+                    <a class="text-dark text-decoration-none" href="{% url 'list_reservas' %}"><div class="menu-item">
+                        Reservas </a>
                     </div>
                 </div>
 
                 <div class="menu-section mt-4">
                     <h4>Usuarios</h4>
-                    <a href="{% url 'list_clientes' %}"><div class="menu-item">
-                        Clientes Registrados
-                    </div></a>
-                    <a href="{% url 'list_empleados' %}"><div class="menu-item">
-                        Empleados Registrados
-                    </div></a>
+                    <div class="menu-item"><a class="text-dark text-decoration-none" href="{% url 'list_clientes' %}">Clientes Registrados</a></div>
+                    {% if es_admin %}
+                    <div class="menu-item"><a class="text-dark text-decoration-none" href="{% url 'list_empleados' %}">Empleados Registrados</a></div>
+                    {% endif %}
                 </div>
             </div>
 
@@ -71,7 +72,6 @@
             </div>
         </div>
     </div>
-
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

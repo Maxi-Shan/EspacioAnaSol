@@ -1,0 +1,47 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendario</title>
+    <link rel="stylesheet" href="{% static 'styles/calendario.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="tarjeta-servicio">
+            {% if servicio.imagen %}
+                <img src="{{ servicio.imagen.url }}" alt="{{ servicio.nombre_del_servicio }}" style="width: 100%; height: auto; object-fit: cover;">
+            {% else %}
+                <p>No hay información disponible para este servicio.</p>
+            {% endif %}
+            <div class="titulo-servicio">{{ servicio.nombre_del_servicio }}</div>
+            <div class="descripcion-servicio">
+                <p>{{ servicio.descripcion_del_servicio }}</p>
+                <div class="info-servicio">
+                    Duración: {{ servicio.duracion }}<br>
+                    Valor del Servicio: ${{ servicio.precio_del_servicio }}<br>
+                    Valor de la Reserva: {{ servicio.senia }}%
+                </div>
+            </div>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            {{ turno_form.as_p }}
+            {{ cliente_form.as_p }}
+            
+            <button type="submit" class="btn btn-primary mt-3">Confirmar turno</button>
+        </form>
+
+        <a href="{% url 'mostrar_turnos' %}">
+            <button id="mostrar-turnos-btn" class="btn btn-secondary mt-4">Mostrar Turnos</button>
+        </a>     
+    </div>
+
+    <script src="{% static 'Java/calendario.js' %}"></script>
+        
+</body>
+</html>

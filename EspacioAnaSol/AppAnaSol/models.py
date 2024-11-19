@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.db.models import Sum
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth.hashers import make_password, check_password
 from django.core.validators import EmailValidator, RegexValidator
 
 class Cliente(models.Model):
@@ -10,8 +10,9 @@ class Cliente(models.Model):
     apellido = models.CharField(max_length=255)
     correo_electronico = models.EmailField(max_length=255, validators=[EmailValidator()])
     numero_telefono = models.CharField(max_length=15, validators=[RegexValidator(regex='^[0-9]*$', message='El número de teléfono debe contener solo dígitos.')])
+    fecha_registro = models.DateTimeField(default=timezone.now)
 
-    def _str_(self):
+    def __str__(self):
         return f"{self.nombre} {self.apellido}" 
 
 
@@ -21,22 +22,30 @@ class Turno(models.Model):
     fecha = models.DateField(blank=True, null=True)
     hora = models.TimeField(blank=True, null=True)
     diseño_uñas = models.ImageField(upload_to='diseño_uñas/', blank=True, null=True)
-    fecha_registro = models.DateTimeField(blank=True, null=True)
+    senia_comprobante = models.ImageField(upload_to='senia_comprobante/', blank=True, null=True)
+    fecha_registro = models.DateTimeField(default=timezone.now)
     estado_turno = models.CharField(max_length=20, choices=[
-        ('Disponible', 'Disponible'),
         ('Pendiente', 'Pendiente'),
         ('Confirmado', 'Confirmado'),
         ('Cancelado', 'Cancelado'),
-    ], default='Disponible') 
+    ]) 
 
     def __str__(self):
         return f'Turno {self.id_turno} - Fecha: {self.fecha} Hora: {self.hora} - Estado: {self.estado_turno}'
 
     
     def convertir_a_reserva(self):
-        if not Reservas.objects.filter(id_turno=self).exists():
-            reserva = Reservas.objects.create(id_turno=self, id_cliente=self.id_cliente, estado_turno='Confirmado')
-            return reserva
+        if self.estado_turno == 'confirmado':
+            # Verificar si ya existe una reserva para este turno
+            if not Reservas.objects.filter(id_turno=self).exists():
+                # Crear una nueva reserva asociada al turno
+                reserva = Reservas.objects.create(
+                    id_cliente=self.id_cliente,
+                    id_turno=self,
+                    id_serv_x_tur=ServicioXTurno.objects.filter(id_turno=self).first(),
+                    estado_reserva='confirmada'
+                )
+                return reserva
         return None
 
 class Servicios(models.Model):
@@ -45,10 +54,10 @@ class Servicios(models.Model):
     descripcion_del_servicio = models.TextField(blank=True, null=True)
     duracion = models.CharField(max_length=255, blank=True, null=True)
     precio_del_servicio = models.DecimalField(max_digits=10, decimal_places=2)
-    valor_sello = models.DecimalField(max_digits=10, decimal_places=2)
+    senia = models.IntegerField(blank=True, null=True, validators=[RegexValidator(regex='^[0-9]+$', message='El DNI debe contener solo dígitos.')])
     imagen = models.ImageField(upload_to='servicios/', blank=True, null=True)
 
-    def _str_(self):
+    def __str__(self):
         return self.nombre_del_servicio
     
 class Empleado(models.Model):
@@ -70,7 +79,7 @@ class Empleado(models.Model):
     def verificar_contraseña(self, contraseña):
         return make_password(contraseña, self.contraseña)
 
-    def _str_(self):
+    def __str__(self):
         return f"{self.nombre} {self.apellido}"
 
 class Caja(models.Model):
@@ -95,32 +104,34 @@ class Caja(models.Model):
         self.estado = False  
         self.save()
 
-    def _str_(self):
+    def __str__(self):
         return f'Caja {self.id_caja} - Estado: {"Abierta" if self.estado else "Cerrada"}'
 
 class Venta(models.Model):
-    ESTADO_VENTA_CHOICES = [
-        (0, 'Completada'),
-        (1, 'En Proceso'),
-        (2, 'No Completada'),
-    ]
     id_venta = models.AutoField(primary_key=True)
     id_caja = models.ForeignKey(Caja, on_delete=models.CASCADE)
     id_cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
     fecha_venta = models.DateField(null=True, blank=True)
     hs_venta = models.TimeField(null=True, blank=True)
     monto_total = models.DecimalField(max_digits=10, decimal_places=2)
-    estado_venta = models.IntegerField(choices=ESTADO_VENTA_CHOICES)
 
-    def _str_(self):
-        return f'Venta {self.id_venta} - Cliente: {self.id_cliente}'
+    def save(self, *args, **kwargs):
+        if not self.fecha_venta:
+            self.fecha_venta = timezone.now().date()
+        if not self.hs_venta:
+            self.hs_venta = timezone.now().time()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f'Empleado: {self.dni_emp} en Turno: {self.id_turno}'
+
 
 class EmpleadoXTurno(models.Model):
     id_emp_x_tur = models.AutoField(primary_key=True)
     dni_emp = models.ForeignKey(Empleado, on_delete=models.CASCADE)
     id_turno = models.ForeignKey(Turno, on_delete=models.CASCADE)
 
-    def _str_(self):
+    def __str__(self):
         return f'Empleado: {self.dni_emp} en Turno: {self.id_turno}'
 
 class ServicioXTurno(models.Model):
@@ -128,13 +139,12 @@ class ServicioXTurno(models.Model):
     id_servicio = models.ForeignKey(Servicios, on_delete=models.CASCADE)
     id_turno = models.ForeignKey(Turno, on_delete=models.CASCADE)
 
-    def _str_(self):
+    def __str__(self):
         return f'Servicio: {self.id_servicio} en Turno: {self.id_turno}'
 
 class Reservas(models.Model):
     ESTADO_OPCIONES = [
         ('confirmada', 'Confirmada'),
-        ('pendiente', 'Pendiente'),
         ('cancelada', 'Cancelada'),
     ]
     id_reserva = models.AutoField(primary_key=True)
@@ -142,8 +152,9 @@ class Reservas(models.Model):
     id_turno = models.ForeignKey(Turno, on_delete=models.CASCADE)
     id_serv_x_tur = models.ForeignKey(ServicioXTurno, on_delete=models.CASCADE)
     estado_reserva = models.CharField(max_length=20, choices=ESTADO_OPCIONES, default='Confirmada')
+    fecha_registro = models.DateTimeField(default=timezone.now)
 
-    def _str_(self):
+    def __str__(self):
         return f'Reserva {self.id_reserva} - Cliente: {self.id_cliente} - Estado: {self.estado_reserva} - Servicio: {self.id_serv_x_tur.id_servicio}'
 
 class DetalleVenta(models.Model):
@@ -152,8 +163,6 @@ class DetalleVenta(models.Model):
     id_reserva = models.ForeignKey(Reservas, on_delete=models.CASCADE)
     metodo_pago = models.CharField(max_length=255, null=True, blank=True)
     monto_subtotal = models.DecimalField(max_digits=10, decimal_places=2)
-    comprobante = models.ImageField(upload_to='detalleventa/', blank=True, null=True)
-    estado_reserva = models.CharField(max_length=100)
 
-    def _str_(self):
+    def __str__(self):
         return f'Detalle de Venta {self.id_detalle_venta} - Reserva: {self.id_reserva}'

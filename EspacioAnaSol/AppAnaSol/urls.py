@@ -4,40 +4,56 @@ from django.conf.urls.static import static
 from . import views
 
 urlpatterns = [
+    # Autenticación
     path('', views.login_view, name='login'),
     path('login/', views.login_view, name='login'),
+    path('logout/', views.logout_view, name='logout'),
+
+    # Pagina Principal
     path('pagina-principal/', views.pagina_principal, name='pagina_principal'),
+    
+    # Empleados
     path('empleados/', views.list_empleados, name='list_empleados'),
     path('empleados/add/', views.add_empleado, name='add_empleado'),
-    path('empleados/update/<int:dni>/', views.update_empleado, name='update_empleado'),
-    path('empleados/delete/<int:dni>/', views.delete_empleado, name='delete_empleado'),
-    path('empleados/update-status/<int:dni>/', views.update_empleado_status, name='update_empleado_status'),
-    path('abrir-caja/', views.abrir_caja, name='abrir_caja'),
+    path('empleados/<int:dni>/update/', views.update_empleado, name='update_empleado'),
+    path('empleados/<int:dni>/delete/', views.delete_empleado, name='delete_empleado'),
+    path('empleados/<int:dni>/update-status/', views.update_empleado_status, name='update_empleado_status'),
+
+    # Cajas
     path('cajas/', views.list_cajas, name='list_cajas'),
-    path('cerrar-caja/<int:id_caja>/', views.cerrar_caja, name='cerrar_caja'),
-    path('cajas/modificar/<int:id_caja>/', views.update_caja, name='update_caja'),
-    path('cajas/eliminar/<int:id_caja>/', views.delete_caja, name='delete_caja'),
+    path('cajas/add/', views.abrir_caja, name='abrir_caja'),
+    path('cajas/<int:id_caja>/update/', views.update_caja, name='update_caja'),
+    path('cajas/<int:id_caja>/delete/', views.delete_caja, name='delete_caja'),
+    path('cajas/<int:id_caja>/close/', views.cerrar_caja, name='cerrar_caja'),
+
+    # Servicios
     path('servicios/', views.list_servicios, name='list_servicios'),
     path('servicios/add/', views.add_servicio, name='add_servicio'),
     path('servicios/update/<int:id_servicio>/', views.update_servicio, name='update_servicio'),
     path('servicios/delete/<int:id_servicio>/', views.delete_servicio, name='delete_servicio'),
+
+    # Turnos
     path('turnos/', views.list_turnos, name='list_turnos'),
-    path('turnos/add/', views.add_turno, name='add_turno'),
-    path('turnos/update/<int:turno_id>/', views.update_turno, name='update_turno'),
-    path('turnos/delete/<int:turno_id>/', views.delete_turno, name='delete_turno'),
+    path('turnos/registrar-cliente/', views.registrar_cliente, name='registrar_cliente'),
+    path('turnos/registrar-turno/', views.registrar_turno, name='registrar_turno'),
+    path('turnos/cancelar-registro/', views.cancelar_registro, name='cancelar_registro'),
+    path('modificar-turno/<int:turno_id>/', views.modificar_turno, name='modificar_turno'),
+    path('eliminar-turno/<int:turno_id>/', views.eliminar_turno, name='eliminar_turno'),
+
+    # Clientes
     path('clientes/', views.list_clientes, name='list_clientes'),
-    path('logout/', views.logout_view, name='logout'),
+
+    # Backups
     path('backup/', views.backup_database, name='backup_database'),    
     path('restore/', views.restore_database, name='restore_database'),
-    path('ventas', views.list_ventas, name='list_ventas'),
-    path('registrar_cliente/', views.registrar_cliente, name='registrar_cliente'),
-    path('registrar_reserva/', views.registrar_reserva, name='registrar_reserva'),
-    path('confirmar_reserva/<int:reserva_id>/', views.confirmar_reserva, name='confirmar_reserva'),
-    path('venta_exitosa/', views.venta_exitosa, name='venta_exitosa'),
+    
+    # Ventas, DestalleVentas y Reservas
     path('ventas/', views.list_ventas, name='list_ventas'),
-    path('detalleventa/<int:id_venta>/', views.list_detalleventa, name='list_detalleventa'),
-    path('detalle_reserva/<int:id_reserva>/', views.detalle_reserva, name='detalle_reserva'),
-    path('ventas/modificar/<int:id_venta>/', views.update_venta, name='update_venta'),
+    path('ventas/<int:id_venta>/', views.detalle_venta, name='detalle_venta'),
+    path('reservas/', views.list_reservas, name='list_reservas'),
+    path('modificar_metodo_pago/<int:venta_id>/', views.modificar_metodo_pago, name='modificar_metodo_pago'),
+
+    path('confirmar_turnos/<str:accion>/', views.gestionar_turno, name='confirmar_turnos'),
 ]
 
 if settings.DEBUG:

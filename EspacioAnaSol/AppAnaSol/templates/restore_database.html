@@ -2,131 +2,24 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Restaurar Base de Datos</title>
-    <style>
-        /* Estilos generales */
-        body, html {
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #C16AA8;
-            color: #333;
-        }
-
-        /* Contenedor principal */
-        .container {
-            background-color: #ffffff;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            text-align: center;
-            max-width: 500px;
-            width: 90%;
-        }
-
-        /* Encabezado */
-        h1 {
-            color: #d9534f; /* Rojo de advertencia */
-            font-size: 28px;
-            margin-bottom: 20px;
-        }
-
-        /* Mensajes de advertencia o éxito */
-        .message {
-            padding: 10px;
-            margin: 15px 0;
-            border-radius: 5px;
-            font-weight: bold;
-            text-align: center;
-        }
-
-        .message.error {
-            background-color: #f8d7da;
-            color: #842029;
-        }
-
-        .message.success {
-            background-color: #d4edda;
-            color: #155724;
-        }
-
-        /* Estilos del formulario */
-        form {
-            margin-top: 20px;
-            text-align: left;
-        }
-
-        label {
-            display: block;
-            font-weight: bold;
-            color: #555;
-            margin-bottom: 5px;
-        }
-
-        input[type="file"] {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            margin-bottom: 15px;
-            box-sizing: border-box;
-        }
-
-        /* Botón de restauración */
-        button[type="submit"] {
-            background-color: #d9534f; /* Rojo de advertencia */
-            color: #ffffff;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        button[type="submit"]:hover {
-            background-color: #c9302c; /* Más oscuro al pasar el mouse */
-        }
-
-        /* Enlace de regreso */
-        a {
-            display: inline-block;
-            margin-top: 20px;
-            color: #007bff;
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-
-        a:hover {
-            color: #0056b3;
-            text-decoration: underline;
-        }
-    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Restaurar Base de Datos</h1>
-        
-        {% if messages %}
-            {% for message in messages %}
-                <p class="message {{ message.tags }}">{{ message }}</p>
-            {% endfor %}
-        {% endif %}
+    <h1>Restaurar Base de Datos</h1>
+    
+    {% if messages %}
+        {% for message in messages %}
+            <p class="message {{ message.tags }}">{{ message }}</p>
+        {% endfor %}
+    {% endif %}
 
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            <label for="backup_file">Selecciona el archivo de copia de seguridad (.json):</label>
-            <input type="file" id="backup_file" name="backup_file" accept=".json" required>
-            <button type="submit">Restaurar Base de Datos</button>
-        </form>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="backup_file">Selecciona el archivo de copia de seguridad (.json):</label>
+        <input type="file" id="backup_file" name="backup_file" accept=".json" required>
+        <button type="submit">Restaurar Base de Datos</button>
+    </form>
 
-        <a href="{% url 'pagina_principal' %}">Volver a la Página Principal</a>
-    </div>
+    <a href="{% url 'pagina_principal' %}">Volver a la Página Principal</a>
 </body>
 </html>

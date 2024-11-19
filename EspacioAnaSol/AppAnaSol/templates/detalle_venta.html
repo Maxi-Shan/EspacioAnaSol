@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caja</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style2.css' %}">
+</head>
+<body>
+    <!-- Primary Header -->
+    <header class="header-primary">
+        <div class="logo">
+            <a class="text-dark text-decoration-none" href="{% url 'pagina_principal' %}">
+                <img src="{% static 'imagenes/icono1.png' %}" alt="Logo"> <!-- Replace with actual logo URL -->
+            </a>
+            <span>EspacioAnaSol</span>
+        </div>
+        <div class="welcome-text">
+            Bienvenido, <strong>Usuario</strong> / <a class="text-dark text-decoration-none" href="#">Ver el Sitio</a> / <a class="text-dark text-decoration-none" href="{% url 'backup_database' %}">Hacer copia de seguridad</a> / <a class="text-dark text-decoration-none" href="{% url 'restore_database' %}">Restaurar base de datos</a>  / <a class="text-dark text-decoration-none" href="{% url 'logout' %}">Cerrar Sesión</a>
+        </div>
+    </header>
+    
+    <!-- Secondary Header -->
+    <header class="header-secondary">
+        <div class="menu-text">
+            <a class="text-dark text-decoration-none" href="{% url 'pagina_principal' %}">Inicio </a> / <a class="text-dark text-decoration-none" href="{% url 'list_ventas' %}">Ventas</a>
+        </div>
+    </header>
+
+    <!-- Main content -->
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-4 sidebar">
+                <h3>Sitio de Empleados</h3>
+
+                <div class="menu-section">
+                    <h4>Registro de Datos</h4>
+                    <div class="menu-item">
+                        <a class="text-dark text-decoration-none" href="{% url 'list_ventas' %}">Ventas</a> <span class="plus-icon"></span>
+                    </div>
+                    <div class="menu-item">
+                        <a class="text-dark text-decoration-none" href="{% url 'list_cajas' %}">Caja
+                        {% if not cajas_abiertas %}
+                        <a class="text-decoration-none" href="{% url 'abrir_caja' %}"><span class="plus-icon">+</span></a>
+                        {% endif %}
+                    </div>
+                    <a class="text-dark text-decoration-none" href="{% url 'list_turnos' %}"><div class="menu-item">
+                        Turnos </a><a class="text-decoration-none" href="{% url 'registrar_cliente' %}"><span class="plus-icon">+</span></a>
+                    </div>
+                    <a class="text-dark text-decoration-none" href="{% url 'list_servicios' %}"><div class="menu-item">
+                        Servicios </a><a class="text-decoration-none" href="{% url 'add_servicio' %}"><span class="plus-icon">+</span></a>
+                    </div>
+                    <a class="text-dark text-decoration-none" href="{% url 'list_reservas' %}"><div class="menu-item">
+                        Reservas </a>
+                    </div>
+                </div>
+
+                <div class="menu-section mt-4">
+                    <h4>Usuarios</h4>
+                    <div class="menu-item"><a class="text-dark text-decoration-none" href="{% url 'list_clientes' %}">Clientes Registrados</a></div>
+                    {% if es_admin %}
+                    <div class="menu-item"><a class="text-dark text-decoration-none" href="{% url 'list_empleados' %}">Empleados Registrados</a></div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-8 main-content">
+                <div class="title-section">
+                    <h2>Detalle de Venta</h2>
+                </div>
+            
+                <div class="table-responsive" style="margin-top: 15px;">
+                    <table class="table table-borderless">
+                        <thead>
+                            <tr>
+                                <th>Campo</th>
+                                <th>Valor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>ID Venta</strong></td>
+                                <td>{{ venta.id_venta }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Cliente</strong></td>
+                                <td>{{ venta.id_cliente.nombre }} {{ venta.id_cliente.apellido }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Fecha</strong></td>
+                                <td>{{ venta.fecha_venta }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Monto Total</strong></td>
+                                <td>${{ venta.monto_total }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Método de Pago</strong></td>
+                                <td>{{ detalle_venta.metodo_pago }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Monto Subtotal</strong></td>
+                                <td>${{ detalle_venta.monto_subtotal }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
+
+

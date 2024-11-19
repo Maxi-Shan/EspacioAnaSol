@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modificar Método de Pago</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Modificar Método de Pago de la Venta</h1>
+        <p><strong>Venta ID:</strong> {{ venta.id_venta }}</p>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="metodo_pago">Método de Pago</label>
+                {{ form.metodo_pago }}
+            </div>
+            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+            <a href="{% url 'list_ventas' %}" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+</body>
+</html>

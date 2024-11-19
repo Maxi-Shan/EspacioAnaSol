@@ -1,0 +1,65 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmación de Turno</title>
+    <link rel="stylesheet" href="{% static 'styles/calendario.css' %}">
+</head>
+<body>
+    <div class="container">
+        <div class="tarjeta-servicio">
+            {% if servicio.imagen %}
+                <img src="{{ servicio.imagen.url }}" alt="{{ servicio.nombre_del_servicio }}" style="width: 100%; height: auto; object-fit: cover;">
+            {% else %}
+                <p>No hay información disponible para este servicio.</p>
+            {% endif %}
+            <div class="titulo-servicio">"{{ servicio.nombre_del_servicio }}"</div>
+                <div class="descripcion-servicio">
+                    <p>{{ servicio.descripcion_del_servicio }}</p>
+                    <div class="info-servicio">
+                        Duración: {{ servicio.duracion }}<br>
+                        Valor del Servicio: ${{ servicio.precio_del_servicio }}<br>
+                        Valor de la Reserva: {{ servicio.senia }}%
+                    </div>
+                </div>
+        </div>
+
+        <div id="modal-confirmacion">
+            <div class="modal-content">
+                <h2>Confirmación de Reserva</h2>
+                <p>Sube el comprobante de pago antes de que el tiempo se agote:</p>
+                <p>Alias: <strong>Anasol.nails20</strong></p>
+                <p>Tiempo restante: <span id="timer">60</span></p>
+                <p><strong>Servicio elegido:</strong> {{ servicio }}</p>
+                <p><strong>Fecha:</strong> {{ turno_data.fecha }}</p>
+                <p><strong>Hora:</strong> {{ turno_data.hora }}</p>
+                <p><strong>Nombre:</strong> {{ nombre }}</p>
+                <p><strong>Celular:</strong> {{ numero_telefono }}</p>
+                <p><strong>Correo:</strong> {{ correo_electronico }}</p>
+                <p><strong>Valor de la reserva (30%):</strong> ${{ valor_reserva }}</p>
+        
+                <div class="form-container">
+                    <form method="POST" enctype="multipart/form-data" action="{% url 'confirmacion_turno' servicio_nombre=servicio.nombre_del_servicio %}">
+                        {% csrf_token %}
+                
+                        <label for="diseño_uñas">Subir Diseño de uñas (opcional): </label><br><br>
+                        <input type="file" name="diseño_uñas" class="form-control"><br><br>
+
+                        <label for="senia_comprobante">Subir Comprobante de la Senia (obligatorio): </label><br><br>
+                        <input type="file" name="senia_comprobante" class="form-control" required><br><br>
+
+                        <button type="submit" class="submit-btn">Confirmar Turno</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const tiempoAgotadoUrl = "{% url 'tiempo_agotado' %}";
+    </script>
+    <script src="{% static 'Java/temporizador.js' %}"></script>
+</body>
+</html>

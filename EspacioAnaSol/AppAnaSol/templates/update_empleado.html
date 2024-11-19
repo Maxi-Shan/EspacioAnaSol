@@ -1,6 +1,59 @@
-{% extends 'empleados3.html' %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caja</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style2.css' %}">
+</head>
+<body>
+    <!-- Primary Header -->
+    <header class="header-primary">
+        <div class="logo">
+            <a class="text-dark text-decoration-none" href="{% url 'pagina_principal' %}">
+                <img src="{% static 'imagenes/icono1.png' %}" alt="Logo"> <!-- Replace with actual logo URL -->
+            </a>
+            <span>EspacioAnaSol</span>
+        </div>
+        <div class="welcome-text">
+            <a class="text-dark text-decoration-none" href="#">Ver el Sitio</a> / <a class="text-dark text-decoration-none" href="{% url 'backup_database' %}">Hacer copia de seguridad</a> / {% if es_admin %} <a class="text-dark text-decoration-none" href="{% url 'restore_database' %}">Restaurar base de datos</a>  / {% endif %} <a class="text-dark text-decoration-none" href="{% url 'logout' %}">Cerrar Sesión</a>
+        </div>
+    </header>
+    
+    <!-- Secondary Header -->
+    <header class="header-secondary">
+        <div class="menu-text">
+            <a class="text-dark text-decoration-none" href="{% url 'pagina_principal' %}">Inicio </a> / <a class="text-dark text-decoration-none" href="{% url 'list_empleados' %}">Empleados</a> / <a class="text-dark text-decoration-none" href="{% url 'list_empleados' %}">Modificar Empleado</a>
+        </div>
+    </header>
 
-{% block content %}
+    <!-- Main content -->
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-4 sidebar">
+                <h3>Sitio de Empleados</h3>
+                <div class="menu-section">
+                    <h4>Registro de Datos</h4>
+                    <div class="menu-item"><a class="text-dark text-decoration-none" href="#">Ventas</a><a class="text-dark text-decoration-none" href="#"><span class="plus-icon">+</span></a></div>
+                    <div class="menu-item">
+                        <a class="text-dark text-decoration-none" href="{% url 'list_cajas' %}">Caja
+                        {% if not cajas_abiertas %}
+                        <a class="text-decoration-none" href="{% url 'abrir_caja' %}"><span class="plus-icon">+</span></a>
+                        {% endif %}
+                    </div>
+                    <div class="menu-item"><a class="text-dark text-decoration-none" href="{% url 'list_turnos' %}">Turnos<a class="text-dark text-decoration-none" href="#"><span class="plus-icon">+</span></a></div>
+                    <div class="menu-item"><a class="text-dark text-decoration-none" href="{% url 'list_servicios' %}">Servicios <a class="text-dark text-decoration-none" href="{% url 'add_servicio' %}"><span class="plus-icon">+</span></a></div>
+                </div>
+                <div class="menu-section mt-4">
+                    <h4>Usuarios</h4>
+                    <div class="menu-item"><a class="text-dark text-decoration-none" href="{% url 'list_clientes' %}">Clientes Registrados</a></div>
+                    <div class="menu-item"><a class="text-dark text-decoration-none" href="{% url 'list_empleados' %}">Empleados Registrados</a></div>
+                </div>
+            </div>
+            
 <div class="col-md-8 p-0" style="margin-top: 21px;">
     <div class="card border-0 h-100">
         <div class="card-header text-black text-left">
@@ -90,10 +143,17 @@
 
                 <div class="card-footer bg-danger">
                     <button type="submit" class="btn btn-sm mr-2 text-white" style="background-color: #701C7E;">Guardar</button>
-                    <a href="{% url 'list_empleados' %}" class="btn btn-secondary">Cancelar</a>
+                    <a href="{% url 'list_empleados' %}"><button type="button" class="btn btn-warning btn-sm mr-2">Cancelar</button></a>
                 </div>
             </form>
         </div>
     </div>
 </div>
-{% endblock %}
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
