@@ -1,69 +1,91 @@
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.hashers import make_password
 from django.core.mail import send_mail
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
 from django.core.files.storage import default_storage
 from django.conf import settings
 from django.contrib import messages
 from django.utils import timezone
 from .models import Caja, Empleado, ServicioXTurno, EmpleadoXTurno, Cliente, Turno, Reservas, Servicios, Venta, Reservas, DetalleVenta
-from .forms import LoginForm, EmpleadoForm, ServiciosForm, ClienteForm, TurnoForm
-from django.http import HttpResponse
+from .forms import EmpleadoForm, ServiciosForm, ClienteForm, TurnoForm, MetodoPagoForm
 from django.core import management
 from django.utils import timezone
-from django.http import HttpResponseRedirect, JsonResponse
-from decimal import Decimal
+from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
+from django.db.models import Count
 import os
 import json
 
-def obtener_empleado_autenticado(request):
-    dni_empleado = request.session.get('empleado_dni')
-    return get_object_or_404(Empleado, dni=dni_empleado)
+def login(request):
+    dni_error = ''
+    contraseña_error = ''
 
-def login_view(request):
     if request.method == 'POST':
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            dni = form.cleaned_data['dni']
-            contraseña = form.cleaned_data['contraseña']
+        dni = request.POST.get('dni')
+        contraseña = request.POST.get('contraseña')
+
+        if not dni or not contraseña:
+            if not dni:
+                dni_error = 'Por favor, ingrese su DNI.'
+            if not contraseña:
+                contraseña_error = 'La contraseña no puede estar vacía.'
+        else:
             try:
+                # Obtener el empleado por DNI
                 empleado = Empleado.objects.get(dni=dni)
+                
+                # Verificar la contraseña
                 if empleado.verificar_contraseña(contraseña):
+                    # Guardar DNI del empleado en la sesión
                     request.session['empleado_dni'] = empleado.dni
                     messages.success(request, '¡Entraste a la Interfaz para Empleados! ¡Bienvenido a Espacio Ana Sol!')
-                    return redirect('pagina_principal') 
+                    return redirect('pagina_principal')
                 else:
-                    messages.error(request, '¡DNI o Contraseña incorrectos, vuelva a intentarlo!')
+                    contraseña_error = 'Contraseña incorrecta.'
             except Empleado.DoesNotExist:
-                messages.error(request, '¡Empleado inexistente!')
-    else:
-        form = LoginForm()
+                dni_error = 'Empleado inexistente.'
 
-    return render(request, 'login.html', {'form': form})
+    return render(request, 'login.html', {'dni_error': dni_error, 'contraseña_error': contraseña_error})
 
-def logout_view(request):
+
+
+def logout(request):
     if 'empleado_dni' in request.session:
         del request.session['empleado_dni']
-        messages.success(request, '¡Saliste de Espacio Ana Sol, adiós!')
+        messages.success(request, '¡Sesión cerrada correctamente!')
     else:
         messages.warning(request, 'No estabas autenticado.')
     return redirect('login')
+
+
+def obtener_empleado_autenticado(request):
+    dni_cifrado = request.session.get('empleado_dni')
+    if not dni_cifrado:
+        return None
+    try:
+        empleado = Empleado.objects.get(dni=dni_cifrado)
+        return empleado
+    except Empleado.DoesNotExist:
+        return None
+
 def requerir_autenticacion(view_func):
     def _wrapped_view(request, *args, **kwargs):
         if 'empleado_dni' not in request.session:
-            return redirect('login') 
+            return redirect('login')
         return view_func(request, *args, **kwargs)
     return _wrapped_view
+
 
 def admin_required(view_func):
     def _wrapped_view(request, *args, **kwargs):
         empleado = obtener_empleado_autenticado(request)
-        if not empleado.es_admin:
-            return redirect('pagina_principal')  
+        if not empleado or not empleado.es_admin:
+            return redirect('pagina_principal')
         return view_func(request, *args, **kwargs)
     return _wrapped_view
 
 
-
+@login_required
 @requerir_autenticacion
 def pagina_principal(request):
     cajas = Caja.objects.all()
@@ -76,13 +98,23 @@ def pagina_principal(request):
     })
 
 
-
 @admin_required
+@requerir_autenticacion
 def list_empleados(request):
     empleados = Empleado.objects.all()
-    return render(request, 'list_empleados.html', {'empleados': empleados})
+
+    # Pasar las contraseñas en texto plano a la plantilla
+    for empleado in empleados:
+        empleado.contraseña_original = empleado.contraseña_original or "No establecida"
+
+    empleado_autenticado = obtener_empleado_autenticado(request)
+    return render(request, 'list_empleados.html', {
+        'empleados': empleados,
+        'es_admin': empleado_autenticado.es_admin
+    })
 
 @admin_required
+@requerir_autenticacion
 def delete_empleado(request, dni):
     empleado = get_object_or_404(Empleado, dni=dni)
     if request.method == "POST":
@@ -91,6 +123,7 @@ def delete_empleado(request, dni):
     return render(request, 'delete_confirm.html', {'empleado': empleado})
 
 @admin_required
+@requerir_autenticacion
 def update_empleado_status(request, dni):
     empleado = Empleado.objects.get(dni=dni)
     if request.method == 'POST':
@@ -102,7 +135,9 @@ def update_empleado_status(request, dni):
         return redirect('list_empleados')
 
 @admin_required
+@requerir_autenticacion
 def add_empleado(request):
+    empleado = obtener_empleado_autenticado(request)
     if request.method == "POST":
         form = EmpleadoForm(request.POST)
         if form.is_valid():
@@ -110,32 +145,44 @@ def add_empleado(request):
             return redirect('list_empleados')
     else:
         form = EmpleadoForm()
-    return render(request, 'add_empleado.html', {'form': form})
+    return render(request, 'add_empleado.html', {'form': form, 'es_admin': empleado.es_admin})
 
 @admin_required
+@requerir_autenticacion
 def update_empleado(request, dni):
+    empleado_autenticado = obtener_empleado_autenticado(request)
     empleado = get_object_or_404(Empleado, dni=dni)
-    
+
     if request.method == "POST":
         nombre = request.POST.get('nombre')
         apellido = request.POST.get('apellido')
         domicilio = request.POST.get('domicilio')
         correo_electronico = request.POST.get('correo_electronico')
         numero_telefono = request.POST.get('numero_telefono')
-        contraseña = request.POST.get('contraseña')
+        contraseña = request.POST.get('contraseña')  # Obtén la contraseña en texto claro
         estado_empleado = request.POST.get('estado_empleado')
         es_admin = request.POST.get('es_admin') == 'True' 
 
+        # Validar que los campos obligatorios no estén vacíos
         if not nombre or not apellido or not correo_electronico:
-            messages.error(request, "Los campos 'Nombre', 'Apellido' y 'Correo Electrónico' son obligatorios.")
-            return render(request, 'update_empleado.html', {'empleado': empleado})
+            # Retornar error si algún campo obligatorio está vacío
+            return render(request, 'update_empleado.html', {
+                'empleado': empleado,
+                'es_admin': empleado_autenticado.es_admin,
+                'error': 'Por favor, complete todos los campos obligatorios.'
+            })
 
+        # Si la contraseña se modificó, actualizamos el campo cifrado y en texto claro
+        if contraseña:
+            empleado.set_password(contraseña)  # Cifra la nueva contraseña
+            empleado.contraseña_original = contraseña  # Guarda la contraseña en texto claro
+
+        # Actualiza los otros campos
         empleado.nombre = nombre
         empleado.apellido = apellido
         empleado.domicilio = domicilio
         empleado.correo_electronico = correo_electronico
         empleado.numero_telefono = numero_telefono
-        empleado.contraseña = contraseña
         empleado.estado_empleado = estado_empleado
         empleado.es_admin = es_admin
 
@@ -143,10 +190,33 @@ def update_empleado(request, dni):
 
         return redirect('list_empleados')
 
-    return render(request, 'update_empleado.html', {'empleado': empleado})
+    # Si es GET, se pasa la contraseña sin cifrar para mostrarla en el formulario
+    return render(request, 'update_empleado.html', {
+        'empleado': empleado,
+        'contraseña_original': empleado.contraseña_original,
+        'es_admin': empleado_autenticado.es_admin
+    })
 
+def guardar_empleado(request, empleado_id):
+    empleado = get_object_or_404(Empleado, pk=empleado_id)
+    if request.method == "POST":
+        contraseña = request.POST.get("contraseña")
 
+        if contraseña:
+            # Guardar la contraseña en texto plano
+            empleado.contraseña_original = contraseña
 
+            # Cifrar y guardar la contraseña en el campo encriptado
+            empleado.password = make_password(contraseña)
+
+        # Guardar otros datos
+        empleado.nombre = request.POST.get("nombre")
+        empleado.apellido = request.POST.get("apellido")
+        empleado.save()
+
+        return redirect("list_empleados")
+
+@login_required
 @requerir_autenticacion
 def abrir_caja(request):
     empleado = obtener_empleado_autenticado(request)
@@ -183,8 +253,7 @@ def abrir_caja(request):
         'es_admin': empleado.es_admin
     })
 
-
-
+@login_required
 @requerir_autenticacion
 def list_cajas(request):
     cajas = Caja.objects.all()
@@ -201,7 +270,7 @@ def list_cajas(request):
         'es_admin': empleado.es_admin
     })
 
-
+@login_required
 @requerir_autenticacion
 def cerrar_caja(request, id_caja):
     caja = Caja.objects.get(id_caja=id_caja)
@@ -212,9 +281,12 @@ def cerrar_caja(request, id_caja):
 
     return render(request, 'cerrar_caja.html', {'caja': caja, 'es_admin': empleado.es_admin})
 
+@login_required
+@requerir_autenticacion
 def update_caja(request, id_caja):
     caja = get_object_or_404(Caja, id_caja=id_caja)
     empleado = obtener_empleado_autenticado(request)
+    cajas_abiertas = Caja.objects.filter(estado=True).exists()
     if request.method == "POST":
         monto_inicial = request.POST.get('monto_inicial')
 
@@ -229,10 +301,10 @@ def update_caja(request, id_caja):
         except ValueError:
             messages.error(request, 'Monto inicial no válido. Asegúrese de ingresar un número válido.')
     
-    return render(request, 'update_caja.html', {'caja': caja, 'es_admin': empleado.es_admin})
-
+    return render(request, 'update_caja.html', {'caja': caja, 'es_admin': empleado.es_admin, 'cajas_abiertas': cajas_abiertas,})
 
 @admin_required
+@requerir_autenticacion
 def delete_caja(request, id_caja):
     caja = get_object_or_404(Caja, id_caja=id_caja)
     if request.method == "POST":
@@ -242,16 +314,19 @@ def delete_caja(request, id_caja):
     
     return render(request, 'delete_caja.html', {'caja': caja})
 
+@login_required
 @requerir_autenticacion
 def list_servicios(request):
     servicios = Servicios.objects.all()
     empleado = obtener_empleado_autenticado(request)
-    return render(request, 'list_servicios.html', {'servicios': servicios, 'es_admin': empleado.es_admin})
+    cajas_abiertas = Caja.objects.filter(estado=True).exists()
+    return render(request, 'list_servicios.html', {'servicios': servicios, 'es_admin': empleado.es_admin, 'cajas_abiertas': cajas_abiertas,})
 
-
+@login_required
 @requerir_autenticacion
 def add_servicio(request):
     empleado = obtener_empleado_autenticado(request)
+    cajas_abiertas = Caja.objects.filter(estado=True).exists()
     if request.method == 'POST':
         form = ServiciosForm(request.POST, request.FILES)
         if form.is_valid():
@@ -261,13 +336,15 @@ def add_servicio(request):
     else:
         form = ServiciosForm()
         print(form.errors)
-    return render(request, 'add_servicio.html', {'form': form, 'es_admin': empleado.es_admin})
+    return render(request, 'add_servicio.html', {'form': form, 'es_admin': empleado.es_admin, 'cajas_abiertas': cajas_abiertas,})
 
 
+@login_required
 @requerir_autenticacion
 def update_servicio(request, id_servicio):
     servicio = get_object_or_404(Servicios, id_servicio=id_servicio)
     empleado = obtener_empleado_autenticado(request)
+    cajas_abiertas = Caja.objects.filter(estado=True).exists()
     if request.method == 'POST':
         # Verifica los datos que están llegando
         nombre_del_servicio = request.POST.get('nombre_del_servicio')
@@ -295,10 +372,9 @@ def update_servicio(request, id_servicio):
         messages.success(request, 'Servicio actualizado con éxito.')
         return redirect('list_servicios')
 
-    return render(request, 'update_servicio.html', {'servicio': servicio, 'es_admin': empleado.es_admin})
+    return render(request, 'update_servicio.html', {'servicio': servicio, 'es_admin': empleado.es_admin, 'cajas_abiertas': cajas_abiertas,})
 
-
-
+@login_required
 @requerir_autenticacion
 def delete_servicio(request, id_servicio):
     servicio = get_object_or_404(Servicios, id_servicio=id_servicio)
@@ -308,9 +384,11 @@ def delete_servicio(request, id_servicio):
         return redirect('list_servicios')
     return render(request, 'delete_servicio.html', {'servicio': servicio})
 
+@login_required
 @requerir_autenticacion
 def registrar_cliente(request):
     empleado = obtener_empleado_autenticado(request)
+    cajas_abiertas = Caja.objects.filter(estado=True).exists()
     if request.method == "POST":
         form = ClienteForm(request.POST)
         if form.is_valid():
@@ -320,12 +398,14 @@ def registrar_cliente(request):
             return redirect('registrar_turno')
     else:
         form = ClienteForm()
-    return render(request, 'registrar_cliente.html', {'form': form, 'es_admin': empleado.es_admin})
+    return render(request, 'registrar_cliente.html', {'form': form, 'es_admin': empleado.es_admin, 'cajas_abiertas': cajas_abiertas,})
 
+@login_required
 @requerir_autenticacion
 def registrar_turno(request):
     cliente_id = request.session.get('cliente_id')
     empleado = obtener_empleado_autenticado(request)
+    cajas_abiertas = Caja.objects.filter(estado=True).exists()
     if not cliente_id:
         return redirect('registrar_cliente')
 
@@ -352,14 +432,16 @@ def registrar_turno(request):
     else:
         form = TurnoForm()
 
-    return render(request, 'registrar_turno.html', {'form': form, 'es_admin': empleado.es_admin})
+    return render(request, 'registrar_turno.html', {'form': form, 'es_admin': empleado.es_admin, 'cajas_abiertas': cajas_abiertas,})
 
+@login_required
 @requerir_autenticacion
 def cancelar_registro(request):
     request.session.pop('cliente_id', None)  # Limpiar datos de sesión si existen
     return redirect('list_turnos')
 
 # Listar turnos
+@login_required
 @requerir_autenticacion
 def list_turnos(request):
     empleado = obtener_empleado_autenticado(request)
@@ -386,21 +468,24 @@ def list_turnos(request):
             'senia_comprobante': turno.senia_comprobante,  # Añadido para mostrar la imagen del comprobante
             'cajas_abiertas': cajas_abiertas,
             'turnos_data': turnos,
+            'empleados': empleado,
         })
 
     context = {
         'turnos_data': turnos_data,
-        'cajas_abiertas': cajas_abiertas
+        'cajas_abiertas': cajas_abiertas,
+        'es_admin': empleado.es_admin
     }
     
     return render(request, 'list_turnos.html', context)
 
 
+@login_required
 @requerir_autenticacion
 def modificar_turno(request, turno_id):
     empleado = obtener_empleado_autenticado(request)
     turno = get_object_or_404(Turno, id_turno=turno_id)
-
+    cajas_abiertas = Caja.objects.filter(estado=True).exists()
     if request.method == "POST":
         empleado_id = request.POST.get('empleado')
         servicio_id = request.POST.get('servicio')
@@ -442,23 +527,26 @@ def modificar_turno(request, turno_id):
         'empleados': empleados,
         'servicios': servicios,
         'servicios_asociados': servicios_asociados,
-        'es_admin': empleado.es_admin
+        'es_admin': empleado.es_admin, 
+        'cajas_abiertas': cajas_abiertas,
     })
 
+@login_required
 @requerir_autenticacion
 def eliminar_turno(request, turno_id):
     turno = get_object_or_404(Turno, id_turno=turno_id)
     turno.delete()
     return redirect('list_turnos')
 
-
+@login_required
 @requerir_autenticacion
 def list_clientes(request):
     empleado = obtener_empleado_autenticado(request)
     clientes = Cliente.objects.all() 
-    return render(request, 'list_clientes.html', {'clientes': clientes, 'es_admin': empleado.es_admin})
+    cajas_abiertas = Caja.objects.filter(estado=True).exists()
+    return render(request, 'list_clientes.html', {'clientes': clientes, 'es_admin': empleado.es_admin, 'cajas_abiertas': cajas_abiertas,})
 
-
+@login_required
 @requerir_autenticacion
 def backup_database(request):
     timestamp = timezone.now().strftime('%Y-%m-%d_%H-%M-%S')
@@ -477,7 +565,7 @@ def backup_database(request):
         response['Content-Disposition'] = f'attachment; filename="{backup_filename}"'
         return response
     
-
+@login_required
 @requerir_autenticacion
 def restore_database(request):
     if request.method == 'POST' and request.FILES['backup_file']:
@@ -501,19 +589,19 @@ def restore_database(request):
 
     return render(request, 'restore_database.html')
 
+@login_required
 @requerir_autenticacion
 def list_ventas(request):
     ventas = Venta.objects.all()
     empleado = obtener_empleado_autenticado(request)
-    return render(request, 'list_ventas.html', {'ventas': ventas, 'es_admin': empleado.es_admin})
+    cajas_abiertas = Caja.objects.filter(estado=True).exists()
+    return render(request, 'list_ventas.html', {'ventas': ventas, 'es_admin': empleado.es_admin, 'cajas_abiertas': cajas_abiertas,})
 
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib import messages
-from .models import Venta, DetalleVenta
-from .forms import MetodoPagoForm
-
+@login_required
+@requerir_autenticacion
 def modificar_metodo_pago(request, venta_id):
     # Obtener la venta y el detalle de la venta relacionado con la venta
+    cajas_abiertas = Caja.objects.filter(estado=True).exists()
     venta = get_object_or_404(Venta, id_venta=venta_id)
     detalle_venta = get_object_or_404(DetalleVenta, id_venta=venta)
 
@@ -531,222 +619,108 @@ def modificar_metodo_pago(request, venta_id):
     return render(request, 'modificar_metodo_pago.html', {
         'form': form,
         'venta': venta,
+        'cajas_abiertas': cajas_abiertas,
     })
 
-
-
+@login_required
 @requerir_autenticacion
 def detalle_venta(request, id_venta):
     venta = get_object_or_404(Venta, id_venta=id_venta)
     detalle_venta = DetalleVenta.objects.filter(id_venta=venta).first()
+    cajas_abiertas = Caja.objects.filter(estado=True).exists()
     empleado = obtener_empleado_autenticado(request)
-    return render(request, 'detalle_venta.html', {'venta': venta, 'detalle_venta': detalle_venta, 'es_admin': empleado.es_admin})
+    return render(request, 'detalle_venta.html', {'venta': venta, 'detalle_venta': detalle_venta, 'es_admin': empleado.es_admin, 'cajas_abiertas': cajas_abiertas,})
 
+@login_required
 @requerir_autenticacion
 def list_reservas(request):
     reservas = Reservas.objects.all()
     empleado = obtener_empleado_autenticado(request)
-    return render(request, 'list_reservas.html', {'reservas': reservas, 'es_admin': empleado.es_admin})
+    cajas_abiertas = Caja.objects.filter(estado=True).exists()
+    return render(request, 'list_reservas.html', {'reservas': reservas, 'es_admin': empleado.es_admin, 'cajas_abiertas': cajas_abiertas,})
 
-@requerir_autenticacion
-def confirmar_turnos(request, accion):
-    if request.method == 'POST':
-        data = json.loads(request.body)  # Leer el cuerpo JSON de la solicitud
-        turnos_ids = data.get('turnos')  # IDs de los turnos seleccionados
-        action = data.get('action')  # Acción seleccionada: confirmar o cancelar
+from django.http import JsonResponse
+from django.core.mail import send_mail
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+from .models import Turno, ServicioXTurno, Reservas, Venta, DetalleVenta, Caja
+import json
+from decimal import Decimal
 
-        if not turnos_ids:
-            return JsonResponse({'success': False, 'message': 'No se seleccionaron turnos.'})
+# Alias para confirmar específicamente turnos
+def confirmar_turno(request):
+    return gestionar_turno(request, accion='confirmar')
 
-        # Verificar si la caja está abierta
-        cajas_abiertas = Caja.objects.filter(estado=True)
-
-        if not cajas_abiertas.exists():
-            return JsonResponse({'success': False, 'message': 'Debe hacer abrir una caja para confirmar o cancelar este turno.'})
-
-        caja_abierta = cajas_abiertas.first()  # Suponiendo que solo puede haber una caja abierta
-
-        for turno_id in turnos_ids:
-            turno = Turno.objects.get(id_turno=turno_id)
-
-            if action == 'confirmar':
-                # Crear reserva
-                reserva = Reservas.objects.create(
-                    id_cliente=turno.id_cliente,
-                    id_turno=turno,
-                    estado_reserva='confirmada'
-                )
-
-                # Crear venta (con monto_total vacío)
-                venta = Venta.objects.create(
-                    id_caja=caja_abierta,
-                    id_cliente=turno.id_cliente,
-                    monto_total=None  # No se define el monto total todavía
-                )
-
-                # Crear detalle de venta
-                servicio = ServicioXTurno.objects.filter(id_turno=turno).first().id_servicio
-                monto_subtotal = servicio.precio_del_servicio * (servicio.senia / 100)
-
-                DetalleVenta.objects.create(
-                    id_venta=venta,
-                    id_reserva=reserva,
-                    monto_subtotal=monto_subtotal,
-                )
-
-                # Eliminar el turno después de crear la reserva
-                turno.delete()
-
-                # Enviar correo de confirmación
-                send_mail(
-                    'Confirmación de Turno',
-                    f'Hola {reserva.id_cliente.nombre}, tu turno ha sido confirmado para el día {reserva.id_turno.fecha} a las {reserva.id_turno.hora}.',
-                    'anasolespacio@gmail.com',
-                    [reserva.id_cliente.correo_electronico],
-                    fail_silently=False,
-                )
-
-            elif action == 'cancelar':
-                # Cambiar el estado del turno a cancelado
-                turno.estado_turno = 'Cancelado'
-                turno.save()
-
-                # Crear venta con monto_total igual al monto_subtotal
-                venta = Venta.objects.create(
-                    id_caja=caja_abierta,
-                    id_cliente=turno.id_cliente,
-                    monto_total=None  # No se define el monto total todavía
-                )
-
-                # Crear detalle de venta
-                servicio = ServicioXTurno.objects.filter(id_turno=turno).first().id_servicio
-                monto_subtotal = servicio.precio_del_servicio * (servicio.senia / 100)
-
-                DetalleVenta.objects.create(
-                    id_venta=venta,
-                    id_reserva=None,  # No se crea reserva en caso de cancelación
-                    monto_subtotal=monto_subtotal,
-                )
-
-                # Enviar correo de cancelación
-                send_mail(
-                    'Cancelación de Turno',
-                    f'Hola {turno.id_cliente.nombre}, lamentamos informarte que tu turno para el día {turno.fecha} a las {turno.hora} ha sido cancelado.',
-                    'anasolespacio@gmail.com',
-                    [turno.id_cliente.correo_electronico],
-                    fail_silently=False,
-                )
-
-            return JsonResponse({'success': True, 'message': f'Turno {accion} correctamente.'})
-
-    return JsonResponse({'success': False, 'message': 'Método no permitido.'})
-
-@requerir_autenticacion
+@login_required
 def gestionar_turno(request, accion):
     if request.method == 'POST':
         data = json.loads(request.body)  # Leer el cuerpo JSON de la solicitud
         turnos_ids = data.get('turnos')  # IDs de los turnos seleccionados
-        action = data.get('action')  # Acción seleccionada: confirmar o cancelar
+        action = data.get('action')  # "confirmar" o "cancelar"
 
         if not turnos_ids:
             return JsonResponse({'success': False, 'message': 'No se seleccionaron turnos.'})
-
-        # Verificar si la caja está abierta
-        cajas_abiertas = Caja.objects.filter(estado=True)
-
-        if not cajas_abiertas.exists():
-            return JsonResponse({'success': False, 'message': 'Debe hacer abrir una caja para confirmar o cancelar este turno.'})
-
-        caja_abierta = cajas_abiertas.first()  # Suponiendo que solo puede haber una caja abierta
 
         for turno_id in turnos_ids:
             try:
                 turno = Turno.objects.get(id_turno=turno_id)
 
                 if action == 'confirmar':
+                    # Actualizar estado del turno y crear una reserva
+                    turno.estado_turno = 'Confirmado'
+                    turno.save()
+
                     # Obtener el servicio asociado al turno
                     servicio_x_turno = ServicioXTurno.objects.filter(id_turno=turno).first()
                     if not servicio_x_turno:
-                        return JsonResponse({'success': False, 'message': f'No se encontró el servicio para el turno {turno_id}.'})
-                    
-                    servicio = servicio_x_turno.id_servicio
+                        return JsonResponse({'success': False, 'message': f'No se encontró un servicio asociado al turno {turno_id}.'})
 
-                    # Crear reserva
+                    # Crear reserva asociada al turno
                     reserva = Reservas.objects.create(
                         id_cliente=turno.id_cliente,
                         id_turno=turno,
-                        estado_reserva='Confirmada',
-                        id_serv_x_tur=servicio_x_turno  # Asegúrate de asignar el servicio correctamente
+                        id_serv_x_tur=servicio_x_turno,
+                        estado_reserva='En Proceso'
                     )
 
+                    # Crear registro de venta asociado a la reserva
+                    precio_servicio = servicio_x_turno.id_servicio.precio_del_servicio
+                    senia = servicio_x_turno.id_servicio.senia
+                    monto_subtotal = (precio_servicio * senia) / 100
 
-                    # Crear venta sin el campo metodo_pago
+                    # Obtener la caja activa (supone que hay una caja abierta única)
+                    caja_activa = Caja.objects.filter(estado=True).first()
+                    if not caja_activa:
+                        return JsonResponse({'success': False, 'message': 'No hay una caja abierta para registrar la venta.'})
+
+                    # Crear la venta
                     venta = Venta.objects.create(
-                        id_caja=caja_abierta,
+                        id_caja=caja_activa,
                         id_cliente=turno.id_cliente,
-                        monto_total=0,  # Ahora proporcionamos el monto total
+                        monto_total=monto_subtotal
                     )
 
-                    # Calcular monto_subtotal (senia)
-                    monto_subtotal = servicio.precio_del_servicio * (Decimal(servicio.senia) / 100)
-
-                    # Crear detalle de venta con metodo_pago
+                    # Crear el detalle de venta
                     DetalleVenta.objects.create(
                         id_venta=venta,
-                        id_reserva=reserva,  # Se asocia la reserva al detalle de venta
-                        monto_subtotal=monto_subtotal,
-                        metodo_pago='Transferencia',  # Método de pago establecido como transferencia
+                        id_reserva=reserva,
+                        metodo_pago='Tranferencia',  # Se puede modificar según corresponda
+                        monto_subtotal=monto_subtotal
                     )
-
-                    # Actualizar estado del turno a 'confirmado'
-                    turno.estado_turno = 'Confirmado'
-                    turno.save()
 
                     # Enviar correo de confirmación
                     send_mail(
                         'Confirmación de Turno',
-                        f'Hola {reserva.id_cliente.nombre}, tu turno ha sido confirmado para el día {reserva.id_turno.fecha} a las {reserva.id_turno.hora}.',
+                        f'Hola {turno.id_cliente.nombre}, tu turno ha sido confirmado para el día {turno.fecha} a las {turno.hora}.',
                         'anasolespacio@gmail.com',
-                        [reserva.id_cliente.correo_electronico],
+                        [turno.id_cliente.correo_electronico],
                         fail_silently=False,
                     )
 
                 elif action == 'cancelar':
-                    # Cambiar el estado del turno a 'cancelado'
+                    # Actualizar estado del turno a "cancelado"
                     turno.estado_turno = 'Cancelado'
                     turno.save()
-
-                    # Obtener el servicio asociado al turno
-                    servicio_x_turno = ServicioXTurno.objects.filter(id_turno=turno).first()
-                    if not servicio_x_turno:
-                        return JsonResponse({'success': False, 'message': f'No se encontró el servicio para el turno {turno_id}.'})
-                    
-                    reserva = Reservas.objects.create(
-                        id_cliente=turno.id_cliente,
-                        id_turno=turno,
-                        estado_reserva='Cancelada',
-                        id_serv_x_tur=servicio_x_turno  # Asegúrate de asignar el servicio correctamente
-                    )
-
-                    servicio = servicio_x_turno.id_servicio
-
-                    # Calcular monto_subtotal (senia)
-                    monto_subtotal = servicio.precio_del_servicio * (Decimal(servicio.senia) / 100)
-
-                    # Crear venta con monto_subtotal
-                    venta = Venta.objects.create(
-                        id_caja=caja_abierta,
-                        id_cliente=turno.id_cliente,
-                        monto_total=monto_subtotal,  # Proporcionamos el monto subtotal para la cancelación
-                    )
-
-                    # Crear detalle de venta con metodo_pago
-                    DetalleVenta.objects.create(
-                        id_venta=venta,
-                        id_reserva=reserva,  # No se crea reserva en caso de cancelación
-                        monto_subtotal=monto_subtotal,
-                        metodo_pago='Transferencia',  # Método de pago establecido como transferencia
-                    )
 
                     # Enviar correo de cancelación
                     send_mail(
@@ -757,31 +731,140 @@ def gestionar_turno(request, accion):
                         fail_silently=False,
                     )
 
-                return JsonResponse({'success': True, 'message': f'Turno {accion} correctamente.'})
-
             except Turno.DoesNotExist:
                 return JsonResponse({'success': False, 'message': f'El turno con ID {turno_id} no existe.'})
 
+        return JsonResponse({'success': True, 'message': f'Turno(s) {accion} correctamente.'})
+
     return JsonResponse({'success': False, 'message': 'Método no permitido.'})
 
-@requerir_autenticacion
-def confirmar_o_cancelar_turno(request):
+@csrf_exempt
+def actualizar_reserva(request, reserva_id):
     if request.method == 'POST':
-        action = request.POST.get('action')  # Confirmar o cancelar
-        turnos = request.POST.getlist('turnos')  # Lista de turnos seleccionados
+        try:
+            # Leer el cuerpo JSON de la solicitud
+            data = json.loads(request.body)
 
-        # Verificar si la caja está abierta
-        caja = Caja.objects.first()  # Suponiendo que hay solo una caja
-        if not caja.abierta:
-            return JsonResponse({'success': False, 'message': 'Realice la Apertura de Caja para confirmar o cancelar este turno.'})
+            # Obtener la acción
+            accion = data.get('accion')
+            if accion not in ['confirmar', 'cancelar']:
+                return JsonResponse({"error": "Acción no válida"}, status=400)
 
-        # Si la caja está abierta, realizar la acción
-        for turno_id in turnos:
-            turno = Turno.objects.get(id=turno_id)
-            if action == 'confirmar':
-                turno.estado_turno = 'confirmado'
-            elif action == 'cancelar':
-                turno.estado_turno = 'cancelado'
-            turno.save()
+            # Obtener la reserva correspondiente
+            reserva = get_object_or_404(Reservas, id_reserva=reserva_id)
+            
+            # Obtener el empleado asociado al turno de la reserva
+            empleado_turno = EmpleadoXTurno.objects.filter(id_turno=reserva.id_turno).first()
+            if not empleado_turno:
+                return JsonResponse({"error": "No se encuentra el empleado asociado al turno."}, status=400)
 
-        return JsonResponse({'success': True, 'message': 'Acción realizada exitosamente.'})
+            # Verificar si la caja está abierta para el empleado
+            caja_abierta = Caja.objects.filter(empleado=empleado_turno.dni_emp, estado=True).last()
+            if not caja_abierta:
+                return JsonResponse({"error": "Realice la Apertura de caja para realizar esta acción"}, status=400)
+
+            # Acciones para confirmar o cancelar la reserva
+            if accion == 'confirmar':
+                # Obtener el servicio y los montos
+                servicio = reserva.id_serv_x_tur.id_servicio
+                monto_subtotal = (servicio.precio_del_servicio * servicio.senia) / 100
+                monto_total_adicional = servicio.precio_del_servicio - monto_subtotal
+
+                # Verificar si ya existe una venta para este cliente en la caja abierta
+                venta_existente = Venta.objects.filter(
+                    id_caja=caja_abierta,
+                    id_cliente=reserva.id_cliente
+                ).last()
+
+                if venta_existente:
+                    # Si la caja de la venta existente es la misma, actualizar el monto
+                    if venta_existente.id_caja == caja_abierta:
+                        venta_existente.monto_total += monto_total_adicional
+                        venta_existente.save()
+                    else:
+                        # Si es otra caja, crear una nueva venta
+                        venta_existente = Venta.objects.create(
+                            id_caja=caja_abierta,
+                            id_cliente=reserva.id_cliente,
+                            monto_total=monto_total_adicional
+                        )
+                else:
+                    # Si no hay una venta existente, crear una nueva
+                    venta_existente = Venta.objects.create(
+                        id_caja=caja_abierta,
+                        id_cliente=reserva.id_cliente,
+                        monto_total=monto_total_adicional
+                    )
+
+                # Crear un detalle de venta asociado
+                DetalleVenta.objects.create(
+                    id_venta=venta_existente,
+                    id_reserva=reserva,
+                    metodo_pago='Tranferencia',
+                    monto_subtotal=monto_total_adicional
+                )
+
+                # Actualizar el estado de la reserva a 'terminada'
+                reserva.estado_reserva = 'Terminada'
+                reserva.save()
+
+                return JsonResponse({"success": "Se confirmó la reserva como terminada exitosamente"})
+
+            elif accion == 'cancelar':
+                # Actualizar el estado de la reserva a 'cancelada'
+                reserva.estado_reserva = 'Cancelada'
+                reserva.save()
+
+                return JsonResponse({"success": "Se canceló la reserva exitosamente"})
+
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "JSON malformado"}, status=400)
+    return JsonResponse({"error": "Método no permitido"}, status=405)
+
+
+@login_required
+@requerir_autenticacion
+def inicio(request):
+   
+    return render(request,'index.html')
+    #return HttpResponse("<h1>hola feos<h1>")
+
+@login_required
+@requerir_autenticacion
+def gturno(request):
+    servicios = (
+        ServicioXTurno.objects.values('id_servicio__nombre_del_servicio')
+        .annotate(total=Count('id_turno'))
+        .order_by('-total')
+    )
+
+    # Preparar los datos para Chart.js
+    labels = [servicio['id_servicio__nombre_del_servicio'] for servicio in servicios]
+    data = [servicio['total'] for servicio in servicios]
+
+    context = {
+        'labels': labels,
+        'data': data,
+    }
+    return render(request,'graficos/grafico_turno.html',context)
+    #return HttpResponse("<h1>hola feos<h1>")
+
+@login_required
+@requerir_autenticacion
+def gventas(request):
+    ventas_por_metodo = (
+        DetalleVenta.objects.values('metodo_pago')
+        .annotate(total=Count('id_detalle_venta'))
+        .order_by('-total')
+    )
+
+    # Preparar los datos para Chart.js
+    labels = [venta['metodo_pago'] if venta['metodo_pago'] else 'Desconocido' for venta in ventas_por_metodo]
+    data = [venta['total'] for venta in ventas_por_metodo]
+
+    context = {
+        'labels': labels,
+        'data': data,
+    }
+    
+    return render(request, 'graficos/grafico_ventas.html',context)

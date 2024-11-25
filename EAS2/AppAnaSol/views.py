@@ -1,6 +1,6 @@
 from decimal import Decimal, ROUND_HALF_UP
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Turno, Cliente, EmpleadoXTurno, ServicioXTurno, Reservas, Empleado, Servicios
+from .models import Turno, Cliente, EmpleadoXTurno, ServicioXTurno, Empleado, Servicios
 from .forms import ClienteForm, TurnoForm, ComprobanteForm
 from django.utils.timezone import now  
 

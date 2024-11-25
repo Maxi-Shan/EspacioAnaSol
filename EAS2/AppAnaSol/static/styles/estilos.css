@@ -1,0 +1,61 @@
+body {
+    background-image: url("../imagenes/10.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.logo {
+    width: 50%;
+    height: 50%;
+}
+
+.botones {
+    text-align: center;
+}
+
+.tutorial, .reserva {
+    display: inline-block;
+    background: linear-gradient(90deg, #fa8dfa 0%, #b033bb 100%);
+    padding: 10px 35px;
+    color: #fdfdfd;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.tutorial {
+    margin-top: 3%;
+    margin-right: 20px;
+}
+
+.reserva {
+    margin-top: 1rem;
+    margin-right: 20px;
+    padding: 10px 60px;
+}
+
+.iconos {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 3%;
+}
+
+.ig, .wsp {
+    width: 10rem;
+    height: 10rem;
+}
+
+.boton-login {
+    display: inline-block;
+    background: linear-gradient(90deg, #fa8dfa 0%, #b033bb 100%);
+    padding: 10px 35px;
+    color: #fdfdfd;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.texto-sesion {
+    text-decoration: none;
+}

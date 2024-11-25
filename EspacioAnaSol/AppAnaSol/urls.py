@@ -5,9 +5,9 @@ from . import views
 
 urlpatterns = [
     # Autenticación
-    path('', views.login_view, name='login'),
-    path('login/', views.login_view, name='login'),
-    path('logout/', views.logout_view, name='logout'),
+    path('', views.login, name='login'),
+    path('login/', views.login, name='login'),
+    path('logout/', views.logout, name='logout'),
 
     # Pagina Principal
     path('pagina-principal/', views.pagina_principal, name='pagina_principal'),
@@ -39,6 +39,7 @@ urlpatterns = [
     path('turnos/cancelar-registro/', views.cancelar_registro, name='cancelar_registro'),
     path('modificar-turno/<int:turno_id>/', views.modificar_turno, name='modificar_turno'),
     path('eliminar-turno/<int:turno_id>/', views.eliminar_turno, name='eliminar_turno'),
+    path('confirmar_turnos/<str:accion>/', views.gestionar_turno, name='confirmar_turnos'),
 
     # Clientes
     path('clientes/', views.list_clientes, name='list_clientes'),
@@ -52,8 +53,12 @@ urlpatterns = [
     path('ventas/<int:id_venta>/', views.detalle_venta, name='detalle_venta'),
     path('reservas/', views.list_reservas, name='list_reservas'),
     path('modificar_metodo_pago/<int:venta_id>/', views.modificar_metodo_pago, name='modificar_metodo_pago'),
+    path('actualizar_reserva/<int:reserva_id>/', views.actualizar_reserva, name='actualizar_reserva'),
 
-    path('confirmar_turnos/<str:accion>/', views.gestionar_turno, name='confirmar_turnos'),
+    #graficos
+    path('inicio/',views.inicio,name='inicio'),
+    path('gturno/',views.gturno,name='gturno'),
+    path('gventas/',views.gventas,name='gventas'),
 ]
 
 if settings.DEBUG:

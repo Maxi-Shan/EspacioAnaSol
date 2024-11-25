@@ -1,0 +1,34 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <title>{% block titulo %} {% endblock %}</title>
+</head>
+<body>
+    <nav class="navbar navbar-wxpand navbar-light bg-light">
+        <div class="nav navbar-nav">
+            <a class="nav-item nav-link active" href="{% url 'pagina_principal' %}">inicio</a>
+            <a class="nav-item nav-link active" href="{% url 'gventas' %}">grafico ventas</a>
+            <a class="nav-item nav-link active" href="{% url 'gturno' %}">grafico turno</a>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                {% block contenido %} {% endblock %}
+            </div>
+        </div>
+    </div>
+   
+
+
+    <!-- javascrip -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- ChartJS -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> -->
+</body>
+</html>

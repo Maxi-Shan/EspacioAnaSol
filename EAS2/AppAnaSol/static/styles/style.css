@@ -1,12 +1,14 @@
-body {
-    background-image: url("10.png");
-    background-size: cover;
+body{
+    background-image: url(../Imagenes/10.png);
     background-repeat: no-repeat;
+    background-size: auto;
+}
+
+.botones{
     text-align: center;
     margin: 0;
     padding: 0;
 }
-
 .logo {
     width: 25%;
     height: 25%;
@@ -27,39 +29,32 @@ body {
     border-radius: 25px;
 }
 
-.carousel-item {
-    pointer-events: auto;
-}
-
 .reserva {
     display: inline-block;
     background: linear-gradient(90deg, #fa8dfa 0%, #b033bb 100%);
+    margin-top: 1rem;
     padding: 10px 60px;
     margin-right: 20px;
     color: #fdfdfd;
     border-radius: 25px;
 }
-
-.reservar-boton {
-    pointer-events: auto;
-    z-index: 10;
+.iconos{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    margin-top: 0%;
+    margin: 3%;
 }
-
 .ig {
-    display: inline-block;
-    width: 3%;
-    height: 3%;
-    margin-top: 3%;
-    border-radius: 26%;
+    width: 5rem;
+    height: 5rem;
+    margin-left: 33rem;
+
 }
 
-.wsp {
-    display: inline-block;
-    width: 3.5%;
-    height: 3.5%;
-    margin-top: 3%;
-    border-radius: 100%;
-}
+.wsp{
+    width: 5rem;
+    height: 5rem;
+    }
 
 .texto-sesion {
     text-decoration: none;

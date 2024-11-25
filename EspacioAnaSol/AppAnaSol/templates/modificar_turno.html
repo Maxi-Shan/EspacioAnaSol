@@ -1,74 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    {% load static %}
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Turnos</title>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/style2.css' %}">
-    
-</head>
-<body>
-    <!-- Primary Header -->
-    <header class="header-primary">
-        <div class="logo">
-            <a class="text-dark text-decoration-none" href="{% url 'pagina_principal' %}">
-                <img src="{% static 'imagenes/icono1.png' %}" alt="Logo"> <!-- Replace with actual logo URL -->
-                </a>
-            <span>EspacioAnaSol</span>
-        </div>
-        <div class="welcome-text">
-            <a class="text-dark text-decoration-none" href="#">Ver el Sitio</a> / <a class="text-dark text-decoration-none" href="{% url 'backup_database' %}">Hacer copia de seguridad</a> / <a class="text-dark text-decoration-none" href="{% url 'restore_database' %}">Restaurar base de datos</a>  / <a class="text-dark text-decoration-none" href="{% url 'logout' %}">Cerrar Sesión</a>
-        </div>
-    </header>
-        <!-- Secondary Header -->
-    <header class="header-secondary">
-        <div class="menu-text">
-        <a class="text-dark text-decoration-none" href="{% url 'pagina_principal' %}">Inicio </a> / <a class="text-dark text-decoration-none" href="{% url 'list_servicios' %}">Turnos</a> / <a class="text-dark text-decoration-none" href="{% url 'modificar_turno' %}">Modificar Turno</a>
-        </div>
-    </header>
+{% extends "base.html" %}
+{% load static %}
 
-    <!-- Main content -->
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Sidebar -->
-            <div class="col-md-4 sidebar">
-                <h3>Sitio de Empleados</h3>
+{% block titulo %}Modificar Turno{% endblock %}
 
-                <div class="menu-section">
-                    <h4>Registro de Datos</h4>
-                    <div class="menu-item">
-                        <a class="text-dark text-decoration-none" href="{% url 'list_ventas' %}">Ventas</a> <span class="plus-icon"></span>
-                    </div>
-                    <div class="menu-item">
-                        <a class="text-dark text-decoration-none" href="{% url 'list_cajas' %}">Caja
-                        {% if not cajas_abiertas %}
-                        <a class="text-decoration-none" href="{% url 'abrir_caja' %}"><span class="plus-icon">+</span></a>
-                        {% endif %}
-                    </div>
-                    <a class="text-dark text-decoration-none" href="{% url 'list_turnos' %}"><div class="menu-item">
-                        Turnos </a><a class="text-decoration-none" href="{% url 'registrar_cliente' %}"><span class="plus-icon">+</span></a>
-                    </div>
-                    <a class="text-dark text-decoration-none" href="{% url 'list_servicios' %}"><div class="menu-item">
-                        Servicios </a><a class="text-decoration-none" href="{% url 'add_servicio' %}"><span class="plus-icon">+</span></a>
-                    </div>
-                    <a class="text-dark text-decoration-none" href="{% url 'list_reservas' %}"><div class="menu-item">
-                        Reservas </a>
-                    </div>
-                </div>
-
-                <div class="menu-section mt-4">
-                    <h4>Usuarios</h4>
-                    <div class="menu-item"><a class="text-dark text-decoration-none" href="{% url 'list_clientes' %}">Clientes Registrados</a></div>
-                    {% if es_admin %}
-                    <div class="menu-item"><a class="text-dark text-decoration-none" href="{% url 'list_empleados' %}">Empleados Registrados</a></div>
-                    {% endif %}
-                </div>
-            </div>
-            
-<div class="col-md-8 p-0" style="margin-top: 21px;">
-    <div class="card border-0 h-100">
+{% block contenido %}
+<div class="col-md-9 p-0" style="margin-top: 21px; min-height: 100vh; display: flex; flex-direction: column;">
+    <div class="card border-0 flex-grow-1">
         <div class="card-header text-black text-left">
             <h2>Modificar Turno</h2>
         </div>
@@ -79,7 +16,7 @@
                 <div class="form-group row">
                     <label for="empleado" class="col-md-4 col-form-label">Empleado:</label>
                     <div class="col-md-8">
-                        <select class="form-control" name="empleado" id="empleado" required>
+                        <select class="form-control" name="empleado" id="empleado">
                             {% for empleado in empleados %}
                                 <option value="{{ empleado.id }}" {% if empleado.id == turno.id_empleado.id %}selected{% endif %}>{{ empleado.nombre }}</option>
                             {% endfor %}
@@ -101,44 +38,12 @@
                     </div>
                 </div>
 
-                <div class="form-group row">
-                    <label for="diseño_uñas" class="col-md-4 col-form-label">Diseño de Uñas (opcional):</label>
-                    <div class="col-md-8">
-                        <input type="file" class="form-control" name="diseño_uñas" id="diseño_uñas">
-                        {% if turno.diseño_uñas %}
-                            <img src="{{ turno.diseño_uñas.url }}" width="100" alt="Diseño Actual">
-                        {% endif %}
-                    </div>
-                </div>
-
-                <div class="form-group row">
-                    <label for="senia_comprobante" class="col-md-4 col-form-label">Seña Comprobante (opcional):</label>
-                    <div class="col-md-8">
-                        <input type="file" class="form-control" name="senia_comprobante" id="senia_comprobante">
-                        {% if turno.senia_comprobante %}
-                            <img src="{{ turno.senia_comprobante.url }}" width="100" alt="Comprobante Actual">
-                        {% endif %}
-                    </div>
-                </div>
-
-                <div class="card-footer bg-danger">
-                    <div class="d-flex">
-                        <div>
-                            <button type="submit" class="btn btn-sm mr-2 text-white" style="background-color: #701C7E;">Actualizar</button>
-                            <button type="button" class="btn btn-sm mr-2 text-white" style="background-color: #A964BF;">Guardar y agregar nuevo</button>
-                            <button type="button" class="btn btn-sm text-white" style="background-color: #A964BF;">Guardar y modificar</button>
-                        </div>
-                    </div>
-                </div>
             </form>
+        </div>
+        <!-- Card Footer, siempre al final -->
+        <div class="card-footer bg-danger d-flex pt-3">
+            <button type="submit" class="btn btn-sm text-white" style="background-color: #701C7E;">Actualizar</button>
         </div>
     </div>
 </div>
-        </div>
-    </div>
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body>
-</html>
-
+{% endblock %}

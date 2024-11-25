@@ -1,18 +1,8 @@
 from django import forms
-from .models import Empleado, Caja, Servicios, Turno, Cliente
+from .models import Empleado, Caja, Servicios, Turno, Cliente, DetalleVenta, EmpleadoXTurno
 from django.utils import timezone
 from django.utils.timezone import now
-
-class LoginForm(forms.Form):
-    dni = forms.IntegerField(label="DNI", help_text="Ingresa tu número de identificación sin espacios.")
-    contraseña = forms.CharField(widget=forms.PasswordInput)
-
-    def clean_dni(self):
-        dni = self.cleaned_data.get('dni')
-        if not Empleado.objects.filter(dni=dni).exists():
-            raise forms.ValidationError("El DNI ingresado no está registrado.")
-        return dni
-
+from calendar import monthrange
 
 class EmpleadoForm(forms.ModelForm):
     class Meta:
@@ -45,11 +35,6 @@ class ClienteForm(forms.ModelForm):
         model = Cliente
         fields = ['nombre', 'apellido', 'correo_electronico', 'numero_telefono']
 
-from django import forms
-from .models import Turno, Empleado, Servicios, EmpleadoXTurno
-from django.utils import timezone
-from calendar import monthrange
-from datetime import timedelta
 
 class TurnoForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -126,9 +111,7 @@ class TurnoForm(forms.ModelForm):
             self.add_error("id_empleado", "Este empleado ya tiene dos turnos en esta fecha.")
 
         return cleaned_data
-    
-from django import forms
-from .models import DetalleVenta
+
 
 class MetodoPagoForm(forms.ModelForm):
     METODO_PAGO_CHOICES = [

@@ -1,20 +1,28 @@
 from pathlib import Path
 import os
-import logging
+from decouple import config, Csv  # Asegúrate de importar Csv correctamente
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+
+
+# Clave Fernet para cifrado (ya configurada en .env)
+FERNET_KEY = config('FERNET_KEY', default=None)
+
+if not FERNET_KEY:
+    raise ValueError("La clave FERNET_KEY no está configurada correctamente en el archivo .env")
+
+# Base del proyecto
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Quick-start development settings - unsuitable for production
-SECRET_KEY = 'django-insecure-mc(e+6%y2bqzx+i5pcvxjm%tbjb2)&0jn3dipypxivj)oaaxr&'
-DEBUG = True
-ALLOWED_HOSTS = []
-# settings.py
-TIME_ZONE = 'America/Argentina/Buenos_Aires'  # Ajusta a la zona horaria que necesites
-USE_TZ = True  # Asegúrate de que esto esté en True
+# Configuración general
+SECRET_KEY = config('SECRET_KEY', default='django-insecure-placeholder-key')
+DEBUG = config('DEBUG', default=True, cast=bool)
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='', cast=Csv())
+
+TIME_ZONE = 'America/Argentina/Buenos_Aires'  # Ajusta según tu zona horaria
+USE_TZ = True
 
 
-# Application definition
+# Aplicaciones instaladas
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -25,7 +33,7 @@ INSTALLED_APPS = [
     'AppAnaSol',
 ]
 
-
+# Middleware
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -55,64 +63,49 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'EspacioAnaSol.wsgi.application'
 
-# Database
+# Base de datos
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'BD_EAS',
-        'USER': 'root',
-        'PASSWORD': '0912',
-        'HOST': 'localhost',
-        'PORT': '3306',
+        'NAME': config('DB_NAME', default='BD_EAS'),
+        'USER': config('DB_USER', default='root'),
+        'PASSWORD': config('DB_PASSWORD', default='0912'),
+        'HOST': config('DB_HOST', default='localhost'),
+        'PORT': config('DB_PORT', default='3306'),
     }
 }
 
-# Password validation
+# Validadores de contraseñas
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
+# Localización
 LANGUAGE_CODE = 'es-es'
-TIME_ZONE = 'UTC'
-USE_I18N = True
-USE_TZ = True
 
-LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL = 'pagina_principal'
-
-# Static files (CSS, JavaScript, Images)
+# Rutas para estáticos y media
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'media')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'AppAnaSol', 'static'),
-]
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'AppAnaSol', 'static')]
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
+# Configuración de email
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'anasolespacio@gmail.com'  # Pon tu dirección de Gmail
-EMAIL_HOST_PASSWORD = 'gpms gcem feul lrxv'  # Usa la contraseña de aplicación generada
-DEFAULT_FROM_EMAIL = 'anasolespacio@gmail.com'
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='anasolespacio@gmail.com')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='gpmsgcemfeullrxv')
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
+# Logging
+import logging
 logging.basicConfig(
     level=logging.DEBUG,
     format='%(asctime)s %(levelname)s %(message)s',
 )
-

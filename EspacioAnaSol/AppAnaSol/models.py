@@ -1,4 +1,6 @@
+from django.conf import settings
 from django.db import models
+from cryptography.fernet import Fernet
 from django.utils import timezone
 from django.db.models import Sum
 from django.contrib.auth.hashers import make_password, check_password
@@ -59,28 +61,61 @@ class Servicios(models.Model):
 
     def __str__(self):
         return self.nombre_del_servicio
-    
+
 class Empleado(models.Model):
-    dni = models.IntegerField(primary_key=True, validators=[RegexValidator(regex='^[0-9]+$', message='El DNI debe contener solo dígitos.')])
+    dni = models.CharField(max_length=255, primary_key=True)  # Almacenado cifrado
     nombre = models.CharField(max_length=255)
     apellido = models.CharField(max_length=255)
     domicilio = models.CharField(max_length=255, blank=True, null=True)
-    correo_electronico = models.EmailField(max_length=255, validators=[EmailValidator()], blank=True, null=True, unique=True)
-    numero_telefono = models.CharField(max_length=20, blank=True, null=True, validators=[RegexValidator(regex='^[0-9]*$', message='El número de teléfono debe contener solo dígitos.')])
-    contraseña = models.CharField(max_length=128)
-    estado_empleado = models.CharField(max_length=10, choices=[('activo', 'Activo'), ('inactivo', 'Inactivo')])
+    correo_electronico = models.EmailField(
+        max_length=255, unique=True, blank=True, null=True
+    )
+    numero_telefono = models.CharField(
+        max_length=20, blank=True, null=True
+    )
+    contraseña = models.CharField(max_length=128)  # Almacenada cifrada
+    estado_empleado = models.CharField(
+        max_length=10, choices=[('activo', 'Activo'), ('inactivo', 'Inactivo'), ('despedido', 'Despedido')]
+    )
     es_admin = models.BooleanField(default=False)
+    contraseña_original = models.CharField(max_length=128, blank=True, null=True)
 
     def save(self, *args, **kwargs):
-        if not self.pk:  # Solo al crear el objeto
-            self.contraseña = make_password(self.contraseña)
+        # Verificar si es un nuevo empleado o si se está actualizando la contraseña
+        if self.pk is None or not Empleado.objects.filter(pk=self.pk).exists():  # Nuevo empleado
+            self.contraseña = make_password(self.contraseña)  # Cifra la contraseña
+        elif self.contraseña != Empleado.objects.get(pk=self.pk).contraseña:  # Contraseña cambiada
+            self.contraseña = make_password(self.contraseña)  # Cifra la nueva contraseña
         super().save(*args, **kwargs)
 
-    def verificar_contraseña(self, contraseña):
-        return make_password(contraseña, self.contraseña)
+    def verificar_contraseña(self, raw_password):
+        return check_password(raw_password, self.contraseña)  # Verifica la contraseña
+
+
+    # Métodos para el DNI
+    def guardar_dni_cifrado(self, raw_dni):
+        """Cifra y guarda el DNI."""
+        fernet = Fernet(settings.FERNET_KEY.encode())
+        self.dni = fernet.encrypt(raw_dni.encode()).decode()
+
+    def obtener_dni_descifrado(self):
+        """Descifra y devuelve el DNI."""
+        fernet = Fernet(settings.FERNET_KEY.encode())
+        return fernet.decrypt(self.dni.encode()).decode()
+
+    # Métodos para la contraseña
+    def set_password(self, raw_password):
+        """Cifra y almacena la contraseña."""
+        self.contraseña = make_password(raw_password)
+
+    def check_password(self, raw_password):
+        """Verifica la contraseña."""
+        return check_password(raw_password, self.contraseña)
 
     def __str__(self):
         return f"{self.nombre} {self.apellido}"
+
+
 
 class Caja(models.Model):
     id_caja = models.AutoField(primary_key=True)
@@ -144,14 +179,15 @@ class ServicioXTurno(models.Model):
 
 class Reservas(models.Model):
     ESTADO_OPCIONES = [
-        ('confirmada', 'Confirmada'),
-        ('cancelada', 'Cancelada'),
+        ('Terminada', 'Terminada'),
+        ('Confirmada', 'Confirmada'),
+        ('Cancelada', 'Cancelada'),
     ]
     id_reserva = models.AutoField(primary_key=True)
     id_cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
     id_turno = models.ForeignKey(Turno, on_delete=models.CASCADE)
     id_serv_x_tur = models.ForeignKey(ServicioXTurno, on_delete=models.CASCADE)
-    estado_reserva = models.CharField(max_length=20, choices=ESTADO_OPCIONES, default='Confirmada')
+    estado_reserva = models.CharField(max_length=20, choices=ESTADO_OPCIONES, default='En Proceso')
     fecha_registro = models.DateTimeField(default=timezone.now)
 
     def __str__(self):

@@ -1,7 +1,7 @@
 *{
-    font-family: Arial, sans-serif;
-    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
     margin: 0;
+    padding: 0;
 }
 
 /* General page styles */
@@ -57,7 +57,7 @@ body {
 }
 
 .container-fluid{
-    height: 100%;
+    width: 100%;
 }
 
 /* Sidebar styles */
@@ -67,8 +67,8 @@ body {
     border-right: 1px solid #ddd;
     margin-top: 20px;
 }
-.sidebar h3 {
-    font-size: 1.5rem;
+.sidebar h1 {
+    font-size: 2rem;
     font-weight: bold;
     color: #5e2a6f;
 }
@@ -153,9 +153,6 @@ body {
     background-color: #CD9AFE;
     font-weight: bold;
 }
-.card-footer{
-    margin-top: 200px;
-}
 
 .modal {
     display: none;
@@ -171,8 +168,6 @@ body {
 
 .modal-content {
     background-color: #fff;
-    margin: 15% auto;
-    padding: 20px;
     width: 60%;
 }
 
@@ -195,4 +190,49 @@ body {
 .modal-img {
     width: 100%;
     height: auto;
+}
+
+/* Estilos personalizados para los estados de los turnos */
+
+.estado-confirmado {
+    background-color: #7bff9a !important;
+    color: #155724 !important;
+}
+
+.estado-pendiente {
+    background-color: #ffc277 !important;
+    color: #b55d00 !important;
+}
+
+.estado-cancelado {
+    background-color: #ff8791 !important;
+    color: #721c24 !important;
+}
+
+/* Estilos personalizados para los estados de las reservas */
+
+.estado-confirmado {
+    background-color: #7bff9a !important;
+    color: #155724 !important;
+}
+
+.estado-terminado {
+    background-color: #cce5ff !important;
+    color: #004085 !important;
+}
+
+.estado-cancelado {
+    background-color: #ff8791 !important;
+    color: #721c24 !important;
+}
+
+/* Estilos para los estados de las cajas */
+.estado-abierta {
+    background-color: #ffffff !important;  /* Azul claro */
+    color: #24600c !important;  /* Azul oscuro */
+}
+
+.estado-cerrada {
+    background-color: #d6d8db !important;  /* Gris claro */
+    color: #6c757d !important;  /* Gris oscuro */
 }

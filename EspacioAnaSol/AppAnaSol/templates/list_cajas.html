@@ -1,73 +1,10 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    {% load static %}
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registros de Caja</title>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/style2.css' %}">
-</head>
-<body>
-    <!-- Primary Header -->
-    <header class="header-primary">
-        <div class="logo">
-            <a class="text-dark text-decoration-none" href="{% url 'pagina_principal' %}">
-                <img src="{% static 'imagenes/icono1.png' %}" alt="Logo"> <!-- Replace with actual logo URL -->
-            </a>
-            <span>EspacioAnaSol</span>
-        </div>
-        <div class="welcome-text">
-            <a class="text-dark text-decoration-none" href="#">Ver el Sitio</a> / <a class="text-dark text-decoration-none" href="{% url 'backup_database' %}">Hacer copia de seguridad</a> / <a class="text-dark text-decoration-none" href="{% url 'restore_database' %}">Restaurar base de datos</a>  / <a class="text-dark text-decoration-none" href="{% url 'logout' %}">Cerrar Sesión</a>
-        </div>
-    </header>
-    
-    <!-- Secondary Header -->
-    <header class="header-secondary">
-        <div class="menu-text">
-            <a class="text-dark text-decoration-none" href="{% url 'pagina_principal' %}">Inicio </a> / <a class="text-dark text-decoration-none" href="{% url 'list_cajas' %}">Cajas</a>
-        </div>
-    </header>
+{% extends "base.html" %}
+{% load static %}
 
-    <!-- Main content -->
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Sidebar -->
-            <div class="col-md-4 sidebar">
-                <h3>Sitio de Empleados</h3>
+{% block titulo %}Listado de Cajas{% endblock %}
 
-                <div class="menu-section">
-                    <h4>Registro de Datos</h4>
-                    <div class="menu-item">
-                        <a class="text-dark text-decoration-none" href="{% url 'list_ventas' %}">Ventas</a> <span class="plus-icon"></span>
-                    </div>
-                    <div class="menu-item">
-                        <a class="text-dark text-decoration-none" href="{% url 'list_cajas' %}">Caja
-                        {% if not cajas_abiertas %}
-                        <a class="text-decoration-none" href="{% url 'abrir_caja' %}"><span class="plus-icon">+</span></a>
-                        {% endif %}
-                    </div>
-                    <a class="text-dark text-decoration-none" href="{% url 'list_turnos' %}"><div class="menu-item">
-                        Turnos </a><a class="text-decoration-none" href="{% url 'registrar_cliente' %}"><span class="plus-icon">+</span></a>
-                    </div>
-                    <a class="text-dark text-decoration-none" href="{% url 'list_servicios' %}"><div class="menu-item">
-                        Servicios </a><a class="text-decoration-none" href="{% url 'add_servicio' %}"><span class="plus-icon">+</span></a>
-                    </div>
-                    <a class="text-dark text-decoration-none" href="{% url 'list_reservas' %}"><div class="menu-item">
-                        Reservas </a>
-                    </div>
-                </div>
-
-                <div class="menu-section mt-4">
-                    <h4>Usuarios</h4>
-                    <div class="menu-item"><a class="text-dark text-decoration-none" href="{% url 'list_clientes' %}">Clientes Registrados</a></div>
-                    {% if es_admin %}
-                    <div class="menu-item"><a class="text-dark text-decoration-none" href="{% url 'list_empleados' %}">Empleados Registrados</a></div>
-                    {% endif %}
-                </div>
-            </div>
-            
-<div class="col-md-8 main-content">
+{% block contenido %} 
+<div class="col-md-9 main-content">
     <div class="title-section">
         <h2>Lista de Cajas</h2>
         
@@ -94,13 +31,13 @@
         <table class="table table-striped" style="width:100%">
             <thead>
                 <tr>
-                    <th>ID Caja</th>
+                    <th>ID</th>
                     <th>Empleado</th>
                     <th>Fecha Apertura</th>
                     <th>Fecha Cierre</th>
                     <th>Monto Inicial</th>
                     <th>Monto Recaudado</th>
-                    <th>Monto Total</th>
+                    <th>Monto Final</th>
                     <th>Estado</th>
                     {% if es_admin %}
                      <th>Acciones</th>
@@ -109,9 +46,9 @@
             </thead>
             <tbody>
                 {% for caja in cajas %}
-                <tr>
+                <tr class="{% if caja.estado %}estado-abierta{% else %}estado-cerrada{% endif %}">
                     <td>{{ caja.id_caja }}</td>
-                    <td>{{ caja.empleado.dni }}</td>
+                    <td>{{ caja.empleado.nombre }}</td>
                     <td>{{ caja.fecha_apertura }}</td>
                     <td>
                         {% if caja.fecha_cierre %}
@@ -129,23 +66,32 @@
                     {% endif %}
                     </td>
                     <td>${{ caja.monto_total }}</td>
-                    <td>{% if caja.estado %}
-                        <form action="{% url 'cerrar_caja' caja.id_caja %}" method="post" style="display:inline;">
-                            {% csrf_token %}
-                            <button type="submit" class="btn-sm">Cerrar Caja</button>
-                        </form>
+                    <td class="{% if caja.estado %}text-success{% else %}text-danger{% endif %}">
+                        {% if caja.estado %}
+                            Abierta
+                            <form action="{% url 'cerrar_caja' caja.id_caja %}" method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-sm" title="Cerrar Caja">
+                                    <i class="fas fa-lock"></i> Cerrar
+                                </button>
+                            </form>
                         {% else %}
                             Cerrada
                         {% endif %}
                     </td>
                     {% if es_admin %}
                     <td>
+                        <!-- Botón Modificar con icono y título -->
                         <form action="{% url 'update_caja' caja.id_caja %}" method="get" style="display:inline;">
-                            <button type="submit" class="btn btn-warning btn-sm">Modificar</button>
-                        </form>
+                            <button type="submit" class="btn btn-warning btn-sm" title="Modificar Monto Inicial">
+                                <i class="fas fa-edit"></i> 
+                            </button>
+                        </form>                        
                         <form action="{% url 'delete_caja' caja.id_caja %}" method="post" style="display:inline;">
                             {% csrf_token %}
-                             <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Está seguro de que desea eliminar este empleado?');">Eliminar</button>
+                             <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Está seguro de que desea eliminar esta caja?');" title="Eliminar Caja">
+                                <i class="fas fa-trash-alt"></i> 
+                            </button>
                         </form>
                     </td>
                     {% endif %}
@@ -155,11 +101,7 @@
         </table>
     </div>
 </div>
-        </div>
-    </div>
+{% endblock %}
 
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body>
-</html>
+
+

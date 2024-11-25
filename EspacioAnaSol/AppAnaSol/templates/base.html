@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titulo %} {% endblock %}</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.3/css/jquery.dataTables.min.css">
+    <!-- DataTables JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.3/js/jquery.dataTables.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style2.css' %}">
+</head>
+<body>
+    <!-- Primary Header -->
+    <header class="header-primary">
+        <div class="logo">
+            <a class="text-dark text-decoration-none" href="{% url 'pagina_principal' %}">
+                <img src="{% static 'imagenes/icono1.png' %}" alt="Logo"> <!-- Replace with actual logo URL -->
+            </a>
+            <span>EspacioAnaSol</span>
+        </div>
+        <div class="welcome-text">
+            <a class="text-dark text-decoration-none" href="#">Ver el Sitio</a> / <a class="text-dark text-decoration-none" href="{% url 'backup_database' %}">Hacer copia de seguridad</a> /  <a class="text-dark text-decoration-none" href="{% url 'restore_database' %}">Restaurar base de datos</a>  / <a class="text-dark text-decoration-none" href="{% url 'logout' %}"><strong>Cerrar Sesión</strong></a> 
+        </div>
+    </header>
+    
+    <!-- Secondary Header -->
+    <header class="header-secondary">
+        <div class="menu-text">
+            <a class="text-dark text-decoration-none" href="{% url 'pagina_principal' %}">Inicio </a> / <a class="text-dark text-decoration-none" href="{% url 'list_cajas' %}">Cajas</a>
+        </div>
+    </header>
+
+    <!-- Main content -->
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 sidebar">
+                <h1>Sitio de {% if es_admin %} Administradores {% else %} Empleado {% endif %}</h1>
+
+                <div class="menu-section">
+                    <h4>Registro de Datos</h4>
+                    <div class="menu-item">
+                        <a class="text-dark text-decoration-none" href="{% url 'list_ventas' %}"><i class="fas fa-shopping-cart"></i> Ventas</a> <span class="plus-icon"></span>
+                    </div>
+                    <div class="menu-item">
+                        <a class="text-dark text-decoration-none" href="{% url 'list_cajas' %}"><i class="fas fa-cash-register"></i> Caja</a>
+                        {% if not cajas_abiertas %}
+                        <a class="text-decoration-none" href="{% url 'abrir_caja' %}"><span class="plus-icon"><i class="fas fa-plus-circle"></i></span></a>
+                        {% endif %}
+                    </div>
+                    <div class="menu-item">
+                        <a class="text-dark text-decoration-none" href="{% url 'list_turnos' %}"><i class="fas fa-clock"></i> Turnos</a><a class="text-decoration-none" href="{% url 'registrar_cliente' %}"><span class="plus-icon"><i class="fas fa-plus-circle"></i></span></a>
+                    </div>
+                    <div class="menu-item">
+                        <a class="text-dark text-decoration-none" href="{% url 'list_servicios' %}"><i class="fas fa-cogs"></i> Servicios</a><a class="text-decoration-none" href="{% url 'add_servicio' %}"><span class="plus-icon"><i class="fas fa-plus-circle"></i></span></a>
+                    </div>
+                    <div class="menu-item">
+                        <a class="text-dark text-decoration-none" href="{% url 'list_reservas' %}"><i class="fas fa-calendar-check"></i> Reservas</a>
+                    </div>
+                </div>
+
+                <div class="menu-section mt-4">
+                    <h4>Usuarios</h4>
+                    <div class="menu-item"><a class="text-dark text-decoration-none" href="{% url 'list_clientes' %}"><i class="fas fa-users"></i> Clientes Registrados</a></div>
+                    {% if es_admin %}
+                    <div class="menu-item"><a class="text-dark text-decoration-none" href="{% url 'list_empleados' %}"><i class="fas fa-users-cog"></i> Empleados Registrados</a></div>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% block contenido %} {% endblock %}
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

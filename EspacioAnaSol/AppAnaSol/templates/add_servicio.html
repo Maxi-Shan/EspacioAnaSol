@@ -1,129 +1,67 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    {% load static %}
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agregar Servicio</title>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/style2.css' %}">
-</head>
-<body>
-    <!-- Primary Header -->
-    <header class="header-primary">
-        <div class="logo">
-            <a class="text-dark text-decoration-none" href="{% url 'pagina_principal' %}">
-                <img src="{% static 'imagenes/icono1.png' %}" alt="Logo"> <!-- Replace with actual logo URL -->
-            </a>
-            <span>EspacioAnaSol</span>
-        </div>
-        <div class="welcome-text">
-             <a class="text-dark text-decoration-none" href="#">Ver el Sitio</a> / <a class="text-dark text-decoration-none" href="{% url 'backup_database' %}">Hacer copia de seguridad</a> /  <a class="text-dark text-decoration-none" href="{% url 'restore_database' %}">Restaurar base de datos</a>  / <a class="text-dark text-decoration-none" href="{% url 'logout' %}">Cerrar Sesión</a>
-        </div>
-    </header>
-    
-    <!-- Secondary Header -->
-    <header class="header-secondary">
-        <div class="menu-text">
-            <a class="text-dark text-decoration-none" href="{% url 'pagina_principal' %}">Inicio </a> / <a class="text-dark text-decoration-none" href="{% url 'list_cajas' %}">Cajas</a>
-        </div>
-    </header>
+{% extends "base.html" %}
+{% block titulo %}Agregar Nuevo Servicio{% endblock %}
 
-    <!-- Main content -->
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Sidebar -->
-            <div class="col-md-4 sidebar">
-                <h3>Sitio de Empleados</h3>
-                <div class="menu-section">
-                    <h4>Registro de Datos</h4>
-                    <div class="menu-item"><a class="text-dark text-decoration-none" href="#">Ventas</a><a class="text-dark text-decoration-none" href="#"><span class="plus-icon">+</span></a></div>
-                    <div class="menu-item">
-                        <a class="text-dark text-decoration-none" href="{% url 'list_cajas' %}">Caja
-                        {% if not cajas_abiertas %}
-                        <a class="text-decoration-none" href="{% url 'abrir_caja' %}"><span class="plus-icon">+</span></a>
-                        {% endif %}
-                    </div>
-                    <div class="menu-item"><a class="text-dark text-decoration-none" href="{% url 'list_turnos' %}">Turnos<a class="text-dark text-decoration-none" href="#"><span class="plus-icon">+</span></a></div>
-                    <div class="menu-item"><a class="text-dark text-decoration-none" href="{% url 'list_servicios' %}">Servicios <a class="text-dark text-decoration-none" href="{% url 'add_servicio' %}"><span class="plus-icon">+</span></a></div>
-                </div>
-                <div class="menu-section mt-4">
-                    <h4>Usuarios</h4>
-                    <div class="menu-item"><a class="text-dark text-decoration-none" href="{% url 'list_clientes' %}">Clientes Registrados</a></div>
-                    {% if es_admin %}
-                    <div class="menu-item"><a class="text-dark text-decoration-none" href="{% url 'list_empleados' %}">Empleados Registrados</a></div>
-                    {% endif %}
-                </div>
-            </div>
-            
-<div class="col-md-8 p-0" style="margin-top: 21px;">
-    <div class="card border-0 h-100">
+{% block contenido %} 
+<div class="col-md-9 p-0" style="margin-top: 21px; min-height: 100vh; display: flex; flex-direction: column;">
+    <div class="card border-0 flex-grow-1">
         <div class="card-header text-black text-left">
-            <h2>Modificar Turno</h2>
+            <h2>Agregar Servicio</h2>
         </div>
         <div class="card-body">
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 
                 <div class="form-group row">
-                    <label for="empleado" class="col-md-4 col-form-label">Empleado:</label>
+                    <label for="nombre_del_servicio" class="col-md-4 col-form-label">Nombre del Servicio:</label>
                     <div class="col-md-8">
-                        <select class="form-control" name="empleado" id="empleado" required>
-                            {% for empleado in empleados %}
-                                <option value="{{ empleado.id }}" {% if empleado.id == turno.id_empleado.id %}selected{% endif %}>{{ empleado.nombre }}</option>
-                            {% endfor %}
-                        </select>
+                        <input type="text" class="form-control" id="nombre_del_servicio" name="nombre_del_servicio" required>
                     </div>
                 </div>
-
+                
                 <div class="form-group row">
-                    <label for="servicio" class="col-md-4 col-form-label">Servicio:</label>
+                    <label for="descripcion_del_servicio" class="col-md-4 col-form-label">Descripción del Servicio:</label>
                     <div class="col-md-8">
-                        <select class="form-control" name="servicio" id="servicio" required>
-                            {% for servicio in servicios %}
-                                <option value="{{ servicio.id }}" {% if servicio.id == turno.id_servicio.id %}selected{% endif %}>{{ servicio.nombre }}</option>
-                            {% endfor %}
-                        </select>
+                        <textarea rows="10" class="form-control" id="descripcion_del_servicio" name="descripcion_del_servicio"></textarea>
                     </div>
                 </div>
-
+                
                 <div class="form-group row">
-                    <label for="diseño_uñas" class="col-md-4 col-form-label">Diseño de Uñas (opcional):</label>
+                    <label for="duracion" class="col-md-4 col-form-label">Duración:</label>
                     <div class="col-md-8">
-                        <input type="file" class="form-control" name="diseño_uñas" id="diseño_uñas">
-                        {% if turno.diseño_uñas %}
-                            <img src="{{ turno.diseño_uñas.url }}" width="100" alt="Diseño Actual">
-                        {% endif %}
+                        <input type="text" class="form-control" id="duracion" name="duracion">
                     </div>
                 </div>
-
+                
                 <div class="form-group row">
-                    <label for="senia_comprobante" class="col-md-4 col-form-label">Seña Comprobante (opcional):</label>
+                    <label for="precio_del_servicio" class="col-md-4 col-form-label">Precio del Servicio:</label>
                     <div class="col-md-8">
-                        <input type="file" class="form-control" name="senia_comprobante" id="senia_comprobante">
-                        {% if turno.senia_comprobante %}
-                            <img src="{{ turno.senia_comprobante.url }}" width="100" alt="Comprobante Actual">
-                        {% endif %}
+                        <input type="number" step="0.01" class="form-control" id="precio_del_servicio" name="precio_del_servicio" required>
                     </div>
                 </div>
+                
+                <div class="form-group row">
+                    <label for="senia" class="col-md-4 col-form-label">Valor de Seña:</label>
+                    <div class="col-md-8">
+                        <input type="number" step="0.01" class="form-control" id="senia" name="senia" required>
+                    </div>
+                </div>
+                
+                <div class="form-group row">
+                    <label for="imagen" class="col-md-4 col-form-label">Imagen:</label>
+                    <div class="col-md-8">
+                        <input type="file" class="form-control" id="imagen" name="imagen">
+                    </div>
+                </div>
+            </div>
 
-                <div class="card-footer bg-danger">
-                    <div class="d-flex">
-                        <div>
-                            <button type="submit" class="btn btn-sm mr-2 text-white" style="background-color: #701C7E;">Actualizar</button>
-                            <a href="{% url 'list_servicios' %}"><button type="button" class="btn btn-warning btn-sm mr-2">Cancelar</button></a>
-                        </div>
-                    </div>
-                </div>
-            </form>
+        <!-- Card Footer, siempre al final -->
+        <div class="card-footer bg-danger d-flex pt-3">
+            <button type="submit" class="btn btn-sm mr-2 text-white" style="background-color: #701C7E;">Guardar</button>
+            <a href="{% url 'list_servicios' %}" class="btn btn-warning btn-sm text-white ml-2">Cancelar</a>
         </div>
+     </form>
     </div>
 </div>
-        </div>
-    </div>
+{% endblock %}
 
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body>
-</html>
+

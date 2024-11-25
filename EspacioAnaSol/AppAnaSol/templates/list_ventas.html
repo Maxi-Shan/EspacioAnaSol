@@ -1,117 +1,49 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    {% load static %}
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registros de Ventas</title>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/style2.css' %}">
-</head>
-<body>
-    <!-- Primary Header -->
-    <header class="header-primary">
-        <div class="logo">
-            <a class="text-dark text-decoration-none" href="{% url 'pagina_principal' %}">
-                <img src="{% static 'imagenes/icono1.png' %}" alt="Logo">
-            </a>
-            <span>EspacioAnaSol</span>
-        </div>
-        <div class="welcome-text">
-            <a class="text-dark text-decoration-none" href="#">Ver el Sitio</a> / <a class="text-dark text-decoration-none" href="{% url 'backup_database' %}">Hacer copia de seguridad</a> / <a class="text-dark text-decoration-none" href="{% url 'restore_database' %}">Restaurar base de datos</a> / <a class="text-dark text-decoration-none" href="{% url 'logout' %}">Cerrar Sesión</a>
-        </div>
-    </header>
-    
-    <!-- Secondary Header -->
-    <header class="header-secondary">
-        <div class="menu-text">
-            <a class="text-dark text-decoration-none" href="{% url 'pagina_principal' %}">Inicio </a> / <a class="text-dark text-decoration-none" href="{% url 'list_ventas' %}">Ventas</a>
-        </div>
-    </header>
+{% extends "base.html" %}
+{% block titulo %}Listado de Ventas{% endblock %}
 
-    <!-- Main content -->
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Sidebar -->
-            <div class="col-md-4 sidebar">
-                <h3>Sitio de Empleados</h3>
-
-                <div class="menu-section">
-                    <h4>Registro de Datos</h4>
-                    <div class="menu-item">
-                        <a class="text-dark text-decoration-none" href="{% url 'list_ventas' %}">Ventas</a> <span class="plus-icon"></span>
-                    </div>
-                    <div class="menu-item">
-                        <a class="text-dark text-decoration-none" href="{% url 'list_cajas' %}">Caja
-                        {% if not cajas_abiertas %}
-                        <a class="text-decoration-none" href="{% url 'abrir_caja' %}"><span class="plus-icon">+</span></a>
-                        {% endif %}
-                    </div>
-                    <a class="text-dark text-decoration-none" href="{% url 'list_turnos' %}"><div class="menu-item">
-                        Turnos </a><a class="text-decoration-none" href="{% url 'registrar_cliente' %}"><span class="plus-icon">+</span></a>
-                    </div>
-                    <a class="text-dark text-decoration-none" href="{% url 'list_servicios' %}"><div class="menu-item">
-                        Servicios </a><a class="text-decoration-none" href="{% url 'add_servicio' %}"><span class="plus-icon">+</span></a>
-                    </div>
-                    <a class="text-dark text-decoration-none" href="{% url 'list_reservas' %}"><div class="menu-item">
-                        Reservas </a>
-                    </div>
-                </div>
-
-                <div class="menu-section mt-4">
-                    <h4>Usuarios</h4>
-                    <div class="menu-item"><a class="text-dark text-decoration-none" href="{% url 'list_clientes' %}">Clientes Registrados</a></div>
-                    {% if es_admin %}
-                    <div class="menu-item"><a class="text-dark text-decoration-none" href="{% url 'list_empleados' %}">Empleados Registrados</a></div>
-                    {% endif %}
-                </div>
-            </div>
-            <div class="col-md-8 main-content">
-                <div class="title-section">
-                    <h1>Lista de Ventas</h1>
-                </div>
-                
-                <div class="action-bar">
-                    Acción
-                    <select class="form-control">
-                        <option>Seleccionar</option>
-                        <option>Opción 1</option>
-                        <option>Opción 2</option>
-                    </select>
-                    <button class="btn btn-filter btn-light ml-2">Filtrar</button>
-                </div>
-            
-                <div class="table-responsive" style="max-height: 400px; overflow-y: auto; margin-top: 15px;">
-                    <table class="table table-striped" style="width:100%">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Caja</th>
-                                <th>Cliente</th>
-                                <th>Fecha</th>
-                                <th>Monto Total</th>
-                                <th>Detalle</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for venta in ventas %}
-                            <tr>
-                                <td>{{ venta.id_venta }}</td>
-                                <td>{{ venta.id_caja }}</td>
-                                <td>{{ venta.id_cliente.nombre }} {{ venta.id_cliente.apellido }}</td>
-                                <td>{{ venta.fecha_venta }}</td>
-                                <td>${{ venta.monto_total }}</td>
-                                <td>
-                                    <a href="{% url 'detalle_venta' venta.id_venta %}" class="btn btn-info btn-sm">Ver Detalle</a>
-                                    <a href="{% url 'modificar_metodo_pago' venta.id_venta %}" class="btn btn-warning btn-sm">Modificar Método de Pago</a>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>                
-                    </table>
-                </div>
-            </div>
-        </div>
+{% block contenido %} 
+<div class="col-md-9 main-content">
+    <div class="title-section">
+        <h2>Lista de Ventas</h2>
     </div>
-</body>
-</html>
+    <div class="action-bar">
+        Acción
+        <select class="form-control">
+            <option>Seleccionar</option>
+            <option>Opción 1</option>
+            <option>Opción 2</option>
+        </select>
+        <button class="btn btn-filter btn-light ml-2">Filtrar</button>
+    </div>
+
+    <div class="table-responsive" style="max-height: 400px; overflow-y: auto; margin-top: 15px;">
+        <table class="table table-striped" style="width:100%">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Caja</th>
+                    <th>Cliente</th>
+                    <th>Fecha</th>
+                    <th>Monto Total</th>
+                    <th>Detalle</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for venta in ventas %}
+                <tr class="{% if venta.id_caja.estado %}estado-abierta{% else %}estado-cerrada{% endif %}">
+                    <td>{{ venta.id_venta }}</td>
+                    <td>{{ venta.id_caja }}</td>
+                    <td>{{ venta.id_cliente.nombre }} {{ venta.id_cliente.apellido }}</td>
+                    <td>{{ venta.fecha_venta }}</td>
+                    <td>${{ venta.monto_total }}</td>
+                    <td>
+                        <a href="{% url 'detalle_venta' venta.id_venta %}" class="btn btn-primary btn-sm">Ver Detalle</a>
+                        <a href="{% url 'modificar_metodo_pago' venta.id_venta %}" class="btn btn-warning btn-sm">Modificar Método de Pago</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>                
+        </table>
+    </div>
+</div>
+{% endblock %}
