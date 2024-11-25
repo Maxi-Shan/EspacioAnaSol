@@ -1,25 +1,48 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <title>Restaurar Base de Datos</title>
+    <!-- Incluye el CDN de Bootstrap para el estilo -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style3.css' %}">
 </head>
 <body>
-    <h1>Restaurar Base de Datos</h1>
-    
-    {% if messages %}
-        {% for message in messages %}
-            <p class="message {{ message.tags }}">{{ message }}</p>
-        {% endfor %}
-    {% endif %}
+    <div class="card-container">
+        <h2 class="text-center">Restaurar Base de Datos</h2>
+        
+        <div class="alert alert-info text-center" role="alert">
+            <h4 class="alert-heading">Restauración de la Base de Datos</h4>
+            <p>Estás a punto de restaurar la base de datos desde un archivo de copia de seguridad en formato <strong>.json</strong>.</p>
+            <hr>
+            <p class="mb-0">Asegúrate de que el archivo de copia de seguridad sea el correcto antes de proceder.</p>
+        </div>
+        
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} message" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+        
+        
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="backup_file">Selecciona el archivo de copia de seguridad (.json):</label>
+                <input type="file" id="backup_file" name="backup_file" accept=".json" required class="form-control">
+            </div>
+            <button type="submit" class="btn btn-custom btn-block">Restaurar Base de Datos</button>
+        </form>
 
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <label for="backup_file">Selecciona el archivo de copia de seguridad (.json):</label>
-        <input type="file" id="backup_file" name="backup_file" accept=".json" required>
-        <button type="submit">Restaurar Base de Datos</button>
-    </form>
+        <a href="{% url 'pagina_principal' %}" class="back-link">Volver a la Página Principal</a>
+    </div>
 
-    <a href="{% url 'pagina_principal' %}">Volver a la Página Principal</a>
+    <!-- Incluye los scripts de Bootstrap -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

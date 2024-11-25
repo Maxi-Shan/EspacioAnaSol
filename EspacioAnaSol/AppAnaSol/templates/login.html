@@ -7,57 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://unpkg.com/boxicons/css/boxicons.min.css" rel="stylesheet">
     <title>Iniciar Sesión - Empleados</title>
-    <style>
-        body {
-            background-image: url("{% static 'imagenes/fondo.png' %}");
-            background-repeat: no-repeat;
-            background-size: cover;
-            height: 100vh;
-        }
-        .padre {
-            background-color: #ffffff;
-            border: 2px solid #8b2ea8;
-            border-radius: 50px;
-            padding: 20px;
-            max-width: 800px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            position: relative;
-        }
-        .texto {
-            font-weight: bold;
-            color: #b033bb;
-            font-size: 50px;
-        }
-        .input-group-text {
-            background-color: #8b2ea8;
-            color: white;
-            border: none;
-            width: 50px; /* Uniform width for icons */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .bx {
-            font-size: 20px; /* Adjust icon size */
-        }
-        .btn-custom {
-            width: 150px;
-            padding: 10px;
-            background-color: #a964bf;
-            color: white;
-            border: none;
-            border-radius: 25px;
-            font-size: 16px;
-        }
-        .btn-custom:hover {
-            background-color: #8b2ea8;
-        }
-        .error-message {
-            color: red;
-            font-size: 14px;
-            margin-top: 5px;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style_login.css' %}">
 </head>
 <body class="d-flex justify-content-center align-items-center">
     <div class="padre container p-4">

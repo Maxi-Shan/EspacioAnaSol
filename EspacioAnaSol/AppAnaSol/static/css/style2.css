@@ -135,17 +135,7 @@ body {
     margin-left: 10px;
 }
 
- /* Table styles */
-.table {
-    margin-top: 15px;
-}
-.table th {
-    color: #5e2a6f;
-    font-weight: bold;
-}
-.table td {
-    font-size: 15px;
-}
+
 .card-header{
     background-color: #CD9AFE;
 }
@@ -235,4 +225,63 @@ body {
 .estado-cerrada {
     background-color: #d6d8db !important;  /* Gris claro */
     color: #6c757d !important;  /* Gris oscuro */
+}
+
+/* Estilos de la tabla similar a Bootstrap */
+.table-custom {
+    width: 980px;
+    margin-bottom: 1rem;
+    border-collapse: collapse;
+}
+ /* Table styles */
+.table-custom {
+    margin-top: 15px;
+}
+
+.table-custom th,
+.table-custom td {
+    padding: 0.75rem;
+    vertical-align: top;
+    border-top: 1px solid #000000;
+    font-size: 10px;
+    font-weight: bold;
+}
+
+.table-custom thead th {
+    background-color: #f8f9fa;
+    color: #5e2a6f;
+    font-weight: bold;
+}
+
+.table-custom th {
+    text-align: left;
+}
+
+
+/* Estilo del botón en pantallas pequeñas */
+.dropdown-toggle {
+    background-color: #ffffff; /* Color del botón */
+    color: rgb(0, 0, 0); /* Color del texto */
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* Enlaces del menú desplegable */
+.dropdown-item {
+    color: #333; /* Color de los enlaces */
+    font-size: 14px;
+}
+
+.dropdown-item:hover {
+    background-color: #000000; /* Fondo azul al pasar el mouse */
+    color: white; /* Texto blanco al pasar el mouse */
+}
+
+/* Footer styling */
+.footer {
+    background-color: #6f1c7e91; /* Custom background color */
+    color: white;
+    text-align: center;
+    padding: 10px;
 }

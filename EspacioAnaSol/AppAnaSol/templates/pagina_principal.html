@@ -19,13 +19,34 @@
                 </a>
                 <span>EspacioAnaSol</span>
             </div>
-            <div class="welcome-text">
-                Bienvenido, {% if es_admin %} Administrador <strong>{{ nombre.nombre }} </strong>{% else %} Empleado <strong>{{ nombre.nombre }} </strong> {% endif %} /
-                <a class="text-dark text-decoration-none" href="#">Ver el Sitio</a> / 
-                <a class="text-dark text-decoration-none" href="{% url 'backup_database' %}">Hacer copia de seguridad</a> /  
-                <a class="text-dark text-decoration-none" href="{% url 'restore_database' %}">Restaurar base de datos</a> / 
-                <a class="text-dark text-decoration-none" href="{% url 'logout' %}"><strong>Cerrar Sesión</strong></a>
-            </div>
+            <!-- Menú visible en pantallas grandes -->
+<div class="welcome-text d-none d-md-flex">
+    <div class="mx-2 mr-2">
+    Bienvenido, {% if es_admin %} Administrador <strong>{{ nombre.nombre }} </strong>{% else %} Empleado <strong>{{ nombre.nombre }} </strong> {% endif %} /
+    </div>
+    <div class="d-flex">
+        <a class="text-dark text-decoration-none mr-2" href="#">Ver el Sitio</a> /
+        <a class="text-dark text-decoration-none mx-2 mr-2" href="{% url 'backup_database' %}">Hacer copia de seguridad</a> /
+        <a class="text-dark text-decoration-none mx-2 mr-2" href="{% url 'restore_database' %}">Restaurar base de datos</a> /
+        <a class="text-dark text-decoration-none mx-2 mr-2" href="{% url 'logout' %}"><strong>Cerrar Sesión</strong></a> 
+    </div>
+</div>
+
+<!-- Menú desplegable para pantallas pequeñas -->
+<div class="dropdown d-md-none">
+    <button class="btn btn-light dropdown-toggle w-100" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+        Menú
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        <li><a class="dropdown-item" href="#">Ver el Sitio</a></li>
+        <li><a class="dropdown-item" href="{% url 'backup_database' %}">Hacer copia de seguridad</a></li>
+        <li><a class="dropdown-item" href="{% url 'restore_database' %}">Restaurar base de datos</a></li>
+        <li><a class="dropdown-item" href="{% url 'logout' %}"><strong>Cerrar Sesión</strong></a></li>
+    </ul>
+</div>
+
+
+
         </header>
 
         <!-- Main content -->
@@ -75,10 +96,12 @@
     </div>
 
     <!-- Footer -->
-    <footer class="footer text-white">
+    <footer class="footer text-white" style="margin-top: 10px;">
         <p>&copy; 2024 EspacioAnaSol. Todos los derechos reservados.</p>
     </footer>
-
+    <!-- Asegúrate de incluir Popper.js y Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

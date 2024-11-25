@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block titulo %}Modificar Monto Inicial{% endblock %}
+{% block titulo %}Modificar Empleado{% endblock %}
 
 {% block contenido %}
 <div class="col-md-9 p-0" style="margin-top: 21px; min-height: 100vh; display: flex; flex-direction: column;">
@@ -68,7 +68,7 @@
                         <input type="text" id="contraseña" name="contraseña" value="{{ empleado.contraseña_original }}" class="form-control">
                     </div>
                 </div>
-
+                {% if not empleado.es_admin %}
                 <!-- Estado del Empleado -->
                 <div class="form-group row">
                     <label for="estado_empleado" class="col-md-4 col-form-label">Estado del Empleado:</label>
@@ -80,20 +80,22 @@
                     </div>
                 </div>
 
+
                 <!-- Es Admin -->
                 <div class="form-group row">
-                    <label for="es_admin" class="col-md-4 col-form-label">¿Es Admin?</label>
+                    <label for="es_admin" class="col-md-4 col-form-label">Rol</label>
                     <div class="col-md-8">
                         <select id="es_admin" name="es_admin" class="form-control">
-                            <option value="True" {% if empleado.es_admin %}selected{% endif %}>Sí</option>
-                            <option value="False" {% if not empleado.es_admin %}selected{% endif %}>No</option>
+                            <option value="True" {% if empleado.es_admin %}selected{% endif %}>Administrador</option>
+                            <option value="False" {% if not empleado.es_admin %}selected{% endif %}>Empleado</option>
                         </select>
                     </div>
                 </div>
+                {% endif %}
             </div>
         <!-- Card Footer, siempre al final -->
         <div class="card-footer bg-danger d-flex pt-3">
-            <button type="submit" class="btn btn-sm text-white" style="background-color: #701C7E;">Actualizar</button>
+            <button type="submit" class="btn btn-sm text-white mx-2 mr-2" style="background-color: #701C7E;">Actualizar</button>
             <a href="{% url 'list_empleados' %}" class="ml-2">
                 <button type="button" class="btn btn-warning btn-sm">Cancelar</button>
             </a>

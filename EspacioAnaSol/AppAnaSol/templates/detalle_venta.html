@@ -2,42 +2,55 @@
 {% block titulo %}Detalle de Ventas{% endblock %}
 
 {% block contenido %} 
-<div class="col-md-9 main-content" >
-    <div class="title-section">
-        <h2>Detalle de Venta</h2>
-    </div>
+<div class="col-md-9 main-content" style="margin-top: 30px;">
+    <!-- Contenedor con estilo de hoja de notas -->
+    <div class="card shadow-sm border-light p-4" style="background-color: #f9f9f9; border-radius: 12px; border: 1px solid #ddd; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+        <div class="title-section mb-4">
+            <h2 class="text-center" style="font-family: 'Courier New', Courier, monospace; color: #333; border-bottom: 1px solid #000000; height: 50px;">Detalle de Venta</h2>
+        </div>
 
-    <div class="table-responsive" style="margin-top: 15px;">
-        <table class="table table-borderless">
-            <thead>
-                <tr>
-                    <th>Datos</th>
-                    <th>Informacion</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><strong>ID Venta</strong></td>
-                    <td>{{ venta.id_venta }}</td>
-                </tr>
-                <tr>
-                    <td><strong>Cliente</strong></td>
-                    <td>{{ venta.id_cliente.nombre }} {{ venta.id_cliente.apellido }}</td>
-                </tr>
-                <tr>
-                    <td><strong>Fecha</strong></td>
-                    <td>{{ venta.fecha_venta }}</td>
-                </tr>
-                <tr>
-                    <td><strong>Método de Pago</strong></td>
-                    <td>{{ detalle_venta.metodo_pago }}</td>
-                </tr>
-                <tr>
-                    <td><strong>Monto Subtotal</strong></td>
-                    <td>${{ detalle_venta.monto_subtotal }}</td>
-                </tr>
-            </tbody>
-        </table>
+        <!-- Table Wrapper -->
+        <div class="table-responsive">
+            <table class="table table-striped" style="border-collapse: separate; border-spacing: 0 10px;">
+                <thead class="thead-light">
+                    <tr>
+                        <th class="text-uppercase" style="border-bottom: 2px solid #ddd; padding-bottom: 8px;">Datos</th>
+                        <th class="text-uppercase" style="border-bottom: 2px solid #ddd; padding-bottom: 8px;">Información</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>ID Venta</strong></td>
+                        <td>{{ venta.id_venta }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cliente</strong></td>
+                        <td>{{ venta.id_cliente.nombre }} {{ venta.id_cliente.apellido }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Fecha</strong></td>
+                        <td>{{ venta.fecha_venta }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Hora</strong></td>
+                        <td>{{ venta.hs_venta }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Método de Pago</strong></td>
+                        <td>{{ detalle_venta.metodo_pago }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Monto Subtotal</strong></td>
+                        <td>${{ detalle_venta.monto_subtotal }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pie de página con borde superior -->
+        <div class="mt-4 pt-3 text-center" style="border-top: 2px dashed #bbb;">
+            <p class="mb-0 text-muted" style="font-family: 'Courier New', Courier, monospace; font-size: 0.9rem;">Detalle de la venta</p>
+        </div>
     </div>
 </div>
 {% endblock %}

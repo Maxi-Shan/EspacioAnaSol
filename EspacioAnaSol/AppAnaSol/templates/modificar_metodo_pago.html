@@ -1,25 +1,32 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    {% load static %}
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modificar Método de Pago</title>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-    <div class="container mt-5">
-        <h1>Modificar Método de Pago de la Venta</h1>
-        <p><strong>Venta ID:</strong> {{ venta.id_venta }}</p>
-        <form method="POST">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="metodo_pago">Método de Pago</label>
-                {{ form.metodo_pago }}
-            </div>
-            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-            <a href="{% url 'list_ventas' %}" class="btn btn-secondary">Cancelar</a>
-        </form>
+{% extends "base.html" %}
+{% load static %}
+
+{% block titulo %}Modificar Método de Pago{% endblock %}
+
+{% block contenido %}
+<div class="col-md-9 p-0" style="margin-top: 21px; min-height: 100vh; display: flex; flex-direction: column;">
+    <div class="card border-0 flex-grow-1">
+        <div class="card-header text-black text-left">
+            <h2>Modificar Método de Pago de la Venta</h2>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group row">
+                    <label for="metodo_pago" class="col-md-4 col-form-label">Método de Pago:</label>
+                    <div class="col-md-8">
+                        {{ form.metodo_pago }}
+                    </div>
+                </div>
+        </div>
+        <!-- Card Footer, siempre al final -->
+        <div class="card-footer bg-danger d-flex pt-3">
+            <button type="submit" class="btn btn-sm text-white mx-2 mr-2" style="background-color: #701C7E;">Actualizar</button>
+            <a href="{% url 'list_ventas' %}" class="ml-2">
+                <button type="button" class="btn btn-warning btn-sm">Cancelar</button>
+            </a>
+        </div>
+    </form>
     </div>
-</body>
-</html>
+</div>
+{% endblock %}

@@ -23,27 +23,13 @@
                         </select>
                     </div>
                 </div>
-
-                <div class="form-group row">
-                    <label for="servicio" class="col-md-4 col-form-label">Servicio:</label>
-                    <div class="col-md-8">
-                        <select class="form-control" name="servicio" id="servicio">
-                            {% for servicio in servicios %}
-                                <option value="{{ servicio.id }}" 
-                                        {% if servicio.id == servicios_asociados.first.id_servicio.id %}selected{% endif %}>
-                                    {{ servicio.nombre_del_servicio }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
-
-            </form>
         </div>
         <!-- Card Footer, siempre al final -->
         <div class="card-footer bg-danger d-flex pt-3">
-            <button type="submit" class="btn btn-sm text-white" style="background-color: #701C7E;">Actualizar</button>
+            <button type="submit" class="btn btn-sm text-white mx-2 mr-2" style="background-color: #701C7E;">Actualizar</button>
+            <a href="{% url 'list_turnos' %}" class="btn btn-warning btn-sm text-white ml-2">Cancelar</a>
         </div>
+    </form>
     </div>
 </div>
 {% endblock %}

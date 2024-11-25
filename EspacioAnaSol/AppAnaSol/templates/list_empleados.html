@@ -26,7 +26,7 @@
     <!-- Scrollable Table Wrapper -->
     <div class="table-responsive" style="max-height: 400px; overflow-y: auto; margin-top: 15px;">
         <!-- Table for content -->
-        <table class="table table-striped" style="width:100%">
+        <table class="table-custom">
             <thead>
                 <tr>
                     <th>DNI</th>
@@ -53,18 +53,26 @@
                     <td>
                         <form action="{% url 'update_empleado_status' empleado.dni %}" method="POST">
                             {% csrf_token %}
-                            <select name="estado_empleado">
+                            
+                            <!-- Mostrar solo los empleados no administradores -->
+                            <select name="estado_empleado" {% if empleado.es_admin %}disabled{% endif %}>
                                 <option value="activo" {% if empleado.estado_empleado == 'activo' %}selected{% endif %}>Activo</option>
-                                <option value="inactivo" {% if empleado.estado_empleado == 'inactivo' %}selected{% endif %}>Suspendido</option>
+                                <option value="suspendido" {% if empleado.estado_empleado == 'suspendido' %}selected{% endif %}>Suspendido</option>
                                 <option value="despedido" {% if empleado.estado_empleado == 'despedido' %}selected{% endif %}>Despedido</option>
                             </select>
-                            <select name="es_admin">
+                            
+                            <!-- Mostrar solo los empleados no administradores -->
+                            <select name="es_admin" {% if empleado.es_admin %}disabled{% endif %}>
                                 <option value="False" {% if empleado.es_admin == False %}selected{% endif %}>Empleado</option>
                                 <option value="True" {% if empleado.es_admin == True %}selected{% endif %}>Administrador</option>
                             </select>                
+                            
+                            {% if not empleado.es_admin %}
                             <button type="submit">Actualizar</button>
+                            {% endif %}
                         </form>
                     </td>
+                    
                     <td>
                         <!-- Botón Modificar con icono y título -->
                         <form action="{% url 'update_empleado' empleado.dni %}" method="POST" style="display:inline;">

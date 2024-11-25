@@ -14,7 +14,12 @@
         </form>
         {% endif %}
     </div>
-    
+    <button class="btn btn-primary">
+        <i class="fas fa-chart-line"></i> Gráfico
+    </button>
+    <button class="btn btn-danger">
+        <i class="fas fa-file-pdf"></i> PDF
+    </button>    
     <div class="action-bar">
         Acción
         <select class="form-control">
@@ -28,7 +33,7 @@
     <!-- Scrollable Table Wrapper -->
     <div class="table-responsive" style="max-height: 400px; overflow-y: auto; margin-top: 15px;">
         <!-- Table for content -->
-        <table class="table table-striped" style="width:100%">
+        <table class="table-custom">
             <thead>
                 <tr>
                     <th>ID</th>
@@ -102,6 +107,3 @@
     </div>
 </div>
 {% endblock %}
-
-
-

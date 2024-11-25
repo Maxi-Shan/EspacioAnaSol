@@ -33,7 +33,12 @@ def login(request):
             try:
                 # Obtener el empleado por DNI
                 empleado = Empleado.objects.get(dni=dni)
-                
+
+                # Verificar el estado del empleado
+                if empleado.estado_empleado in ['suspendido', 'despedido']:
+                    dni_error = 'Estás suspendido.'
+                    return redirect('login')
+
                 # Verificar la contraseña
                 if empleado.verificar_contraseña(contraseña):
                     # Guardar DNI del empleado en la sesión
@@ -46,7 +51,6 @@ def login(request):
                 dni_error = 'Empleado inexistente.'
 
     return render(request, 'login.html', {'dni_error': dni_error, 'contraseña_error': contraseña_error})
-
 
 
 def logout(request):
@@ -64,6 +68,11 @@ def obtener_empleado_autenticado(request):
         return None
     try:
         empleado = Empleado.objects.get(dni=dni_cifrado)
+
+        # Verificar si el empleado está suspendido o despedido
+        if empleado.estado_empleado in ['suspendido', 'despedido']:
+            return None  # No permitir que acceda a la aplicación
+
         return empleado
     except Empleado.DoesNotExist:
         return None
@@ -72,6 +81,11 @@ def requerir_autenticacion(view_func):
     def _wrapped_view(request, *args, **kwargs):
         if 'empleado_dni' not in request.session:
             return redirect('login')
+        
+        empleado = obtener_empleado_autenticado(request)
+        if not empleado:
+            return redirect('login')
+        
         return view_func(request, *args, **kwargs)
     return _wrapped_view
 
@@ -160,12 +174,11 @@ def update_empleado(request, dni):
         correo_electronico = request.POST.get('correo_electronico')
         numero_telefono = request.POST.get('numero_telefono')
         contraseña = request.POST.get('contraseña')  # Obtén la contraseña en texto claro
-        estado_empleado = request.POST.get('estado_empleado')
+        estado_empleado = request.POST.get('estado_empleado', 'activo')  # Valor predeterminado 'activo'
         es_admin = request.POST.get('es_admin') == 'True' 
 
         # Validar que los campos obligatorios no estén vacíos
         if not nombre or not apellido or not correo_electronico:
-            # Retornar error si algún campo obligatorio está vacío
             return render(request, 'update_empleado.html', {
                 'empleado': empleado,
                 'es_admin': empleado_autenticado.es_admin,
@@ -190,12 +203,12 @@ def update_empleado(request, dni):
 
         return redirect('list_empleados')
 
-    # Si es GET, se pasa la contraseña sin cifrar para mostrarla en el formulario
     return render(request, 'update_empleado.html', {
         'empleado': empleado,
         'contraseña_original': empleado.contraseña_original,
         'es_admin': empleado_autenticado.es_admin
     })
+
 
 def guardar_empleado(request, empleado_id):
     empleado = get_object_or_404(Empleado, pk=empleado_id)
@@ -488,28 +501,9 @@ def modificar_turno(request, turno_id):
     cajas_abiertas = Caja.objects.filter(estado=True).exists()
     if request.method == "POST":
         empleado_id = request.POST.get('empleado')
-        servicio_id = request.POST.get('servicio')
-        diseño_uñas = request.FILES.get('diseño_uñas')
-        senia_comprobante = request.FILES.get('senia_comprobante')
 
         # Actualizar el turno con los nuevos datos
         turno.id_empleado_id = empleado_id  # Asignar empleado
-        turno.save()
-
-        # Si se selecciona un servicio, actualizar la relación ServicioXTurno
-        if servicio_id:
-            # Eliminar los servicios actuales del turno (si existen)
-            ServicioXTurno.objects.filter(id_turno=turno).delete()
-
-            # Crear una nueva relación de servicio para el turno
-            ServicioXTurno.objects.create(id_servicio_id=servicio_id, id_turno=turno)
-
-        # Actualizar los archivos si fueron proporcionados
-        if diseño_uñas:
-            turno.diseño_uñas = diseño_uñas
-        if senia_comprobante:
-            turno.senia_comprobante = senia_comprobante
-
         turno.save()
 
         # Redirigir al listado de turnos o a una página de confirmación
@@ -517,16 +511,11 @@ def modificar_turno(request, turno_id):
 
     # Obtener todos los empleados y servicios para mostrarlos en el formulario
     empleados = Empleado.objects.all()
-    servicios = Servicios.objects.all()  # Asegúrate de que se obtienen todos los servicios
 
-    # Obtener el servicio actual asociado al turno (si existe)
-    servicios_asociados = ServicioXTurno.objects.filter(id_turno=turno)
 
     return render(request, 'modificar_turno.html', {
         'turno': turno,
         'empleados': empleados,
-        'servicios': servicios,
-        'servicios_asociados': servicios_asociados,
         'es_admin': empleado.es_admin, 
         'cajas_abiertas': cajas_abiertas,
     })
@@ -597,14 +586,37 @@ def list_ventas(request):
     cajas_abiertas = Caja.objects.filter(estado=True).exists()
     return render(request, 'list_ventas.html', {'ventas': ventas, 'es_admin': empleado.es_admin, 'cajas_abiertas': cajas_abiertas,})
 
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
+from .models import Venta, DetalleVenta, Caja
+from .forms import MetodoPagoForm
+from django.contrib.auth.decorators import login_required
+
 @login_required
 @requerir_autenticacion
 def modificar_metodo_pago(request, venta_id):
-    # Obtener la venta y el detalle de la venta relacionado con la venta
+    # Obtener si hay cajas abiertas
     cajas_abiertas = Caja.objects.filter(estado=True).exists()
-    venta = get_object_or_404(Venta, id_venta=venta_id)
-    detalle_venta = get_object_or_404(DetalleVenta, id_venta=venta)
 
+    # Obtener la venta
+    venta = get_object_or_404(Venta, id_venta=venta_id)
+    
+    # Intentar obtener todos los DetalleVenta relacionados con la venta
+    detalle_venta_list = DetalleVenta.objects.filter(id_venta=venta)
+    
+    if detalle_venta_list.count() == 1:
+        # Si hay solo un detalle de venta, usamos ese
+        detalle_venta = detalle_venta_list.first()
+    elif detalle_venta_list.count() > 1:
+        # Si hay múltiples detalles de venta, puedes manejar cuál usar
+        detalle_venta = detalle_venta_list.first()  # Ejemplo: selecciona el primero
+        # También puedes usar otro criterio como el más reciente, etc.
+    else:
+        # Si no hay detalles de venta, lanzar un error o redirigir
+        messages.error(request, "No se encontraron detalles de venta para esta venta.")
+        return redirect('list_ventas')
+
+    # Si se envió el formulario con los cambios
     if request.method == 'POST':
         form = MetodoPagoForm(request.POST, instance=detalle_venta)
         if form.is_valid():
@@ -616,11 +628,13 @@ def modificar_metodo_pago(request, venta_id):
     else:
         form = MetodoPagoForm(instance=detalle_venta)
 
+    # Renderizamos el formulario de modificación de método de pago
     return render(request, 'modificar_metodo_pago.html', {
         'form': form,
         'venta': venta,
         'cajas_abiertas': cajas_abiertas,
     })
+
 
 @login_required
 @requerir_autenticacion
@@ -638,14 +652,6 @@ def list_reservas(request):
     empleado = obtener_empleado_autenticado(request)
     cajas_abiertas = Caja.objects.filter(estado=True).exists()
     return render(request, 'list_reservas.html', {'reservas': reservas, 'es_admin': empleado.es_admin, 'cajas_abiertas': cajas_abiertas,})
-
-from django.http import JsonResponse
-from django.core.mail import send_mail
-from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
-from .models import Turno, ServicioXTurno, Reservas, Venta, DetalleVenta, Caja
-import json
-from decimal import Decimal
 
 # Alias para confirmar específicamente turnos
 def confirmar_turno(request):

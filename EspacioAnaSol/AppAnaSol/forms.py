@@ -115,9 +115,9 @@ class TurnoForm(forms.ModelForm):
 
 class MetodoPagoForm(forms.ModelForm):
     METODO_PAGO_CHOICES = [
-        ('efectivo', 'Efectivo'),
-        ('transferencia', 'Transferencia'),
-        ('efectivo-transferencia', 'Efectivo - Transferencia'),
+        ('Efectivo', 'Efectivo'),
+        ('Transferencia', 'Transferencia'),
+        ('Efectivo-Transferencia', 'Efectivo - Transferencia'),
     ]
     metodo_pago = forms.ChoiceField(choices=METODO_PAGO_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
 

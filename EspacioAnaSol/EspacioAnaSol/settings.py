@@ -18,7 +18,7 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-placeholder-key')
 DEBUG = config('DEBUG', default=True, cast=bool)
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='', cast=Csv())
 
-TIME_ZONE = 'America/Argentina/Buenos_Aires'  # Ajusta según tu zona horaria
+TIME_ZONE = 'America/Argentina'  
 USE_TZ = True
 
 

@@ -114,9 +114,8 @@ body {
 
 /* Footer styling */
 .footer {
-    background-color: #701C7E; /* Custom background color */
+    background-color: #6f1c7e91; /* Custom background color */
     color: white;
-    padding: 15px 0;
+    padding: 10px;
     text-align: center;
-    margin-top: auto;
 }

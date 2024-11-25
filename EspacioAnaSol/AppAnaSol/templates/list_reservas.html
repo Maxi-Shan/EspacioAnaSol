@@ -1,8 +1,9 @@
 {% extends "base.html" %}
 {% load static %}
+
 {% block titulo %}Listado de Reservas{% endblock %}
 
-{% block contenido %} 
+{% block contenido %}
 <div class="col-md-9 main-content">
     <div class="title-section">
         <h2>Lista de Reservas</h2>
@@ -21,12 +22,10 @@
 
     <!-- Tabla de reservas -->
     <div class="table-responsive" style="max-height: 400px; overflow-y: auto; margin-top: 15px;">
-        <table class="table table-striped" style="width:100%">
+        <table class="table-custom">
             <thead>
                 <tr>
-                    {% if mostrar_checkbox %}
-                    <th>Seleccionar</th>
-                    {% endif %}
+                    <th></th>
                     <th>ID Reserva</th>
                     <th>Cliente</th>
                     <th>Turno</th>
@@ -43,10 +42,10 @@
                     {% elif reserva.estado_reserva == 'Cancelada' %} estado-cancelado
                     {% endif %}
                 ">
-                    <!-- Checkbox para seleccionar reserva -->
-                    {% if reserva.estado_reserva != "Terminada" and reserva.estado_reserva != "Cancelada" %}
-                    <td><input type="checkbox" name="id_reserva" value="{{ reserva.id_reserva }}"></td>
-                    {% endif %}
+                    <td>
+                        <input type="checkbox" name="id_reserva" value="{{ reserva.id_reserva }}"
+                        {% if reserva.estado_reserva == "Terminada" or reserva.estado_reserva == "Cancelado" %} disabled {% endif %}>
+                    </td>
                     <td>{{ reserva.id_reserva }}</td>
                     <td>{{ reserva.id_cliente.nombre }} {{ reserva.id_cliente.apellido }}</td>
                     <td>{{ reserva.id_turno.fecha }} {{ reserva.id_turno.hora }}</td>

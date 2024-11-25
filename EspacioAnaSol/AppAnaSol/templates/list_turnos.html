@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
-{% block titulo %}Listado de Cajas{% endblock %}
+{% block titulo %}Listado de Turnos{% endblock %}
 
 {% block contenido %} 
 <div class="col-md-9 main-content">
@@ -20,12 +20,10 @@
         <button class="btn btn-filter btn-light ml-2" onclick="realizarAccion()">Aplicar</button>
     </div>
     <div class="table-responsive" style="max-height: 400px; overflow-y: auto; margin-top: 15px;">
-        <table class="table table-striped" style="width:100%">
+        <table class="table-custom">
             <thead>
                 <tr>
-                    {% if mostrar_checkbox %}
-                    <th>Seleccionar</th>
-                    {% endif %}
+                    <th></th>
                     <th>ID</th>
                     <th>Cliente</th>
                     <th>Diseño de Uñas</th>
@@ -45,12 +43,10 @@
                     {% elif data.turno.estado_turno == 'Cancelado' %} estado-cancelado
                     {% endif %}
                 ">
-                    {% if mostrar_checkbox %}
                     <td>
                         <input type="checkbox" name="selected_turnos" value="{{ data.turno.id_turno }}"
                             {% if data.turno.estado_turno == "Confirmado" or data.turno.estado_turno == "Cancelado" %} disabled {% endif %}>
                     </td>
-                    {% endif %}
                     <td>{{ data.turno.id_turno }}</td>
                     <td>{{ data.id_cliente.nombre }} {{ data.id_cliente.apellido }}</td>
                     <td>

@@ -6,6 +6,12 @@
     <div class="title-section">
         <h2>Lista de Ventas</h2>
     </div>
+    <button class="btn btn-primary">
+        <i class="fas fa-chart-line"></i> Gráfico
+    </button>
+    <button class="btn btn-danger">
+        <i class="fas fa-file-pdf"></i> PDF
+    </button>    
     <div class="action-bar">
         Acción
         <select class="form-control">
@@ -17,13 +23,14 @@
     </div>
 
     <div class="table-responsive" style="max-height: 400px; overflow-y: auto; margin-top: 15px;">
-        <table class="table table-striped" style="width:100%">
+        <table class="table-custom" style="width:100%">
             <thead>
                 <tr>
                     <th>ID</th>
                     <th>Caja</th>
                     <th>Cliente</th>
                     <th>Fecha</th>
+                    <th>Hora</th>
                     <th>Monto Total</th>
                     <th>Detalle</th>
                 </tr>
@@ -35,11 +42,18 @@
                     <td>{{ venta.id_caja }}</td>
                     <td>{{ venta.id_cliente.nombre }} {{ venta.id_cliente.apellido }}</td>
                     <td>{{ venta.fecha_venta }}</td>
+                    <td>{{ venta.hs_venta }}</td>
                     <td>${{ venta.monto_total }}</td>
                     <td>
-                        <a href="{% url 'detalle_venta' venta.id_venta %}" class="btn btn-primary btn-sm">Ver Detalle</a>
-                        <a href="{% url 'modificar_metodo_pago' venta.id_venta %}" class="btn btn-warning btn-sm">Modificar Método de Pago</a>
+                        <a href="{% url 'detalle_venta' venta.id_venta %}" class="btn btn-primary btn-sm" title="Ver Detalle de la Venta">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                        <a href="{% url 'modificar_metodo_pago' venta.id_venta %}" class="btn btn-warning btn-sm" title="Modificar Metodo de Pago">
+                            <i class="fas fa-edit"></i>
+                        </a>
                     </td>
+                    
+                    
                 </tr>
                 {% endfor %}
             </tbody>                
