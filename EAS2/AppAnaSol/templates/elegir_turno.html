@@ -4,44 +4,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calendario</title>
-    <link rel="stylesheet" href="{% static 'styles/calendario.css' %}">
+    <title>Elegir Turno</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'styles/style.css' %}">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
-    <div class="container">
-        <div class="tarjeta-servicio">
-            {% if servicio.imagen %}
-                <img src="{{ servicio.imagen.url }}" alt="{{ servicio.nombre_del_servicio }}" style="width: 100%; height: auto; object-fit: cover;">
-            {% else %}
-                <p>No hay información disponible para este servicio.</p>
-            {% endif %}
-            <div class="titulo-servicio">{{ servicio.nombre_del_servicio }}</div>
-            <div class="descripcion-servicio">
-                <p>{{ servicio.descripcion_del_servicio }}</p>
-                <div class="info-servicio">
-                    Duración: {{ servicio.duracion }}<br>
-                    Valor del Servicio: ${{ servicio.precio_del_servicio }}<br>
-                    Valor de la Reserva: {{ servicio.senia }}%
-                </div>
-            </div>
-        </div>
 
-        <form method="post">
-            {% csrf_token %}
-            {{ turno_form.as_p }}
-            {{ cliente_form.as_p }}
-            
-            <button type="submit" class="btn btn-primary mt-3">Confirmar turno</button>
-        </form>
-
-        <a href="{% url 'mostrar_turnos' %}">
-            <button id="mostrar-turnos-btn" class="btn btn-secondary mt-4">Mostrar Turnos</button>
-        </a>     
+    <!-- Botón Volver -->
+    <div class="position-absolute top-0 start-0 m-3">
+        <a href="{% url 'elegir_servicio' %}" class="btn btn-secondary">Volver</a>
     </div>
 
-    <script src="{% static 'Java/calendario.js' %}"></script>
+    <h1 class="titulo mt-3 text-center fw-bold">Registra tus Datos</h1>
+
+    <!-- Contenido Principal -->
+    <div class="container vh-100 d-flex align-items-center">
+        <form method="post" class="row w-100 justify-content-center align-items-center text-center">
+            {% csrf_token %}
+            <!-- Imagen del Servicio -->
+            <div class="col-md-4">
+                <div class="tarjeta-servicio">
+                    {% if servicio.imagen %}
+                        <img src="{{ servicio.imagen.url }}" alt="{{ servicio.nombre_del_servicio }}" style="width: 100%; height: auto; object-fit: cover;">
+                    {% else %}
+                        <p>No hay información disponible para este servicio.</p>
+                    {% endif %}
+                    <div class="titulo-servicio">{{ servicio.nombre_del_servicio }}</div>
+                    <div class="descripcion-servicio">
+                        <p>{{ servicio.descripcion_del_servicio }}</p>
+                        <div class="info-servicio">
+                            Duración: {{ servicio.duracion }}<br>
+                            Valor del Servicio: ${{ servicio.precio_del_servicio }}<br>
+                            Valor de la Reserva: {{ servicio.senia }}%
+                        </div>
+                    </div>
+                </div>
+            </div>
         
+            <!-- Tabla de Información del Turno -->
+            <div class="col-md-4">
+                <div class="table-responsive">
+                    <table class="table table-bordered border-dark">
+                        <thead class="table-dark text-center">
+                            <tr>
+                                <th colspan="2">Información del Turno <a href="{% url 'mostrar_turnos' %}" class="btn btn-primary" style="margin-bottom: 10px;">Mostrar Turnos</a></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{ turno_form.as_table }}
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Botón Mostrar Turno -->
+            </div>
+
+            <!-- Formulario de Cliente -->
+            <div class="col-md-4">
+                <div class="card border-dark">
+                    <div class="card-header bg-light text-center fw-bold">Registra Tus Datos</div>
+                    <div class="card-body">
+                        {{ cliente_form.as_p }}
+                        <button type="submit" class="btn btn-primary w-100 mt-3">Confirmar Turno</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <script src="{% static 'Java/calendario.js' %}"></script>
 </body>
 </html>

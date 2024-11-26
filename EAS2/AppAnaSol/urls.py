@@ -6,6 +6,8 @@ from . import views
 
 urlpatterns = [
     path('', views.base, name='inicio'),
+    path('EspacioAnaSol/', views.base, name='inicio'),
+    path('EspacioAnaSol/Tutorial', views.tutorial, name='tutorial'),
     path('elegir_servicio/', views.servicios, name='elegir_servicio'),
     path('elegir_turno/<str:servicio>/', views.elegir_turno, name='elegir_turno'),
     path('confirmacion_turno/<str:servicio_nombre>/', views.confirmacion_turno, name='confirmacion_turno'),

@@ -1,61 +1,66 @@
+/* inicio.html */
+
 body {
-    background-image: url("../imagenes/10.png");
+    background-image: url(../imagenes/10.png);
     background-repeat: no-repeat;
     background-size: cover;
 }
 
+.titulo{
+    color: #a300b1;
+}
+
 .logo {
-    width: 50%;
-    height: 50%;
+    width: 210px; /* Tamaño fijo para todas las pantallas */
+    height: 210px; /* Mantener proporción */
+    object-fit: cover; /* Asegura que la imagen encaje en el contenedor */
 }
-
-.botones {
-    text-align: center;
-}
-
 .tutorial, .reserva {
-    display: inline-block;
     background: linear-gradient(90deg, #fa8dfa 0%, #b033bb 100%);
-    padding: 10px 35px;
     color: #fdfdfd;
     border-radius: 25px;
     text-decoration: none;
     font-weight: bold;
+    width: 250px;
+
+}
+footer {
+    background-color: rgba(255, 255, 255, 0.8);
 }
 
-.tutorial {
-    margin-top: 3%;
-    margin-right: 20px;
+/* Elegir_servicio.html */
+
+.card {
+    background-color: #ffffff; /* Blanco */
+    border: 2px solid #d29dc3; /* Borde morado claro */
+    color: #6c3483; /* Morado */
+}
+.btn-secondary {
+    background-color: #6c3483; /* Morado */
+    border: none;
+}
+.btn-secondary:hover {
+    background-color: #9b59b6; /* Morado más claro */
 }
 
-.reserva {
-    margin-top: 1rem;
-    margin-right: 20px;
-    padding: 10px 60px;
-}
 
-.iconos {
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
-    margin-top: 3%;
+body {
+    background-color: #f8e8f1; /* Rosa claro */
 }
-
-.ig, .wsp {
-    width: 10rem;
-    height: 10rem;
+.carousel-item .card {
+    background-color: #ffffff; /* Blanco */
+    border: 2px solid #d29dc3; /* Borde morado claro */
+    color: #6c3483; /* Morado */
 }
-
-.boton-login {
-    display: inline-block;
-    background: linear-gradient(90deg, #fa8dfa 0%, #b033bb 100%);
-    padding: 10px 35px;
-    color: #fdfdfd;
-    border-radius: 25px;
-    text-decoration: none;
-    font-weight: bold;
+.btn-secondary {
+    background-color: #6c3483; /* Morado */
+    border: none;
 }
-
-.texto-sesion {
-    text-decoration: none;
+.btn-secondary:hover {
+    background-color: #9b59b6; /* Morado más claro */
+}
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    background-color: #6c3483; /* Morado */
+    border-radius: 50%;
 }

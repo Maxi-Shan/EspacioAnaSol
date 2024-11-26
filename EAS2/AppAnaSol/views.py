@@ -7,6 +7,9 @@ from django.utils.timezone import now
 def base(request):
     return render(request, 'base.html')
 
+def tutorial(request):
+    return render(request, 'tutorial.html')
+
 def servicios(request):
     servicios = Servicios.objects.all()
     return render(request, 'elegir_servicio.html', {'servicios': servicios})
@@ -127,13 +130,24 @@ def confirmacion_turno(request, servicio_nombre):
 
     return render(request, 'confirmacion_turno.html', context)
 
+
 def procesando_reserva(request, pk):
     turno = get_object_or_404(Turno, pk=pk)
-    
-    return render(request, 'procesando_reserva.html', {'turno':turno})
+
+    # Si se detecta una actualización (refresh), redirige a la página base.
+    if request.method == "GET" and 'refresh' in request.META.get('HTTP_CACHE_CONTROL', '').lower():
+        return redirect('inicio')
+
+    return render(request, 'procesando_reserva.html', {'turno': turno})
+
 
 def tiempo_agotado(request):
+    # Si se detecta una actualización (refresh), redirige a la página de inicio.
+    if request.method == "GET" and 'refresh' in request.META.get('HTTP_CACHE_CONTROL', '').lower():
+        return redirect('inicio')
+
     return render(request, 'tiempo_agotado.html')
+
 
 def mostrar_turnos(request):
     fecha = request.GET.get('fecha')

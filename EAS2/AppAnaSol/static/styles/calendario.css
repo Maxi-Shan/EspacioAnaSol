@@ -1,7 +1,18 @@
+body {
+    background-image: url(../imagenes/10.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
 .container {
     display: flex;
     justify-content: space-between;
     padding: 20px;
+}
+
+.boton{
+    background-color: #d39fea;
+    padding: 10px;
 }
 
 .tarjeta-servicio {

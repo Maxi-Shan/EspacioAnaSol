@@ -7,38 +7,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inicio</title>
     <link rel="stylesheet" type="text/css" href="{% static 'styles/style.css' %}">
-    <script src="{% static 'Java/calendario.js' %}"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'styles/estilos.css' %}">
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
 </head>
 <body>
-    <h1 class="text-center my-4">ELIGE TU SERVICIO Y REALIZA TU RESERVA</h1>
+
+    <!-- Botón para volver al inicio -->
+
+    <div class="position-absolute top-0 start-0 m-3">
+        <a href="{% url 'inicio' %}" class="btn btn-secondary">Volver</a>
+    </div>
+
+    <h1 class="titulo mt-3 text-center fw-bold">ELIGE TU SERVICIO Y REALIZA TU RESERVA</h1>
 
     <!-- Carrusel de Servicios -->
     <div id="serviciosCarousel" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-inner">
             {% for servicio in servicios %}
-                <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                    <!-- Contenedor de la tarjeta del servicio -->
-                    <div class="tarjeta-servicio text-center p-4" style="max-width: 500px; margin: auto;">
-                        {% if servicio.imagen %}
-                            <img src="{{ servicio.imagen.url }}" class="d-block w-75 mx-auto" alt="{{ servicio.nombre_del_servicio }}" style="height: 250px; object-fit: cover;">
-                        {% endif %}
-                        <div class="titulo-servicio mt-3">{{ servicio.nombre_del_servicio }}</div>
-                        <div class="descripcion-servicio">
-                            <p>{{ servicio.descripcion_del_servicio }}</p>
-                            <div class="info-servicio">
-                                Duración: {{ servicio.duracion }}<br>
-                                Valor del Servicio: ${{ servicio.precio_del_servicio }}<br>
-                                Valor de la Reserva: {{ servicio.senia }}%
-                            </div>
+            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                <!-- Contenedor de la tarjeta del servicio -->
+                <div class="tarjeta-servicio text-center p-4" style="max-width: 500px; margin: auto;">
+                    {% if servicio.imagen %}
+                        <img src="{{ servicio.imagen.url }}" class="d-block w-75 mx-auto" alt="{{ servicio.nombre_del_servicio }}" style="height: 250px; object-fit: cover;">
+                    {% endif %}
+                    <div class="titulo-servicio mt-3">{{ servicio.nombre_del_servicio }}</div>
+                    <div class="descripcion-servicio">
+                        <p>{{ servicio.descripcion_del_servicio }}</p>
+                        <div class="info-servicio">
+                            Duración: {{ servicio.duracion }}<br>
+                            Valor del Servicio: ${{ servicio.precio_del_servicio }}<br>
+                            Valor de la Reserva: {{ servicio.senia }}%
                         </div>
-                        <!-- Botón para reservar -->
-                        <a href="{% url 'elegir_turno' servicio.nombre_del_servicio %}" class="btn btn-primary mt-3 reservar-boton">Reservar</a>
                     </div>
+                    <!-- Botón para reservar -->
+                    <a href="{% url 'elegir_turno' servicio.nombre_del_servicio %}" class="btn btn-primary mt-3 reservar-boton">Reservar</a>
                 </div>
-            {% endfor %}
+            </div>
+        {% endfor %}
         </div>
 
         <!-- Controles de navegación del carrusel -->
@@ -52,15 +59,9 @@
         </button>
     </div>
 
-    <!-- Botón para volver al inicio -->
-    <a href="{% url 'inicio' %}" class="btn btn-secondary mt-5 d-block text-center">Volver</a>
-    
-    <footer class="text-center mt-4">
-        <p>&copy; 2024 Espacio AnaSol</p>
+
+    <footer class="text-center py-4" style="margin-top: 50px;">
+        <p class="mb-0">© 2024 Estética de Uñas. Todos los derechos reservados.</p>
     </footer>
 </body>
-
 </html>
-    
-        
-
