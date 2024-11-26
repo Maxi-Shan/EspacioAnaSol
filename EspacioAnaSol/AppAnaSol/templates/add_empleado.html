@@ -8,55 +8,70 @@
             <h2>Agregar Empleado</h2>
         </div>
         <div class="card-body">
-            <form method="POST">
+            <form method="POST" id="form-empleado">
                 {% csrf_token %}
                 
                 <div class="form-group row">
                     <label for="dni" class="col-md-4 col-form-label">DNI:</label>
                     <div class="col-md-8">
-                        <input type="number" class="form-control" id="dni" name="dni" required>
+                        <input type="number" class="form-control {% if errores.dni %}is-invalid{% endif %}" id="dni" name="dni" value="{{ dni }}">
+                        {% if errores.dni %}
+                            <div class="invalid-feedback">{{ errores.dni }}</div>
+                        {% endif %}
                     </div>
                 </div>
                 
                 <div class="form-group row">
                     <label for="nombre" class="col-md-4 col-form-label">Nombre:</label>
                     <div class="col-md-8">
-                        <input type="text" class="form-control" id="nombre" name="nombre" required>
+                        <input type="text" class="form-control {% if errores.nombre %}is-invalid{% endif %}" id="nombre" name="nombre" value="{{ nombre }}">
+                        {% if errores.nombre %}
+                            <div class="invalid-feedback">{{ errores.nombre }}</div>
+                        {% endif %}
                     </div>
                 </div>
                 
                 <div class="form-group row">
                     <label for="apellido" class="col-md-4 col-form-label">Apellido:</label>
                     <div class="col-md-8">
-                        <input type="text" class="form-control" id="apellido" name="apellido" required>
+                        <input type="text" class="form-control {% if errores.apellido %}is-invalid{% endif %}" id="apellido" name="apellido" value="{{ apellido }}">
+                        {% if errores.apellido %}
+                            <div class="invalid-feedback">{{ errores.apellido }}</div>
+                        {% endif %}
                     </div>
                 </div>
                 
                 <div class="form-group row">
                     <label for="domicilio" class="col-md-4 col-form-label">Domicilio:</label>
                     <div class="col-md-8">
-                        <input type="text" class="form-control" id="domicilio" name="domicilio">
+                        <input type="text" class="form-control" id="domicilio" name="domicilio" value="{{ domicilio }}">
                     </div>
                 </div>
                 
                 <div class="form-group row">
                     <label for="correo_electronico" class="col-md-4 col-form-label">Correo Electrónico:</label>
                     <div class="col-md-8">
-                        <input type="email" class="form-control" id="correo_electronico" name="correo_electronico">
+                        <input type="email" class="form-control {% if errores.correo_electronico %}is-invalid{% endif %}" id="correo_electronico" name="correo_electronico" value="{{ correo_electronico }}">
+                        {% if errores.correo_electronico %}
+                            <div class="invalid-feedback">{{ errores.correo_electronico }}</div>
+                        {% endif %}
                     </div>
                 </div>
                 
                 <div class="form-group row">
                     <label for="numero_telefono" class="col-md-4 col-form-label">Número de Teléfono:</label>
                     <div class="col-md-8">
-                        <input type="tel" class="form-control" id="numero_telefono" name="numero_telefono">
+                        <input type="tel" class="form-control" id="numero_telefono" name="numero_telefono" value="{{ numero_telefono }}">
                     </div>
                 </div>
                 
                 <div class="form-group row">
                     <label for="contraseña" class="col-md-4 col-form-label">Contraseña:</label>
                     <div class="col-md-8">
-                        <input type="password" class="form-control" id="contraseña" name="contraseña" required>
+                        <input type="password" class="form-control {% if errores.contraseña %}is-invalid{% endif %}" id="contraseña" name="contraseña" value="{{ contraseña }}">
+                        {% if errores.contraseña %}
+                            <div class="invalid-feedback">{{ errores.contraseña }}</div>
+                        {% endif %}
                     </div>
                 </div>
                 
@@ -64,7 +79,7 @@
                     <label for="estado_empleado" class="col-md-4 col-form-label">Estado del Empleado:</label>
                     <div class="col-md-8">
                         <select class="form-control" id="estado_empleado" name="estado_empleado">
-                            <option value="activo">Activo</option>
+                            <option value="activo" {% if estado_empleado == 'activo' %} selected {% endif %}>Activo</option>
                         </select>
                     </div>
                 </div>
@@ -73,12 +88,12 @@
                     <label for="es_admin" class="col-md-4 col-form-label">Rol:</label>
                     <div class="col-md-8">
                         <select id="es_admin" name="es_admin" class="form-control">
-                            <option value="False">Empleado</option>
-                            <option value="True">Administrador</option>
+                            <option value="False" {% if es_admin_value == False %} selected {% endif %}>Empleado</option>
+                            <option value="True" {% if es_admin_value == True %} selected {% endif %}>Administrador</option>
                         </select>
                     </div>
                 </div>
-            </form>
+            
         </div>
         
         <!-- Card Footer, siempre al final -->
@@ -86,7 +101,7 @@
             <button type="submit" class="btn btn-sm mr-2 text-white mx-2 mr-2" style="background-color: #701C7E;">Guardar</button>
             <a href="{% url 'list_empleados' %}" class="btn btn-warning btn-sm text-white ml-2">Cancelar</a>
         </div>
+    </form>
     </div>
 </div>  
 {% endblock %}
-

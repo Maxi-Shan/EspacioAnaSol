@@ -6,9 +6,9 @@
     <div class="title-section">
         <h2>Lista de Ventas</h2>
     </div>
-    <button class="btn btn-primary">
+    <a href="{% url 'gventas' %}"><button class="btn btn-primary">
         <i class="fas fa-chart-line"></i> Gráfico
-    </button>
+    </button></a>
     <button class="btn btn-danger">
         <i class="fas fa-file-pdf"></i> PDF
     </button>    
@@ -37,7 +37,7 @@
             </thead>
             <tbody>
                 {% for venta in ventas %}
-                <tr class="{% if venta.id_caja.estado %}estado-abierta{% else %}estado-cerrada{% endif %}">
+                <tr class="{% if venta.id_caja %}estado-abierta{% else %}estado-cerrada{% endif %}">
                     <td>{{ venta.id_venta }}</td>
                     <td>{{ venta.id_caja }}</td>
                     <td>{{ venta.id_cliente.nombre }} {{ venta.id_cliente.apellido }}</td>

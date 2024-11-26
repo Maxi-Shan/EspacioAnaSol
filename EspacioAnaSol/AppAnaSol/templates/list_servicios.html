@@ -7,16 +7,12 @@
 <div class="col-md-9 main-content">
     <div class="title-section">
         <h2>Lista de Servicios</h2>
+        {% if es_admin %}
         <form action="{% url 'add_servicio' %}" method="get">
             <button class="btn btn-insert">Agregar Servicios +</button>
         </form>
-    </div>
-    <button class="btn btn-primary">
-        <i class="fas fa-chart-line"></i> Gráfico
-    </button>
-    <button class="btn btn-danger">
-        <i class="fas fa-file-pdf"></i> PDF
-    </button>    
+        {% endif %}
+    </div>   
     <div class="action-bar">
         Acción
         <select class="form-control">
@@ -62,7 +58,7 @@
                     {% if es_admin %}
                     <td>
                         <!-- Botón Modificar con icono y título -->
-                        <form action="{% url 'update_servicio' servicio.id_servicio %}" method="post" style="display:inline;">
+                        <form action="{% url 'modificar_servicio' servicio.id_servicio %}" method="post" style="display:inline;">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-warning btn-sm" title="Modificar Servicio">
                                 <i class="fas fa-edit"></i>

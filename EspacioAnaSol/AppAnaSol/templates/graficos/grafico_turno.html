@@ -1,14 +1,12 @@
 {% extends "index.html" %}
 
-{% block titulo %} grafico turno {% endblock %}
+{% block titulo %} Grafico De Turno {% endblock %}
 
 {% block contenido %} 
-<h1>grafico turno</h1>
+<h1>Grafico de Turnos</h1>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <canvas id="turnoChart" width="400" height="200"></canvas>
-
-
 
 <script>
     const ctx = document.getElementById('turnoChart').getContext('2d');

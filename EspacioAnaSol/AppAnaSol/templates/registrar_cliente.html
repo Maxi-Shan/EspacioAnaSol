@@ -16,38 +16,66 @@
                 <div class="form-group row">
                     <label for="nombre" class="col-md-4 col-form-label">Nombre:</label>
                     <div class="col-md-8">
-                        <input type="text" class="form-control" id="nombre" name="nombre" required>
+                        <input type="text" class="form-control {% if form.nombre.errors %}is-invalid{% endif %}" id="nombre" name="nombre">
+                        {% if form.nombre.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.nombre.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
 
                 <div class="form-group row">
                     <label for="apellido" class="col-md-4 col-form-label">Apellido:</label>
                     <div class="col-md-8">
-                        <input type="text" class="form-control" id="apellido" name="apellido" required>
+                        <input type="text" class="form-control {% if form.apellido.errors %}is-invalid{% endif %}" id="apellido" name="apellido">
+                        {% if form.apellido.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.apellido.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
 
                 <div class="form-group row">
                     <label for="correo_electronico" class="col-md-4 col-form-label">Correo Electrónico:</label>
                     <div class="col-md-8">
-                        <input type="email" class="form-control" id="correo_electronico" name="correo_electronico" required>
+                        <input type="email" class="form-control {% if form.correo_electronico.errors %}is-invalid{% endif %}" id="correo_electronico" name="correo_electronico">
+                        {% if form.correo_electronico.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.correo_electronico.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
 
                 <div class="form-group row">
                     <label for="numero_telefono" class="col-md-4 col-form-label">Número de Teléfono:</label>
                     <div class="col-md-8">
-                        <input type="text" class="form-control" id="numero_telefono" name="numero_telefono" required>
+                        <input type="tel" class="form-control {% if form.numero_telefono.errors %}is-invalid{% endif %}" id="numero_telefono" name="numero_telefono">
+                        {% if form.numero_telefono.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.numero_telefono.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
                     </div>
-                </div>
-
-            </form>
+                </div>   
         </div>
         <!-- Card Footer, siempre al final -->
         <div class="card-footer bg-danger d-flex pt-3">
             <button type="submit" class="btn btn-sm text-white mx-2 mr-2" style="background-color: #701C7E;">Registrar</button>
-            <a class="btn btn-warning btn-sm text-white ml-2" href="{% url 'cancelar_registro' %}">Cancelar</a>
+            <a href="{% url 'cancelar_registro' %}" class="btn btn-warning btn-sm text-white ml-2">Cancelar</a>
         </div>
+    </form>
     </div>
 </div>
 {% endblock %}
+

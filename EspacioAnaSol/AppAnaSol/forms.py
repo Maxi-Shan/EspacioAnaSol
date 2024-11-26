@@ -4,11 +4,6 @@ from django.utils import timezone
 from django.utils.timezone import now
 from calendar import monthrange
 
-class EmpleadoForm(forms.ModelForm):
-    class Meta:
-        model = Empleado
-        fields = ['dni', 'nombre', 'apellido', 'domicilio', 'correo_electronico', 'numero_telefono', 'contraseña', 'estado_empleado', 'es_admin']
-
 class AbrirCajaForm(forms.ModelForm):
     class Meta:
         model = Caja
@@ -63,12 +58,10 @@ class TurnoForm(forms.ModelForm):
     id_empleado = forms.ModelChoiceField(queryset=Empleado.objects.all(), required=True)
     id_servicio = forms.ModelChoiceField(queryset=Servicios.objects.all(), required=True)
 
-    diseño_uñas = forms.ImageField(required=False)
-    senia_comprobante = forms.ImageField(required=False)
 
     class Meta:
         model = Turno
-        fields = ['fecha', 'hora', 'id_empleado', 'id_servicio', 'diseño_uñas', 'senia_comprobante']
+        fields = ['fecha', 'hora', 'id_empleado', 'id_servicio']
 
     def clean_fecha(self):
         """

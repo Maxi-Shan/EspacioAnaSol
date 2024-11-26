@@ -3,50 +3,41 @@
 {% block titulo %} grafico caja {% endblock %}
 
 {% block contenido %} 
-<h1>jajajajajja</h1>
-<!-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<h1>Gráfico de Caja por Empleado</h1>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <canvas id="cajaChart" width="400" height="200"></canvas>
-<script>
-    const ctx = document.getElementById('cajaChart').getContext('2d'); // Cambiado a 'stockChart'
-  
-    new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-        datasets: [{
-          label: '# of Votes',
-          data: [12, 19, 3, 5, 2, 3],
-          backgroundColor: [
-            'rgba(255, 99, 132, 0.2)',
-            'rgba(54, 162, 235, 0.2)',
-            'rgba(255, 206, 86, 0.2)',
-            'rgba(75, 192, 192, 0.2)',
-            'rgba(153, 102, 255, 0.2)',
-            'rgba(255, 159, 64, 0.2)'
-          ],
-          borderColor: [
-            'rgba(255, 99, 132, 1)',
-            'rgba(54, 162, 235, 1)',
-            'rgba(255, 206, 86, 1)',
-            'rgba(75, 192, 192, 1)',
-            'rgba(153, 102, 255, 1)',
-            'rgba(255, 159, 64, 1)'
-          ],
-          borderWidth: 1
-        }]
-      },
-      options: {
-        scales: {
-          y: {
-            beginAtZero: true
-          }
-        }
-      }
-    });
-</script> -->
 
+    <script>
+        // Datos renderizados directamente desde el servidor
+        const empleados = {{ empleados|safe }}; // Lista de empleados pasada como contexto
+        const montos = {{ montos|safe }};       // Lista de montos pasada como contexto
 
-</script>
+        // Crear el gráfico con Chart.js
+        const ctx = document.getElementById('cajaChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: empleados, // Etiquetas de las barras (empleados)
+                datasets: [{
+                    label: 'Monto Recaudado ($)', // Título del gráfico
+                    data: montos, // Datos (montos recaudados)
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)', // Color de las barras
+                    borderColor: 'rgba(54, 162, 235, 1)',       // Color del borde
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true // Comenzar desde 0 en el eje Y
+                    }
+                }
+            }
+        });
+    </script>
+
 
 
 {% endblock %}

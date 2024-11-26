@@ -11,6 +11,10 @@ body {
     background-size: cover;
 }
 
+.fondo{
+    background-color: #fcd3f6a8;
+}
+
 .welcome-section h2 {
     font-size: 100vm;
 }

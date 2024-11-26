@@ -37,7 +37,7 @@
             <tbody>
                 {% for reserva in reservas %}
                 <tr class="
-                    {% if reserva.estado_reserva == 'Confirmado' %} estado-confirmado
+                    {% if reserva.estado_reserva == 'Confirmada' %} estado-confirmado
                     {% elif reserva.estado_reserva == 'Terminada' %} estado-terminado
                     {% elif reserva.estado_reserva == 'Cancelada' %} estado-cancelado
                     {% endif %}

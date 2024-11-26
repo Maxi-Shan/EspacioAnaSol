@@ -4,31 +4,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- bootstrap -->
+    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <title>{% block titulo %} {% endblock %}</title>
+
+    <!-- Estilos personalizados -->
+    <style>
+        /* Estilo para que el fondo se vea mientras el contenido está en un cuadrado blanco */
+        body {
+            background-image: url("{% static 'imagenes/fondo.png' %}"); /* Reemplaza con tu imagen de fondo */
+            background-size: cover;
+            background-position: center;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+        }
+
+        .content-box {
+            background-color: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px; /* Ajusta el tamaño del cuadro */
+        }
+
+        .nav-link {
+            border-radius: 5px;
+            margin-bottom: 10px; /* Espacio entre los botones */
+            padding: 10px 15px;
+            text-transform: uppercase;
+            font-weight: bold;
+            background-color: #701C7E;
+            color: white;
+            text-decoration: none;
+            display: block; /* Los hace apilarse verticalmente */
+        }
+
+        .nav-link:hover {
+            background-color: #590c6c; /* Color más oscuro al hacer hover */
+        }
+
+        .navbar {
+            background-color: transparent;
+            padding: 15px 0;
+            display: flex;
+            flex-direction: column; /* Cambia la dirección a vertical */
+            align-items: flex-start; /* Alinea los elementos al principio (izquierda) */
+        }
+
+        .navbar .nav-item {
+            width: 100%; /* Hace que los botones ocupen todo el ancho */
+        }
+    </style>
 </head>
 <body>
-    <nav class="navbar navbar-wxpand navbar-light bg-light">
+
+    <nav class="navbar navbar-expand navbar-light">
         <div class="nav navbar-nav">
-            <a class="nav-item nav-link active" href="{% url 'pagina_principal' %}">inicio</a>
-            <a class="nav-item nav-link active" href="{% url 'gventas' %}">grafico ventas</a>
-            <a class="nav-item nav-link active" href="{% url 'gturno' %}">grafico turno</a>
+            <a class="nav-item nav-link active" href="{% url 'pagina_principal' %}">Inicio</a>
+            <a class="nav-item nav-link active" href="{% url 'gventas' %}">Gráfico Ventas</a>
+            <a class="nav-item nav-link active" href="{% url 'gturno' %}">Gráfico Turno</a>
+            <a class="nav-item nav-link active" href="{% url 'gcaja' %}">Gráficos Caja</a>
         </div>
     </nav>
+
     <div class="container">
         <div class="row">
             <div class="col-12">
-                {% block contenido %} {% endblock %}
+                <!-- Bloque de contenido dentro de un cuadro blanco -->
+                <div class="content-box">
+                    {% block contenido %} {% endblock %}
+                </div>
             </div>
         </div>
     </div>
-   
 
-
-    <!-- javascrip -->
+    <!-- JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <!-- ChartJS -->
-    <!-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> -->
 </body>
 </html>

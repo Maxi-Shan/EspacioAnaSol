@@ -14,9 +14,9 @@
         </form>
         {% endif %}
     </div>
-    <button class="btn btn-primary">
+    <a href="{% url 'gcaja' %}"><button class="btn btn-primary">
         <i class="fas fa-chart-line"></i> Gráfico
-    </button>
+    </button></a>
     <button class="btn btn-danger">
         <i class="fas fa-file-pdf"></i> PDF
     </button>    
@@ -37,9 +37,8 @@
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Empleado</th>
-                    <th>Fecha Apertura</th>
-                    <th>Fecha Cierre</th>
+                    <th colspan="2">Apertura de Caja</th>
+                    <th colspan="2">Cierre de Caja</th>
                     <th>Monto Inicial</th>
                     <th>Monto Recaudado</th>
                     <th>Monto Final</th>
@@ -55,6 +54,7 @@
                     <td>{{ caja.id_caja }}</td>
                     <td>{{ caja.empleado.nombre }}</td>
                     <td>{{ caja.fecha_apertura }}</td>
+                    <td>{{ caja.empleado_cierre }}</td>
                     <td>
                         {% if caja.fecha_cierre %}
                             {{ caja.fecha_cierre }}
@@ -103,7 +103,7 @@
                 </tr>
                 {% endfor %}
             </tbody>
-        </table>
+        </table>    
     </div>
-</div>
+
 {% endblock %}

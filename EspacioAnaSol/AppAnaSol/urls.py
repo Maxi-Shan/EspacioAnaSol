@@ -29,7 +29,7 @@ urlpatterns = [
     # Servicios
     path('servicios/', views.list_servicios, name='list_servicios'),
     path('servicios/add/', views.add_servicio, name='add_servicio'),
-    path('servicios/update/<int:id_servicio>/', views.update_servicio, name='update_servicio'),
+    path('servicios/update/<int:id_servicio>/', views.modificar_servicio, name='modificar_servicio'),
     path('servicios/delete/<int:id_servicio>/', views.delete_servicio, name='delete_servicio'),
 
     # Turnos
@@ -59,6 +59,7 @@ urlpatterns = [
     path('inicio/',views.inicio,name='inicio'),
     path('gturno/',views.gturno,name='gturno'),
     path('gventas/',views.gventas,name='gventas'),
+    path('gcaja/',views.gcaja,name='gcaja')
 ]
 
 if settings.DEBUG:

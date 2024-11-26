@@ -1,16 +1,24 @@
 {% extends "base.html" %}
 {% load static %}
+
 {% block titulo %}Listado de Turnos{% endblock %}
 
 {% block contenido %} 
 <div class="col-md-9 main-content">
     <div class="title-section">
         <h2>Lista de Turnos</h2>
+        {% if es_admin %}
         <form action="{% url 'registrar_cliente' %}" method="get">
             <button class="btn btn-insert">Agregar Turno +</button>
         </form>
+        {% endif %}
     </div>
-    <a href="{% url 'gturno' %}"><button class="btn btn-primary">Grafico</button></a>
+    <a href="{% url 'gturno' %}"><button class="btn btn-primary">
+        <i class="fas fa-chart-line"></i> Gráfico
+    </button></a>
+    <button class="btn btn-danger">
+        <i class="fas fa-file-pdf"></i> PDF
+    </button> 
     <div class="action-bar">
         Acción:
         <select id="action-select" class="form-control">
@@ -33,6 +41,9 @@
                     <th>Estado</th>
                     <th>Empleados</th>
                     <th>Servicios</th>
+                    {% if es_admin %}
+                    <th>Acciones</th>
+                    {% endif %}
                 </tr>
             </thead>
             <tbody>
@@ -41,8 +52,7 @@
                     {% if data.turno.estado_turno == 'Confirmado' %} estado-confirmado
                     {% elif data.turno.estado_turno == 'Pendiente' %} estado-pendiente
                     {% elif data.turno.estado_turno == 'Cancelado' %} estado-cancelado
-                    {% endif %}
-                ">
+                    {% endif %}">
                     <td>
                         <input type="checkbox" name="selected_turnos" value="{{ data.turno.id_turno }}"
                             {% if data.turno.estado_turno == "Confirmado" or data.turno.estado_turno == "Cancelado" %} disabled {% endif %}>
@@ -68,6 +78,17 @@
                     <td>{{ data.turno.estado_turno }}</td>
                     <td>{{ data.empleados }}</td>
                     <td>{{ data.servicios }}</td>
+                    {% if es_admin %}
+                    <td>
+                        <!-- Botones de Modificar y Eliminar solo para administradores -->
+                        <a href="{% url 'modificar_turno' data.turno.id_turno %}" class="btn btn-warning btn-sm" title="Cambiar Empleado">
+                            <i class="fas fa-edit"></i> 
+                        </a>
+                        <a href="{% url 'eliminar_turno' data.turno.id_turno %}" class="btn btn-danger btn-sm" title="Eliminar Turno" onclick="return confirm('¿Estás seguro de eliminar este turno?');">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
+                    </td>
+                    {% endif %}
                 </tr>
                 {% endfor %}
             </tbody>            

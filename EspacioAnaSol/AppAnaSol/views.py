@@ -1,6 +1,5 @@
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.hashers import make_password
 from django.core.mail import send_mail
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.files.storage import default_storage
@@ -8,11 +7,11 @@ from django.conf import settings
 from django.contrib import messages
 from django.utils import timezone
 from .models import Caja, Empleado, ServicioXTurno, EmpleadoXTurno, Cliente, Turno, Reservas, Servicios, Venta, Reservas, DetalleVenta
-from .forms import EmpleadoForm, ServiciosForm, ClienteForm, TurnoForm, MetodoPagoForm
+from .forms import ServiciosForm, ClienteForm, TurnoForm, MetodoPagoForm
 from django.core import management
 from django.utils import timezone
 from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
-from django.db.models import Count
+from django.db.models import Count, Sum
 import os
 import json
 
@@ -39,8 +38,8 @@ def login(request):
                     dni_error = 'Estás suspendido.'
                     return redirect('login')
 
-                # Verificar la contraseña
-                if empleado.verificar_contraseña(contraseña):
+                # Verificar la contraseña con el método `check_password`
+                if empleado.contraseña == contraseña: 
                     # Guardar DNI del empleado en la sesión
                     request.session['empleado_dni'] = empleado.dni
                     messages.success(request, '¡Entraste a la Interfaz para Empleados! ¡Bienvenido a Espacio Ana Sol!')
@@ -148,18 +147,78 @@ def update_empleado_status(request, dni):
         empleado.save()
         return redirect('list_empleados')
 
+import re
+
 @admin_required
 @requerir_autenticacion
 def add_empleado(request):
-    empleado = obtener_empleado_autenticado(request)
+    empleado_autenticado = obtener_empleado_autenticado(request)
+    
     if request.method == "POST":
-        form = EmpleadoForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('list_empleados')
-    else:
-        form = EmpleadoForm()
-    return render(request, 'add_empleado.html', {'form': form, 'es_admin': empleado.es_admin})
+        dni = request.POST.get('dni')
+        nombre = request.POST.get('nombre')
+        apellido = request.POST.get('apellido')
+        domicilio = request.POST.get('domicilio')
+        correo_electronico = request.POST.get('correo_electronico')
+        numero_telefono = request.POST.get('numero_telefono')
+        contraseña = request.POST.get('contraseña')
+        estado_empleado = request.POST.get('estado_empleado', 'activo')
+        es_admin = request.POST.get('es_admin') == 'True'
+
+        errores = {}  # Diccionario para almacenar los errores por campo
+
+        # Validar que los campos obligatorios están completos
+        if not dni:
+            errores['dni'] = 'El DNI es obligatorio.'
+        if not nombre:
+            errores['nombre'] = 'El nombre es obligatorio.'
+        if not apellido:
+            errores['apellido'] = 'El apellido es obligatorio.'
+        if not correo_electronico:
+            errores['correo_electronico'] = 'El correo electrónico es obligatorio.'
+        if not contraseña:
+            errores['contraseña'] = 'La contraseña es obligatoria.'
+        
+        # Validar que el correo electrónico tiene el formato correcto
+        correo_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        if correo_electronico and not re.match(correo_regex, correo_electronico):
+            errores['correo_electronico'] = 'El correo electrónico debe tener un formato válido (ej. usuario@dominio.com).'
+
+        # Si hay errores, renderizamos de nuevo la plantilla con los errores
+        if errores:
+            return render(request, 'add_empleado.html', {
+                'errores': errores,
+                'es_admin': empleado_autenticado.es_admin,
+                'dni': dni,
+                'nombre': nombre,
+                'apellido': apellido,
+                'correo_electronico': correo_electronico,
+                'numero_telefono': numero_telefono,
+                'domicilio': domicilio,
+                'estado_empleado': estado_empleado,
+                'es_admin_value': es_admin
+            })
+        
+        # Crear nuevo empleado si no hay errores
+        nuevo_empleado = Empleado(
+            dni=dni,
+            nombre=nombre,
+            apellido=apellido,
+            domicilio=domicilio,
+            correo_electronico=correo_electronico,
+            numero_telefono=numero_telefono,
+            estado_empleado=estado_empleado,
+            es_admin=es_admin,
+            contraseña_original=contraseña
+        )
+        
+        # Guardar el empleado
+        nuevo_empleado.save()
+
+        return redirect('list_empleados')
+
+    return render(request, 'add_empleado.html', {'es_admin': empleado_autenticado.es_admin})
+
 
 @admin_required
 @requerir_autenticacion
@@ -173,24 +232,22 @@ def update_empleado(request, dni):
         domicilio = request.POST.get('domicilio')
         correo_electronico = request.POST.get('correo_electronico')
         numero_telefono = request.POST.get('numero_telefono')
-        contraseña = request.POST.get('contraseña')  # Obtén la contraseña en texto claro
-        estado_empleado = request.POST.get('estado_empleado', 'activo')  # Valor predeterminado 'activo'
-        es_admin = request.POST.get('es_admin') == 'True' 
-
-        # Validar que los campos obligatorios no estén vacíos
+        contraseña = request.POST.get('contraseña')  # Contraseña en texto claro
+        estado_empleado = request.POST.get('estado_empleado', 'activo')
+        es_admin = request.POST.get('es_admin') == 'True'
+        
         if not nombre or not apellido or not correo_electronico:
             return render(request, 'update_empleado.html', {
                 'empleado': empleado,
                 'es_admin': empleado_autenticado.es_admin,
                 'error': 'Por favor, complete todos los campos obligatorios.'
             })
-
-        # Si la contraseña se modificó, actualizamos el campo cifrado y en texto claro
+        
+        # Si la contraseña se modificó, la ciframos y la guardamos en texto claro
         if contraseña:
-            empleado.set_password(contraseña)  # Cifra la nueva contraseña
-            empleado.contraseña_original = contraseña  # Guarda la contraseña en texto claro
+            empleado.contraseña_original = contraseña  # Guardamos la contraseña en texto claro
 
-        # Actualiza los otros campos
+        # Actualizamos otros campos
         empleado.nombre = nombre
         empleado.apellido = apellido
         empleado.domicilio = domicilio
@@ -199,35 +256,16 @@ def update_empleado(request, dni):
         empleado.estado_empleado = estado_empleado
         empleado.es_admin = es_admin
 
+        # Guardamos los cambios
         empleado.save()
 
         return redirect('list_empleados')
 
     return render(request, 'update_empleado.html', {
         'empleado': empleado,
-        'contraseña_original': empleado.contraseña_original,
+        'contraseña_original': empleado.contraseña_original,  # Para mostrar la contraseña en el formulario
         'es_admin': empleado_autenticado.es_admin
     })
-
-
-def guardar_empleado(request, empleado_id):
-    empleado = get_object_or_404(Empleado, pk=empleado_id)
-    if request.method == "POST":
-        contraseña = request.POST.get("contraseña")
-
-        if contraseña:
-            # Guardar la contraseña en texto plano
-            empleado.contraseña_original = contraseña
-
-            # Cifrar y guardar la contraseña en el campo encriptado
-            empleado.password = make_password(contraseña)
-
-        # Guardar otros datos
-        empleado.nombre = request.POST.get("nombre")
-        empleado.apellido = request.POST.get("apellido")
-        empleado.save()
-
-        return redirect("list_empleados")
 
 @login_required
 @requerir_autenticacion
@@ -236,10 +274,23 @@ def abrir_caja(request):
     if request.method == 'POST':
         monto_inicial = request.POST.get('monto_inicial')
 
-        try:
-            monto_inicial = float(monto_inicial)  # Convierte a float
-        except ValueError:
-            return render(request, 'abrir_caja.html', {'error': 'Monto inicial no válido.'})
+        errores = {}  # Diccionario para almacenar los errores
+
+        # Validar que el monto_inicial esté presente y sea un número
+        if not monto_inicial:
+            errores['monto_inicial'] = 'El monto inicial es obligatorio.'
+        else:
+            try:
+                monto_inicial = float(monto_inicial)  # Convierte a float
+            except ValueError:
+                errores['monto_inicial'] = 'El monto inicial debe ser un número válido.'
+
+        if errores:
+            return render(request, 'abrir_caja.html', {
+                'errores': errores,
+                'monto_inicial': monto_inicial if not 'monto_inicial' in errores else None,
+                'es_admin': empleado.es_admin
+            })
 
         # Obtener el empleado autenticado
         dni_empleado = request.session.get('empleado_dni')  # Obtener el dni del empleado desde la sesión
@@ -265,6 +316,7 @@ def abrir_caja(request):
     return render(request, 'abrir_caja.html', {
         'es_admin': empleado.es_admin
     })
+
 
 @login_required
 @requerir_autenticacion
@@ -294,7 +346,7 @@ def cerrar_caja(request, id_caja):
 
     return render(request, 'cerrar_caja.html', {'caja': caja, 'es_admin': empleado.es_admin})
 
-@login_required
+@admin_required
 @requerir_autenticacion
 def update_caja(request, id_caja):
     caja = get_object_or_404(Caja, id_caja=id_caja)
@@ -341,23 +393,68 @@ def add_servicio(request):
     empleado = obtener_empleado_autenticado(request)
     cajas_abiertas = Caja.objects.filter(estado=True).exists()
     if request.method == 'POST':
-        form = ServiciosForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Servicio agregado con éxito.')
-            return redirect('list_servicios')
-    else:
-        form = ServiciosForm()
-        print(form.errors)
-    return render(request, 'add_servicio.html', {'form': form, 'es_admin': empleado.es_admin, 'cajas_abiertas': cajas_abiertas,})
+        nombre_del_servicio = request.POST.get('nombre_del_servicio')
+        descripcion_del_servicio = request.POST.get('descripcion_del_servicio')
+        duracion = request.POST.get('duracion')
+        precio_del_servicio = request.POST.get('precio_del_servicio')
+        senia = request.POST.get('senia')
+        imagen = request.FILES.get('imagen')
 
+        errores = {}
 
-@login_required
+        # Validación de los campos obligatorios
+        if not nombre_del_servicio:
+            errores['nombre_del_servicio'] = 'El nombre del servicio es obligatorio.'
+        if not precio_del_servicio:
+            errores['precio_del_servicio'] = 'El precio del servicio es obligatorio.'
+        if not senia:
+            errores['senia'] = 'El valor de la seña es obligatorio.'
+        if not duracion:
+            errores['duracion'] = 'La duración es obligatoria.'
+
+        # Validación de precios y seña (deben ser números positivos)
+        try:
+            if float(precio_del_servicio) <= 0:
+                errores['precio_del_servicio'] = 'El precio debe ser un valor positivo.'
+        except ValueError:
+            errores['precio_del_servicio'] = 'El precio debe ser un número válido.'
+        
+        try:
+            if float(senia) <= 0:
+                errores['senia'] = 'El valor de la seña debe ser un valor positivo.'
+        except ValueError:
+            errores['senia'] = 'El valor de la seña debe ser un número válido.'
+
+        if errores:
+            return render(request, 'add_servicio.html', {
+                'errores': errores,
+                'form': request.POST,
+                'es_admin': empleado.es_admin,
+                'cajas_abiertas': cajas_abiertas,
+            })
+
+        # Si no hay errores, guarda el servicio
+        servicio = Servicios(
+            nombre_del_servicio=nombre_del_servicio,
+            descripcion_del_servicio=descripcion_del_servicio,
+            duracion=duracion,
+            precio_del_servicio=precio_del_servicio,
+            senia=senia,
+            imagen=imagen,
+        )
+        servicio.save()
+        messages.success(request, 'Servicio agregado con éxito.')
+        return redirect('list_servicios')
+    
+    return render(request, 'add_servicio.html', {'form': None, 'es_admin': empleado.es_admin, 'cajas_abiertas': cajas_abiertas})
+
+@admin_required
 @requerir_autenticacion
-def update_servicio(request, id_servicio):
-    servicio = get_object_or_404(Servicios, id_servicio=id_servicio)
+def modificar_servicio(request, id_servicio):
     empleado = obtener_empleado_autenticado(request)
     cajas_abiertas = Caja.objects.filter(estado=True).exists()
+    servicio = get_object_or_404(Servicios, id_servicio=id_servicio)
+    
     if request.method == 'POST':
         # Verifica los datos que están llegando
         nombre_del_servicio = request.POST.get('nombre_del_servicio')
@@ -385,9 +482,10 @@ def update_servicio(request, id_servicio):
         messages.success(request, 'Servicio actualizado con éxito.')
         return redirect('list_servicios')
 
-    return render(request, 'update_servicio.html', {'servicio': servicio, 'es_admin': empleado.es_admin, 'cajas_abiertas': cajas_abiertas,})
+    return render(request, 'modificar_servicio.html', {'servicio': servicio, 'es_admin': empleado.es_admin, 'cajas_abiertas': cajas_abiertas})
 
-@login_required
+
+@admin_required
 @requerir_autenticacion
 def delete_servicio(request, id_servicio):
     servicio = get_object_or_404(Servicios, id_servicio=id_servicio)
@@ -397,7 +495,7 @@ def delete_servicio(request, id_servicio):
         return redirect('list_servicios')
     return render(request, 'delete_servicio.html', {'servicio': servicio})
 
-@login_required
+@admin_required
 @requerir_autenticacion
 def registrar_cliente(request):
     empleado = obtener_empleado_autenticado(request)
@@ -413,7 +511,7 @@ def registrar_cliente(request):
         form = ClienteForm()
     return render(request, 'registrar_cliente.html', {'form': form, 'es_admin': empleado.es_admin, 'cajas_abiertas': cajas_abiertas,})
 
-@login_required
+@admin_required
 @requerir_autenticacion
 def registrar_turno(request):
     cliente_id = request.session.get('cliente_id')
@@ -447,7 +545,7 @@ def registrar_turno(request):
 
     return render(request, 'registrar_turno.html', {'form': form, 'es_admin': empleado.es_admin, 'cajas_abiertas': cajas_abiertas,})
 
-@login_required
+@admin_required
 @requerir_autenticacion
 def cancelar_registro(request):
     request.session.pop('cliente_id', None)  # Limpiar datos de sesión si existen
@@ -493,7 +591,7 @@ def list_turnos(request):
     return render(request, 'list_turnos.html', context)
 
 
-@login_required
+@admin_required
 @requerir_autenticacion
 def modificar_turno(request, turno_id):
     empleado = obtener_empleado_autenticado(request)
@@ -512,20 +610,20 @@ def modificar_turno(request, turno_id):
     # Obtener todos los empleados y servicios para mostrarlos en el formulario
     empleados = Empleado.objects.all()
 
-
     return render(request, 'modificar_turno.html', {
         'turno': turno,
         'empleados': empleados,
-        'es_admin': empleado.es_admin, 
+        'es_admin': empleado.es_admin,  # Pasar la variable es_admin
         'cajas_abiertas': cajas_abiertas,
     })
 
-@login_required
+@admin_required
 @requerir_autenticacion
 def eliminar_turno(request, turno_id):
     turno = get_object_or_404(Turno, id_turno=turno_id)
     turno.delete()
     return redirect('list_turnos')
+
 
 @login_required
 @requerir_autenticacion
@@ -586,11 +684,6 @@ def list_ventas(request):
     cajas_abiertas = Caja.objects.filter(estado=True).exists()
     return render(request, 'list_ventas.html', {'ventas': ventas, 'es_admin': empleado.es_admin, 'cajas_abiertas': cajas_abiertas,})
 
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib import messages
-from .models import Venta, DetalleVenta, Caja
-from .forms import MetodoPagoForm
-from django.contrib.auth.decorators import login_required
 
 @login_required
 @requerir_autenticacion
@@ -657,7 +750,6 @@ def list_reservas(request):
 def confirmar_turno(request):
     return gestionar_turno(request, accion='confirmar')
 
-@login_required
 def gestionar_turno(request, accion):
     if request.method == 'POST':
         data = json.loads(request.body)  # Leer el cuerpo JSON de la solicitud
@@ -686,7 +778,7 @@ def gestionar_turno(request, accion):
                         id_cliente=turno.id_cliente,
                         id_turno=turno,
                         id_serv_x_tur=servicio_x_turno,
-                        estado_reserva='En Proceso'
+                        estado_reserva='Confirmada'
                     )
 
                     # Crear registro de venta asociado a la reserva
@@ -828,14 +920,12 @@ def actualizar_reserva(request, reserva_id):
     return JsonResponse({"error": "Método no permitido"}, status=405)
 
 
-@login_required
 @requerir_autenticacion
 def inicio(request):
    
     return render(request,'index.html')
     #return HttpResponse("<h1>hola feos<h1>")
 
-@login_required
 @requerir_autenticacion
 def gturno(request):
     servicios = (
@@ -855,7 +945,8 @@ def gturno(request):
     return render(request,'graficos/grafico_turno.html',context)
     #return HttpResponse("<h1>hola feos<h1>")
 
-@login_required
+
+
 @requerir_autenticacion
 def gventas(request):
     ventas_por_metodo = (
@@ -874,3 +965,14 @@ def gventas(request):
     }
     
     return render(request, 'graficos/grafico_ventas.html',context)
+
+def gcaja(request):
+    data = Caja.objects.values('empleado_nombre', 'empleado_apellido').annotate(
+        total_recaudado=Sum('monto_final')
+    ).order_by('-total_recaudado')
+
+    empleados = [f"{d['empleado_nombre']} {d['empleado_apellido']}" for d in data]
+    # montos = [float(d['total_recaudado']) or 0 for d in data]
+    montos = [float(d['total_recaudado'] or 0) for d in data]
+
+    return render(request, 'graficos/grafico_caja.html', {'empleados': empleados, 'montos': montos})

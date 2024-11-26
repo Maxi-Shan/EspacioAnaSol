@@ -196,8 +196,110 @@
                     {% endif %}
                 </div>
             </div>
-
-            {% block contenido %} {% endblock %}
+            <div class="col-md-9 p-0" style="margin-top: 21px; min-height: 100vh; display: flex; flex-direction: column;">
+                <div class="card border-0 flex-grow-1">
+                    <div class="card-header text-black text-left">
+                        <h2>Modificar Servicio</h2>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            
+                            <div class="form-group row">
+                                <label for="nombre_del_servicio" class="col-md-4 col-form-label">Nombre del Servicio:</label>
+                                <div class="col-md-8">
+                                    <input type="text" class="form-control {% if form.nombre_del_servicio.errors %}is-invalid{% endif %}" id="nombre_del_servicio" name="nombre_del_servicio" value="{{ servicio.nombre_del_servicio }}">
+                                    {% if form.nombre_del_servicio.errors %}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.nombre_del_servicio.errors %}
+                                                <p>{{ error }}</p>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="form-group row">
+                                <label for="descripcion_del_servicio" class="col-md-4 col-form-label">Descripción del Servicio:</label>
+                                <div class="col-md-8">
+                                    <input type="text" class="form-control {% if form.descripcion_del_servicio.errors %}is-invalid{% endif %}" id="descripcion_del_servicio" name="descripcion_del_servicio" value="{{ servicio.descripcion_del_servicio }}">
+                                    {% if form.descripcion_del_servicio.errors %}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.descripcion_del_servicio.errors %}
+                                                <p>{{ error }}</p>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="form-group row">
+                                <label for="duracion" class="col-md-4 col-form-label">Duración:</label>
+                                <div class="col-md-8">
+                                    <input type="text" class="form-control {% if form.duracion.errors %}is-invalid{% endif %}" id="duracion" name="duracion" value="{{ servicio.duracion }}">
+                                    {% if form.duracion.errors %}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.duracion.errors %}
+                                                <p>{{ error }}</p>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="form-group row">
+                                <label for="precio_del_servicio" class="col-md-4 col-form-label">Precio del Servicio:</label>
+                                <div class="col-md-8">
+                                    <input type="number" step="0.01" class="form-control {% if form.precio_del_servicio.errors %}is-invalid{% endif %}" id="precio_del_servicio" name="precio_del_servicio" value="{{ servicio.precio_del_servicio }}">
+                                    {% if form.precio_del_servicio.errors %}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.precio_del_servicio.errors %}
+                                                <p>{{ error }}</p>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="form-group row">
+                                <label for="senia" class="col-md-4 col-form-label">Valor de Seña:</label>
+                                <div class="col-md-8">
+                                    <input type="text" step="0.01" class="form-control {% if form.senia.errors %}is-invalid{% endif %}" id="senia" name="senia" value="{{ servicio.senia }}">
+                                    {% if form.senia.errors %}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.senia.errors %}
+                                                <p>{{ error }}</p>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="form-group row">
+                                {% if servicio.imagen %}
+                                <p>Imagen actual:</p>
+                                <img src="{{ servicio.imagen.url }}" width="100" alt="Imagen del servicio">
+                                {% else %}
+                                <p>Sin imagen actual.</p>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="form-group row">
+                                <label for="imagen" class="col-md-4 col-form-label">Nueva Imagen:</label>
+                                <div class="col-md-8">
+                                    <input type="file" class="form-control" id="imagen" name="imagen">
+                                </div>
+                            </div>
+                        </div>
+            
+                        <!-- Card Footer, siempre al final -->
+                        <div class="card-footer bg-danger d-flex pt-3">
+                            <button type="submit" class="btn btn-sm text-white mx-2 mr-2" style="background-color: #701C7E;">Guardar</button>
+                            <a href="{% url 'list_servicios' %}" class="btn btn-warning btn-sm text-white ml-2">Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
     <!-- Footer -->

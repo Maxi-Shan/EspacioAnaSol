@@ -17,7 +17,7 @@
                 <div class="form-group row">
                     <label for="dni" class="col-md-4 col-form-label">DNI:</label>
                     <div class="col-md-8">
-                        <input type="text" id="dni" name="dni" value="{{ empleado.dni }}" class="form-control" readonly>
+                        <input type="number" id="dni" name="dni" value="{{ empleado.dni }}" class="form-control" disabled>
                     </div>
                 </div>
 
@@ -57,7 +57,7 @@
                 <div class="form-group row">
                     <label for="numero_telefono" class="col-md-4 col-form-label">Número de Teléfono:</label>
                     <div class="col-md-8">
-                        <input type="text" id="numero_telefono" name="numero_telefono" value="{{ empleado.numero_telefono }}" class="form-control">
+                        <input type="tel" id="numero_telefono" name="numero_telefono" value="{{ empleado.numero_telefono }}" class="form-control">
                     </div>
                 </div>
 
@@ -65,7 +65,7 @@
                 <div class="form-group row">
                     <label for="contraseña" class="col-md-4 col-form-label">Contraseña:</label>
                     <div class="col-md-8">
-                        <input type="text" id="contraseña" name="contraseña" value="{{ empleado.contraseña_original }}" class="form-control">
+                        <input type="text" id="contraseña" name="contraseña" class="form-control">
                     </div>
                 </div>
                 {% if not empleado.es_admin %}
