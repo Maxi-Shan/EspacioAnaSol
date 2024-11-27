@@ -3,36 +3,65 @@
 
 {% block titulo %}Listado de Turnos{% endblock %}
 
-{% block contenido %} 
+{% block contenido %}
 <div class="col-md-9 main-content">
     <div class="title-section">
         <h2>Lista de Turnos</h2>
-        {% if es_admin %}
         <form action="{% url 'registrar_cliente' %}" method="get">
             <button class="btn btn-insert">Agregar Turno +</button>
         </form>
-        {% endif %}
     </div>
     <a href="{% url 'gturno' %}"><button class="btn btn-primary">
         <i class="fas fa-chart-line"></i> Gráfico
     </button></a>
-    <button class="btn btn-danger">
-        <i class="fas fa-file-pdf"></i> PDF
-    </button> 
-    <div class="action-bar">
-        Acción:
-        <select id="action-select" class="form-control">
-            <option value="confirmar">Confirmar turno y enviar un correo electrónico</option>
-            <option value="cancelar">Cancelar turno y enviar un correo electrónico</option>
-        </select>
-        <button class="btn btn-filter btn-light ml-2" onclick="realizarAccion()">Aplicar</button>
+
+    <div class="action-bar d-flex flex-wrap align-items-center justify-content-start mb-4">
+        <!-- Bloque de Acción y Filtros -->
+        <div class="d-flex align-items-center mr-4 mb-3" style="margin-top: 10px;">
+            <!-- Selector de acciones -->
+            <label for="action-select" class="mb-0 mr-2">Acción:</label>
+            <select id="action-select" class="form-control mr-2">
+                <option value="confirmar">Confirmar turno y enviar un correo electrónico</option>
+                <option value="cancelar">Cancelar turno y enviar un correo electrónico</option>
+            </select>
+            <button class="btn btn-filter btn-light" id="apply-button" onclick="realizarAccion()">Aplicar</button>
+        </div>
+
+
+        <!-- Formulario de filtros -->
+        <form method="get" class="d-flex align-items-center flex-wrap" id="filters-form">
+            <!-- Selector de estado -->
+            <div class="d-flex align-items-center mr-4 mb-3" style="margin-top: 10px;">
+                <label for="estado-filtro" class="mb-0 mr-2">Estado:</label>
+                <select id="estado-filtro" name="estado" class="form-control">
+                    <option value="todos" {% if estado_actual == 'todos' %}selected{% endif %}>Todos</option>
+                    <option value="Pendiente" {% if estado_actual == 'Pendiente' %}selected{% endif %}>Pendientes</option>
+                    <option value="Confirmado" {% if estado_actual == 'Confirmado' %}selected{% endif %}>Confirmados</option>
+                    <option value="Cancelado" {% if estado_actual == 'Cancelado' %}selected{% endif %}>Cancelados</option>
+                </select>
+            </div>
+
+            <!-- Selector de rango de fecha -->
+            <div class="d-flex align-items-center mr-4 mb-3" style="margin-top: 10px;">
+                <label for="rango-filtro" class="mb-0 mr-2" style="margin-left: 10px;">Rango de fecha:</label>
+                <select id="rango-filtro" name="rango_fecha" class="form-control">
+                    <option value="hoy" {% if rango_fecha_actual == 'hoy' %}selected{% endif %}>Hoy</option>
+                    <option value="semana" {% if rango_fecha_actual == 'semana' %}selected{% endif %}>Esta semana</option>
+                    <option value="mes" {% if rango_fecha_actual == 'mes' %}selected{% endif %}>Este mes</option>
+                    <option value="todo" {% if rango_fecha_actual == 'todo' %}selected{% endif %}>Todos</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary mb-3" style="margin-left: 10px; margin-top: 10px;">Filtrar</button>
+        </form>
     </div>
+
     <div class="table-responsive" style="max-height: 400px; overflow-y: auto; margin-top: 15px;">
         <table class="table-custom">
             <thead>
                 <tr>
                     <th></th>
-                    <th>ID</th>
+                    <th>Turno</th>
                     <th>Cliente</th>
                     <th>Diseño de Uñas</th>
                     <th>Comprobante de Pago</th>
@@ -84,9 +113,6 @@
                         <a href="{% url 'modificar_turno' data.turno.id_turno %}" class="btn btn-warning btn-sm" title="Cambiar Empleado">
                             <i class="fas fa-edit"></i> 
                         </a>
-                        <a href="{% url 'eliminar_turno' data.turno.id_turno %}" class="btn btn-danger btn-sm" title="Eliminar Turno" onclick="return confirm('¿Estás seguro de eliminar este turno?');">
-                            <i class="fas fa-trash-alt"></i>
-                        </a>
                     </td>
                     {% endif %}
                 </tr>
@@ -106,6 +132,10 @@
             alert("Selecciona al menos un turno.");
             return;
         }
+
+        // Deshabilitar el botón para evitar múltiples clics
+        const applyButton = document.getElementById("apply-button");
+        applyButton.disabled = true;
 
         // Realizar la solicitud al servidor
         fetch("/confirmar_turnos/2/", {
@@ -128,10 +158,13 @@
                 alert(data.message);  // Mostrar el mensaje de error
             }
         })
-        .catch(error => console.error("Error:", error));
+        .catch(error => {
+            console.error("Error:", error);
+        })
+        .finally(() => {
+            // Volver a habilitar el botón después de la respuesta (éxito o error)
+            applyButton.disabled = false;
+        });
     }
 </script>
-
-<script src="{% static 'js/modal.js' %}"></script>
-
 {% endblock %}

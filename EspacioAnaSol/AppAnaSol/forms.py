@@ -4,6 +4,15 @@ from django.utils import timezone
 from django.utils.timezone import now
 from calendar import monthrange
 
+class LoginForm(forms.Form):
+    dni = forms.IntegerField()
+    contraseña = forms.CharField(widget=forms.PasswordInput)
+
+class EmpleadoForm(forms.ModelForm):
+    class Meta:
+        model = Empleado
+        fields = ['dni', 'nombre', 'apellido', 'domicilio', 'correo_electronico', 'numero_telefono', 'contraseña', 'estado_empleado', 'es_admin']
+
 class AbrirCajaForm(forms.ModelForm):
     class Meta:
         model = Caja

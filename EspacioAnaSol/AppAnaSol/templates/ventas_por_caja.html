@@ -1,20 +1,16 @@
 {% extends "base.html" %}
-{% block titulo %}Listado de Ventas{% endblock %}
+{% block titulo %}Ventas de la Caja{% endblock %}
 
-{% block contenido %} 
+{% block contenido %}
 <div class="col-md-9 main-content">
     <div class="title-section">
-        <h2>Lista de Ventas</h2>
+        <h2>Ventas de la Caja</h2>
     </div>
-    <a href="{% url 'gventas' %}"><button class="btn btn-primary">
-        <i class="fas fa-chart-line"></i> Gráfico
-    </button></a>
-
     <div class="table-responsive" style="max-height: 400px; overflow-y: auto; margin-top: 15px;">
         <table class="table-custom" style="width:100%">
             <thead>
                 <tr>
-                    <th>Venta</th>
+                    <th>ID</th>
                     <th>Caja</th>
                     <th>Cliente</th>
                     <th>Fecha</th>
@@ -25,7 +21,7 @@
             </thead>
             <tbody>
                 {% for venta in ventas %}
-                <tr class="{% if venta.id_caja %}estado-abierta{% else %}estado-cerrada{% endif %}">
+                <tr>
                     <td>{{ venta.id_venta }}</td>
                     <td>{{ venta.id_caja }}</td>
                     <td>{{ venta.id_cliente.nombre }} {{ venta.id_cliente.apellido }}</td>
@@ -35,9 +31,6 @@
                     <td>
                         <a href="{% url 'detalle_venta' venta.id_venta %}" class="btn btn-primary btn-sm" title="Ver Detalle de la Venta">
                             <i class="fas fa-eye"></i>
-                        </a>
-                        <a href="{% url 'modificar_metodo_pago' venta.id_venta %}" class="btn btn-warning btn-sm" title="Modificar Metodo de Pago">
-                            <i class="fas fa-edit"></i>
                         </a>
                     </td>
                 </tr>

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Empleado, Servicios, Turno, Reservas
+from .models import Empleado, Servicios, Turno, Reservas, Venta, DetalleVenta, EmpleadoXTurno, ServicioXTurno, Cliente
 from .forms import ServiciosForm
 
 class ServiciosAdmin(admin.ModelAdmin):
@@ -10,4 +10,9 @@ admin.site.register(Empleado)
 admin.site.register(Servicios)
 admin.site.register(Turno)
 admin.site.register(Reservas)
+admin.site.register(Venta)
+admin.site.register(DetalleVenta)
+admin.site.register(EmpleadoXTurno)
+admin.site.register(ServicioXTurno)
+admin.site.register(Cliente)
 

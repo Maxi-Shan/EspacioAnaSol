@@ -9,16 +9,46 @@
         <h2>Lista de Reservas</h2>
     </div>
 
+
     <!-- Acción para seleccionar y aplicar a una reserva -->
     <div class="action-bar">
-        Acción
-        <select class="form-control" id="accionReserva">
-            <option value="seleccionar">Seleccionar Accion</option>
-            <option value="confirmar">Finalizar Reserva</option>
-            <option value="cancelar">Cancelar Reserva</option>
-        </select>
-        <button class="btn btn-filter btn-light ml-2" id="btnAccionReserva">Aplicar</button>
+        <form method="get" class="d-flex flex-wrap align-items-center">
+            <!-- Filtro por estado de reserva -->
+            <div class="form-group mb-2 mr-3">
+                <label for="estado-reserva" class="mb-0">Estado de Reserva:</label>
+                <select id="estado-reserva" name="estado_reserva" class="form-control" onchange="this.form.submit()">
+                    <option value="Confirmada" {% if estado_reserva_actual == 'Confirmada' %}selected{% endif %}>Confirmada</option>
+                    <option value="Terminada" {% if estado_reserva_actual == 'Terminada' %}selected{% endif %}>Terminada</option>
+                    <option value="Cancelada" {% if estado_reserva_actual == 'Cancelada' %}selected{% endif %}>Cancelada</option>
+                </select>
+            </div>
+    
+            <!-- Filtro por rango de fecha -->
+            <div class="form-group mb-2 mr-3">
+                <label for="rango-filtro" class="mb-0">Rango de Fecha:</label>
+                <select id="rango-filtro" name="rango_fecha" class="form-control" onchange="this.form.submit()">
+                    <option value="hoy" {% if rango_fecha_actual == 'hoy' %}selected{% endif %}>Hoy</option>
+                    <option value="semana" {% if rango_fecha_actual == 'semana' %}selected{% endif %}>Esta semana</option>
+                    <option value="mes" {% if rango_fecha_actual == 'mes' %}selected{% endif %}>Este mes</option>
+                    <option value="todo" {% if rango_fecha_actual == 'todo' %}selected{% endif %}>Todos</option>
+                </select>
+            </div>
+        </form>
+    
+        <!-- Acción para seleccionar y aplicar -->
+        {% if not cajas_abiertas %}
+        <div class="d-flex align-items-center mt-3 mt-md-0">
+            <label for="accionReserva" class="mr-3 mb-0">Acción:</label>
+            <select class="form-control w-auto" id="accionReserva">
+                <option value="seleccionar">Seleccionar Acción</option>
+                <option value="confirmar">Finalizar Reserva</option>
+                <option value="cancelar">Cancelar Reserva</option>
+            </select>
+            <button class="btn btn-filter btn-light ml-2" id="btnAccionReserva">Aplicar</button>
+        </div>
+        {% endif %}
     </div>
+    
 
     <!-- Tabla de reservas -->
     <div class="table-responsive" style="max-height: 400px; overflow-y: auto; margin-top: 15px;">
@@ -26,7 +56,7 @@
             <thead>
                 <tr>
                     <th></th>
-                    <th>ID Reserva</th>
+                    <th>Reserva</th>
                     <th>Cliente</th>
                     <th>Turno</th>
                     <th>Servicio</th>
@@ -36,7 +66,7 @@
             </thead>
             <tbody>
                 {% for reserva in reservas %}
-                <tr class="
+                <tr class=" 
                     {% if reserva.estado_reserva == 'Confirmada' %} estado-confirmado
                     {% elif reserva.estado_reserva == 'Terminada' %} estado-terminado
                     {% elif reserva.estado_reserva == 'Cancelada' %} estado-cancelado
@@ -53,7 +83,7 @@
                     <td>{{ reserva.estado_reserva }}</td>
                     <td>{{ reserva.fecha_registro }}</td>
                 </tr>
-               {% endfor %}
+                {% endfor %}
             </tbody>                    
         </table>
     </div>
@@ -62,15 +92,15 @@
 <script>
     document.getElementById("btnAccionReserva").addEventListener("click", function() {
         // Obtener la acción seleccionada
-        var accion = document.getElementById("accionReserva").value;
-        var selectedReserva = document.querySelector("input[name='id_reserva']:checked");
+        let accion = document.getElementById("accionReserva").value;
+        let selectedReserva = document.querySelector("input[name='id_reserva']:checked");
 
         if (!selectedReserva) {
             alert("Por favor, seleccione una reserva.");
             return;
         }
 
-        var reservaId = selectedReserva.value;
+        let reservaId = selectedReserva.value;
 
         if (accion !== "seleccionar") {
             fetch(`/actualizar_reserva/${reservaId}/`, {

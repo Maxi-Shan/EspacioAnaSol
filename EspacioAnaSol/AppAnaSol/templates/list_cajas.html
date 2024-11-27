@@ -16,36 +16,41 @@
     </div>
     <a href="{% url 'gcaja' %}"><button class="btn btn-primary">
         <i class="fas fa-chart-line"></i> Gráfico
-    </button></a>
-    <button class="btn btn-danger">
-        <i class="fas fa-file-pdf"></i> PDF
-    </button>    
+    </button></a>    
+
     <div class="action-bar">
-        Acción
-        <select class="form-control">
-            <option>Seleccionar</option>
-            <option>Opción 1</option>
-            <option>Opción 2</option>
-        </select>
-        <button class="btn btn-filter btn-light ml-2">Filtrar</button>
+        <label for="rango-filtro" class="mr-3 mb-0">Filtrar por Fecha:</label>
+        <form method="get" class="d-flex">
+            <select id="rango-filtro" name="rango_fecha" class="form-control" onchange="this.form.submit()">
+                <option value="hoy" {% if filtro == 'hoy' %}selected{% endif %}>Hoy</option>
+                <option value="semana" {% if filtro == 'semana' %}selected{% endif %}>Esta Semana</option>
+                <option value="mes" {% if filtro == 'mes' %}selected{% endif %}>Este Mes</option>
+                <option value="" {% if filtro == '' %}selected{% endif %}>Todos</option>
+            </select>
+        </form>
     </div>
 
     <!-- Scrollable Table Wrapper -->
-    <div class="table-responsive" style="max-height: 400px; overflow-y: auto; margin-top: 15px;">
+    <div class="table-responsive" style="max-height: 1000px; overflow-y: auto; margin-top: 15px;">
         <!-- Table for content -->
         <table class="table-custom">
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th colspan="2">Apertura de Caja</th>
-                    <th colspan="2">Cierre de Caja</th>
+                    <th>Empleado</th>
+                    <th>Fecha de Inicio</th>
                     <th>Monto Inicial</th>
+                    <th>Empleado Cierre</th>
+                    <th>Fecha de Cierre</th>
                     <th>Monto Recaudado</th>
                     <th>Monto Final</th>
                     <th>Estado</th>
+                    <th>Cerrar</th>
+                    <th>Historial</th>
                     {% if es_admin %}
-                     <th>Acciones</th>
+                    <th>Acciones</th>
                     {% endif %}
+                    
                 </tr>
             </thead>
             <tbody>
@@ -54,52 +59,45 @@
                     <td>{{ caja.id_caja }}</td>
                     <td>{{ caja.empleado.nombre }}</td>
                     <td>{{ caja.fecha_apertura }}</td>
-                    <td>{{ caja.empleado_cierre }}</td>
-                    <td>
-                        {% if caja.fecha_cierre %}
-                            {{ caja.fecha_cierre }}
-                        {% else %}
-                            ---
-                        {% endif %}
-                    </td>
                     <td>${{ caja.monto_inicial }}</td>
+                    <td>{% if caja.empleado_cierre %}{{ caja.empleado_cierre }}{% else %}---{% endif %}</td>
                     <td>
-                    {% if caja.fecha_cierre %}
-                        ${{ caja.monto_recaudado }}
-                    {% else %}
-                        ---
-                    {% endif %}
+                        {% if caja.fecha_cierre %}{{ caja.fecha_cierre }}{% else %}---{% endif %}
+                    </td>
+                    <td>
+                        {% if caja.fecha_cierre %} ${{ caja.monto_recaudado }} {% else %} --- {% endif %}
                     </td>
                     <td>${{ caja.monto_total }}</td>
                     <td class="{% if caja.estado %}text-success{% else %}text-danger{% endif %}">
-                        {% if caja.estado %}
-                            Abierta
-                            <form action="{% url 'cerrar_caja' caja.id_caja %}" method="post" style="display:inline;">
-                                {% csrf_token %}
-                                <button type="submit" class="btn-sm" title="Cerrar Caja">
-                                    <i class="fas fa-lock"></i> Cerrar
-                                </button>
-                            </form>
-                        {% else %}
-                            Cerrada
-                        {% endif %}
+                        {% if caja.estado %}Abierta{% else %}Cerrada{% endif %}
                     </td>
+                    
+                    <td>
+                        {% if not cajas_abiertas %}
+                        <form action="{% url 'cerrar_caja' caja.id_caja %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-sm" title="Cerrar Caja">
+                                <i class="fas fa-lock"></i> Cerrar
+                            </button>
+                        </form>
+                        {% endif %}
+                    </td>    
+
+                    <td>
+                        <a href="{% url 'ventas_por_caja' caja.id_caja %}" class="btn btn-info btn-sm" title="Ver Ventas">
+                            <i class="fas fa-eye"></i> Ventas
+                        </a>
+                    </td>                
                     {% if es_admin %}
                     <td>
-                        <!-- Botón Modificar con icono y título -->
                         <form action="{% url 'update_caja' caja.id_caja %}" method="get" style="display:inline;">
                             <button type="submit" class="btn btn-warning btn-sm" title="Modificar Monto Inicial">
                                 <i class="fas fa-edit"></i> 
                             </button>
                         </form>                        
-                        <form action="{% url 'delete_caja' caja.id_caja %}" method="post" style="display:inline;">
-                            {% csrf_token %}
-                             <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Está seguro de que desea eliminar esta caja?');" title="Eliminar Caja">
-                                <i class="fas fa-trash-alt"></i> 
-                            </button>
-                        </form>
                     </td>
                     {% endif %}
+
                 </tr>
                 {% endfor %}
             </tbody>
@@ -107,3 +105,4 @@
     </div>
 
 {% endblock %}
+

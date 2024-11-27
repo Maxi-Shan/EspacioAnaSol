@@ -23,8 +23,8 @@ urlpatterns = [
     path('cajas/', views.list_cajas, name='list_cajas'),
     path('cajas/add/', views.abrir_caja, name='abrir_caja'),
     path('cajas/<int:id_caja>/update/', views.update_caja, name='update_caja'),
-    path('cajas/<int:id_caja>/delete/', views.delete_caja, name='delete_caja'),
     path('cajas/<int:id_caja>/close/', views.cerrar_caja, name='cerrar_caja'),
+    path('caja/<int:id_caja>/ventas/', views.ventas_por_caja, name='ventas_por_caja'),
 
     # Servicios
     path('servicios/', views.list_servicios, name='list_servicios'),
@@ -38,7 +38,6 @@ urlpatterns = [
     path('turnos/registrar-turno/', views.registrar_turno, name='registrar_turno'),
     path('turnos/cancelar-registro/', views.cancelar_registro, name='cancelar_registro'),
     path('modificar-turno/<int:turno_id>/', views.modificar_turno, name='modificar_turno'),
-    path('eliminar-turno/<int:turno_id>/', views.eliminar_turno, name='eliminar_turno'),
     path('confirmar_turnos/<str:accion>/', views.gestionar_turno, name='confirmar_turnos'),
 
     # Clientes

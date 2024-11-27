@@ -234,7 +234,7 @@ body {
 
 /* Estilos de la tabla similar a Bootstrap */
 .table-custom {
-    width: 980px;
+    width: 100%;
     margin-bottom: 1rem;
     border-collapse: collapse;
 }
@@ -288,4 +288,32 @@ body {
     color: white;
     text-align: center;
     padding: 10px;
+}
+
+.action-bar {
+    gap: 20px; /* Añade espacio uniforme entre los bloques */
+}
+
+.action-bar label {
+    font-weight: bold;
+    margin-right: 5px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.action-bar .form-control {
+    width: auto;
+    min-width: 200px; /* Ajusta según tu diseño */
+}
+
+@media (max-width: 768px) {
+    .action-bar {
+        flex-direction: column; /* Cambiar a columna en pantallas pequeñas */
+        align-items: flex-start; /* Alinear a la izquierda */
+    }
+    .action-bar select,
+    .action-bar button {
+        width: 100%; /* Hacer los selects y botones más anchos */
+        margin-bottom: 10px; /* Espaciado entre los elementos */
+    }
 }

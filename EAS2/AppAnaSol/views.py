@@ -7,9 +7,6 @@ from django.utils.timezone import now
 def base(request):
     return render(request, 'base.html')
 
-def tutorial(request):
-    return render(request, 'tutorial.html')
-
 def servicios(request):
     servicios = Servicios.objects.all()
     return render(request, 'elegir_servicio.html', {'servicios': servicios})
@@ -93,7 +90,7 @@ def confirmacion_turno(request, servicio_nombre):
                 fecha=turno_data['fecha'],
                 hora=turno_data['hora'],
                 diseño_uñas=diseño_uñas,
-                estado_turno='pendiente',
+                estado_turno='Pendiente',
                 fecha_registro=now()  # Registrar la fecha actual del turno
             )
 
