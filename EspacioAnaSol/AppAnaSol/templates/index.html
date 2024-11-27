@@ -62,15 +62,27 @@
 </head>
 <body>
 
-    <nav class="navbar navbar-expand navbar-light">
-        <div class="nav navbar-nav">
-            <a class="nav-item nav-link active" href="{% url 'pagina_principal' %}">Inicio</a>
-            <a class="nav-item nav-link active" href="{% url 'gventas' %}">Gráfico Ventas</a>
-            <a class="nav-item nav-link active" href="{% url 'gturno' %}">Gráfico Turno</a>
+    <div class="container navbar mt-5 justify-content-center">
+        <!-- Hoja de Nota -->
+        <div class="card border-dark">
+            <div class="card-header bg-light text-center fw-bold">
+                Gráficos
+            </div>
+            <div class="card-body">
+                <!-- Barra de Navegación dentro de la hoja de nota -->
+                <nav class="navbar navbar-light">
+                    <div class="nav navbar-nav">
+                        <a class="nav-item nav-link active text-white" href="{% url 'pagina_principal' %}">Inicio</a>
+                        <a class="nav-item nav-link active text-white" href="{% url 'gventas' %}">Gráfico Ventas</a>
+                        <a class="nav-item nav-link active text-white" href="{% url 'gturno' %}">Gráfico Turno</a>
+                    </div>
+                </nav>
+            </div>
         </div>
-    </nav>
+    </div>
+    
 
-    <div class="container">
+    <div class="container" style="margin-left: -800px;">
         <div class="row">
             <div class="col-12">
                 <!-- Bloque de contenido dentro de un cuadro blanco -->

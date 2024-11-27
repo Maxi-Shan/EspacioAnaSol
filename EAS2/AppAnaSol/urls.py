@@ -13,6 +13,7 @@ urlpatterns = [
     path('tiempo_agotado/', views.tiempo_agotado, name='tiempo_agotado'),
     path('mostrar_turnos/', views.mostrar_turnos, name='mostrar_turnos'),
     path('procesando_reserva/<int:pk>/', views.procesando_reserva, name='procesando_reserva'),
+    path('descargar-pdf/', views.generar_pdf, name='descargar_pdf'),
 ]
 
 if settings.DEBUG:

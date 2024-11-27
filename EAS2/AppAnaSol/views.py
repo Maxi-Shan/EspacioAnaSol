@@ -167,3 +167,23 @@ def mostrar_turnos(request):
         'turnos_reservados_horas': turnos_reservados_horas,
         'horarios_totales': horarios_totales
     })
+
+# views.py
+from django.http import FileResponse
+from io import BytesIO
+from reportlab.pdfgen import canvas  # Usando reportlab para generar el PDF
+
+def generar_pdf(request):
+    # Creamos un archivo PDF en memoria
+    buffer = BytesIO()
+    p = canvas.Canvas(buffer)
+    p.drawString(100, 800, "Instrucciones para hacer tu reserva")
+    p.showPage()
+    p.save()
+    
+    # Movemos el cursor al principio del archivo
+    buffer.seek(0)
+    
+    # Enviamos el archivo PDF como respuesta
+    response = FileResponse(buffer, as_attachment=True, filename="Tutorial_EAS.pdf")
+    return response

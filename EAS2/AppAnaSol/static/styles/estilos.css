@@ -6,10 +6,6 @@ body {
     background-size: cover;
 }
 
-.titulo{
-    color: #a300b1;
-}
-
 .logo {
     width: 210px; /* Tamaño fijo para todas las pantallas */
     height: 210px; /* Mantener proporción */
@@ -49,8 +45,8 @@ body {
 }
 .carousel-item .card {
     background-color: #ffffff; /* Blanco */
-    border: 2px solid #d29dc3; /* Borde morado claro */
-    color: #6c3483; /* Morado */
+    border: 2px solid #000000; /* Borde morado claro */
+    color: #000000; /* Morado */
 }
 .btn-secondary {
     background-color: #6c3483; /* Morado */
@@ -61,6 +57,6 @@ body {
 }
 .carousel-control-prev-icon,
 .carousel-control-next-icon {
-    background-color: #6c3483; /* Morado */
+    background-color: #000000; /* Morado */
     border-radius: 50%;
 }
