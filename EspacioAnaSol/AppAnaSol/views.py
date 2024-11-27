@@ -6,6 +6,8 @@ from django.core.files.storage import default_storage
 from django.conf import settings
 from django.contrib import messages
 from django.utils import timezone
+from django.utils.timezone import now
+from datetime import timedelta, datetime
 from .models import Caja, Empleado, ServicioXTurno, EmpleadoXTurno, Cliente, Turno, Reservas, Servicios, Venta, Reservas, DetalleVenta
 from .forms import ServiciosForm, ClienteForm, TurnoForm, MetodoPagoForm, EmpleadoForm
 from django.core import management
@@ -30,17 +32,16 @@ def login(request):
                 contraseña_error = 'La contraseña no puede estar vacía.'
         else:
             try:
-                # Obtener el empleado por DNI
+
                 empleado = Empleado.objects.get(dni=dni)
 
-                # Verificar el estado del empleado
+
                 if empleado.estado_empleado in ['suspendido', 'despedido']:
                     dni_error = 'Estás suspendido.'
                     return redirect('login')
 
-                # Verificar la contraseña con el método `check_password`
                 if empleado.contraseña == contraseña: 
-                    # Guardar DNI del empleado en la sesión
+
                     request.session['empleado_dni'] = empleado.dni
                     messages.success(request, '¡Entraste a la Interfaz para Empleados! ¡Bienvenido a Espacio Ana Sol!')
                     return redirect('pagina_principal')
@@ -68,10 +69,9 @@ def obtener_empleado_autenticado(request):
     try:
         empleado = Empleado.objects.get(dni=dni_cifrado)
 
-        # Verificar si el empleado está suspendido o despedido
-        if empleado.estado_empleado in ['suspendido', 'despedido']:
-            return None  # No permitir que acceda a la aplicación
 
+        if empleado.estado_empleado in ['suspendido', 'despedido']:
+            return None  
         return empleado
     except Empleado.DoesNotExist:
         return None
@@ -114,6 +114,8 @@ def pagina_principal(request):
 @admin_required
 @requerir_autenticacion
 def list_empleados(request):
+    empleado = obtener_empleado_autenticado(request)
+    cajas_abiertas = Caja.objects.filter(estado=True).exists()
     empleados = Empleado.objects.all()
 
     # Pasar las contraseñas en texto plano a la plantilla
@@ -123,8 +125,188 @@ def list_empleados(request):
     empleado_autenticado = obtener_empleado_autenticado(request)
     return render(request, 'list_empleados.html', {
         'empleados': empleados,
-        'es_admin': empleado_autenticado.es_admin
+        'es_admin': empleado.es_admin, 
+        'cajas_abiertas': cajas_abiertas
     })
+
+@login_required
+@requerir_autenticacion
+def list_cajas(request):
+    empleado = obtener_empleado_autenticado(request)
+    cajas_abiertas = Caja.objects.filter(estado=True).exists()
+
+    today = timezone.now().date()
+
+
+    filtro = request.GET.get('rango_fecha', 'hoy') 
+
+    if filtro == 'hoy':
+        cajas = Caja.objects.filter(fecha_apertura__date=today).order_by('-fecha_apertura')
+    elif filtro == 'semana':
+        start_of_week = today - timedelta(days=today.weekday()) 
+        end_of_week = start_of_week + timedelta(days=6) 
+        cajas = Caja.objects.filter(fecha_apertura__date__range=[start_of_week, end_of_week]).order_by('-fecha_apertura')
+    elif filtro == 'mes':
+        start_of_month = today.replace(day=1)
+        end_of_month = today.replace(day=28) + timedelta(days=4)  
+        cajas = Caja.objects.filter(fecha_apertura__date__range=[start_of_month, end_of_month]).order_by('-fecha_apertura')
+    else:
+        cajas = Caja.objects.all().order_by('-fecha_apertura')
+
+    cajas_abiertas = cajas.filter(estado=True).exists() 
+    empleado = obtener_empleado_autenticado(request)
+
+    for caja in cajas:
+        monto_recaudado = caja.monto_recaudado if caja.monto_recaudado else 0
+        caja.monto_total = caja.monto_inicial + monto_recaudado  
+
+    return render(request, 'list_cajas.html', {
+        'cajas': cajas,
+        'cajas_abiertas': cajas_abiertas,
+        'es_admin': empleado.es_admin,
+        'filtro': filtro 
+    })
+
+def ventas_por_caja(request, id_caja):
+    empleado = obtener_empleado_autenticado(request)
+    cajas_abiertas = Caja.objects.filter(estado=True).exists()
+    caja = get_object_or_404(Caja, id_caja=id_caja)
+    ventas = Venta.objects.filter(id_caja=caja).order_by('-fecha_venta')
+
+    context = {
+        'caja': caja,
+        'ventas': ventas,
+        'es_admin': empleado.es_admin, 
+        'cajas_abiertas': cajas_abiertas
+    }
+    return render(request, 'ventas_por_caja.html', context)
+
+
+@login_required
+@requerir_autenticacion
+def list_turnos(request):
+    empleado = obtener_empleado_autenticado(request)
+
+    estado = request.GET.get('estado', 'Pendiente')  
+    rango_fecha = request.GET.get('rango_fecha', 'hoy') 
+
+    # Filtrar turnos por fecha
+    hoy = now().date()
+    if rango_fecha == 'hoy':
+        turnos = Turno.objects.filter(fecha=hoy).order_by('-fecha', '-hora')
+    elif rango_fecha == 'semana':
+        inicio_semana = hoy - timedelta(days=hoy.weekday())  
+        fin_semana = inicio_semana + timedelta(days=6) 
+        turnos = Turno.objects.filter(fecha__range=[inicio_semana, fin_semana]).order_by('-fecha', '-hora')
+    elif rango_fecha == 'mes':
+        turnos = Turno.objects.filter(fecha__month=hoy.month, fecha__year=hoy.year).order_by('-fecha', '-hora')
+    elif rango_fecha == 'todo':
+        turnos = Turno.objects.all().order_by('-fecha', '-hora')  # No filtrar por fecha
+    else:
+        turnos = Turno.objects.all().order_by('-fecha', '-hora')
+
+    # Filtrar por estado de turno
+    if estado != 'todos':
+        turnos = turnos.filter(estado_turno=estado)
+
+    # Obtener datos adicionales para cada turno
+    turnos_data = []
+    for turno in turnos:
+        empleados = EmpleadoXTurno.objects.filter(id_turno=turno).select_related('dni_emp')
+        servicios = ServicioXTurno.objects.filter(id_turno=turno).select_related('id_servicio')
+
+        empleado_nombres = ', '.join([f"{emp.dni_emp.nombre} {emp.dni_emp.apellido}" for emp in empleados])
+        servicio_nombres = ', '.join([servicio.id_servicio.nombre_del_servicio for servicio in servicios])
+
+        turnos_data.append({
+            'turno': turno,
+            'empleados': empleado_nombres,
+            'servicios': servicio_nombres,
+            'id_cliente': turno.id_cliente if turno.id_cliente else None,
+            'diseño_uñas': turno.diseño_uñas,
+            'senia_comprobante': turno.senia_comprobante,
+        })
+
+    context = {
+        'turnos_data': turnos_data,
+        'cajas_abiertas': Caja.objects.filter(estado=True).exists(),
+        'es_admin': empleado.es_admin,
+        'estado_actual': estado,
+        'rango_fecha_actual': rango_fecha, 
+    }
+
+    return render(request, 'list_turnos.html', context)
+
+@login_required
+@requerir_autenticacion
+def list_ventas(request):
+    today = timezone.now().date()
+    start_of_day = timezone.make_aware(datetime.combine(today, datetime.min.time()))
+    end_of_day = start_of_day + timedelta(days=1)
+
+    ventas = Venta.objects.filter(fecha_venta__gte=start_of_day, fecha_venta__lt=end_of_day).order_by('-hs_venta')
+
+    empleado = obtener_empleado_autenticado(request)
+    cajas_abiertas = Caja.objects.filter(estado=True).exists()
+    
+    return render(request, 'list_ventas.html', {
+        'ventas': ventas,
+        'es_admin': empleado.es_admin,
+        'cajas_abiertas': cajas_abiertas,
+    })
+
+
+
+@login_required
+@requerir_autenticacion
+def list_clientes(request):
+    empleado = obtener_empleado_autenticado(request)
+    cajas_abiertas = Caja.objects.filter(estado=True).exists()
+
+    # Obtener filtros de la solicitud GET
+    rango_fecha = request.GET.get('rango_fecha', 'hoy')  # Por defecto 'hoy'
+
+    # Filtrar clientes por fecha
+    hoy = now().date()
+    if rango_fecha == 'hoy':
+        clientes = Cliente.objects.filter(fecha_registro__date=hoy).order_by('-fecha_registro')
+    elif rango_fecha == 'semana':
+        inicio_semana = hoy - timedelta(days=hoy.weekday())  # Lunes de esta semana
+        fin_semana = inicio_semana + timedelta(days=7)  # Domingo de esta semana
+        clientes = Cliente.objects.filter(fecha_registro__date__range=[inicio_semana, fin_semana]).order_by('-fecha_registro')
+    elif rango_fecha == 'mes':
+        clientes = Cliente.objects.filter(fecha_registro__month=hoy.month, fecha_registro__year=hoy.year).order_by('-fecha_registro')
+    elif rango_fecha == 'todo':
+        clientes = Cliente.objects.all().order_by('-fecha_registro')  # No filtrar por fecha
+    else:
+        clientes = Cliente.objects.all().order_by('-fecha_registro')
+
+    cajas_abiertas = Caja.objects.filter(estado=True).exists()
+
+    return render(request, 'list_clientes.html', {
+        'clientes': clientes,
+        'es_admin': empleado.es_admin,
+        'cajas_abiertas': cajas_abiertas,
+        'rango_fecha_actual': rango_fecha,  
+    })
+
+@login_required
+@requerir_autenticacion
+def ventas_por_caja(request, id_caja):
+    empleado = obtener_empleado_autenticado(request)
+    cajas_abiertas = Caja.objects.filter(estado=True).exists()
+    caja = get_object_or_404(Caja, id_caja=id_caja)
+
+
+    ventas = Venta.objects.filter(id_caja=caja).order_by('-hs_venta')
+
+    return render(request, 'ventas_por_caja.html', {
+        'caja': caja,
+        'ventas': ventas,
+        'es_admin': empleado.es_admin,
+        'cajas_abiertas': cajas_abiertas,
+    })
+
 
 @admin_required
 @requerir_autenticacion
@@ -151,6 +333,7 @@ def update_empleado_status(request, dni):
 @admin_required
 @requerir_autenticacion
 def add_empleado(request):
+    empleado = obtener_empleado_autenticado(request)
     cajas_abiertas = Caja.objects.filter(estado=True).exists()
     if request.method == "POST":
         form = EmpleadoForm(request.POST)
@@ -159,7 +342,7 @@ def add_empleado(request):
             return redirect('list_empleados')
     else:
         form = EmpleadoForm()
-    return render(request, 'add_empleado.html', {'form': form, 'cajas_abiertas': cajas_abiertas,})
+    return render(request, 'add_empleado.html', {'form': form, 'es_admin': empleado.es_admin, 'cajas_abiertas': cajas_abiertas})
 
 @admin_required
 @requerir_autenticacion
@@ -205,14 +388,13 @@ def abrir_caja(request):
     if request.method == 'POST':
         monto_inicial = request.POST.get('monto_inicial')
 
-        errores = {}  # Diccionario para almacenar los errores
+        errores = {} 
 
-        # Validar que el monto_inicial esté presente y sea un número
         if not monto_inicial:
             errores['monto_inicial'] = 'El monto inicial es obligatorio.'
         else:
             try:
-                monto_inicial = float(monto_inicial)  # Convierte a float
+                monto_inicial = float(monto_inicial)  
             except ValueError:
                 errores['monto_inicial'] = 'El monto inicial debe ser un número válido.'
 
@@ -223,22 +405,20 @@ def abrir_caja(request):
                 'es_admin': empleado.es_admin
             })
 
-        # Obtener el empleado autenticado
-        dni_empleado = request.session.get('empleado_dni')  # Obtener el dni del empleado desde la sesión
+        dni_empleado = request.session.get('empleado_dni')  
         try:
             empleado = Empleado.objects.get(dni=dni_empleado)
         except Empleado.DoesNotExist:
             return render(request, 'abrir_caja.html', {'error': 'Empleado no encontrado.'})
 
-        # Obtener la hora actual ajustada a la zona horaria configurada en Django
-        hora_actual = timezone.localtime(timezone.now())  # Hora local con la zona horaria configurada
+        hora_actual = timezone.localtime(timezone.now())  
 
         # Crea la nueva caja
         nueva_caja = Caja(
             empleado=empleado,
             monto_inicial=monto_inicial,
-            estado=True,  # Caja abierta
-            fecha_apertura=hora_actual  # Asigna la hora de apertura
+            estado=True, 
+            fecha_apertura=hora_actual  
         )
         nueva_caja.save()
 
@@ -249,47 +429,6 @@ def abrir_caja(request):
     })
 
 
-from django.utils import timezone
-from datetime import timedelta
-
-from django.utils import timezone
-from datetime import timedelta
-
-@login_required
-@requerir_autenticacion
-def list_cajas(request):
-    # Obtener la fecha actual
-    today = timezone.now().date()
-
-    # Filtrar por fecha dependiendo de la selección
-    filtro = request.GET.get('rango_fecha', 'hoy')  # Establecer 'hoy' como valor predeterminado
-
-    if filtro == 'hoy':
-        cajas = Caja.objects.filter(fecha_apertura__date=today)
-    elif filtro == 'semana':
-        start_of_week = today - timedelta(days=today.weekday())  # Primer día de la semana
-        end_of_week = start_of_week + timedelta(days=6)  # Último día de la semana
-        cajas = Caja.objects.filter(fecha_apertura__date__range=[start_of_week, end_of_week])
-    elif filtro == 'mes':
-        start_of_month = today.replace(day=1)
-        end_of_month = today.replace(day=28) + timedelta(days=4)  # Esto asegura que cubrimos todo el mes
-        cajas = Caja.objects.filter(fecha_apertura__date__range=[start_of_month, end_of_month])
-    else:
-        cajas = Caja.objects.all()
-
-    cajas_abiertas = cajas.filter(estado=True).exists() 
-    empleado = obtener_empleado_autenticado(request)
-
-    for caja in cajas:
-        monto_recaudado = caja.monto_recaudado if caja.monto_recaudado else 0
-        caja.monto_total = caja.monto_inicial + monto_recaudado  
-
-    return render(request, 'list_cajas.html', {
-        'cajas': cajas,
-        'cajas_abiertas': cajas_abiertas,
-        'es_admin': empleado.es_admin,
-        'filtro': filtro  # Pasamos el filtro actual al contexto
-    })
 
 
 @login_required
@@ -325,6 +464,43 @@ def update_caja(request, id_caja):
     
     return render(request, 'update_caja.html', {'caja': caja, 'es_admin': empleado.es_admin, 'cajas_abiertas': cajas_abiertas,})
 
+@login_required
+@requerir_autenticacion
+def list_reservas(request):
+    empleado = obtener_empleado_autenticado(request)
+    cajas_abiertas = Caja.objects.filter(estado=True).exists()
+    
+
+    estado_reserva = request.GET.get('estado_reserva', '')  
+    rango_fecha = request.GET.get('rango_fecha', 'hoy') 
+    
+
+    reservas = Reservas.objects.all()
+    if estado_reserva:
+        reservas = reservas.filter(estado_reserva=estado_reserva)
+    
+
+    hoy = now().date()
+    if rango_fecha == 'hoy':
+        reservas = reservas.filter(fecha_registro__date=hoy).order_by('-fecha_registro')
+    elif rango_fecha == 'semana':
+        inicio_semana = hoy - timedelta(days=hoy.weekday())  
+        fin_semana = inicio_semana + timedelta(days=6)  
+        reservas = reservas.filter(fecha_registro__range=[inicio_semana, fin_semana]).order_by('-fecha_registro')
+    elif rango_fecha == 'mes':
+        reservas = reservas.filter(fecha_registro__month=hoy.month, fecha_registro__year=hoy.year).order_by('-fecha_registro')
+    else:
+        reservas = reservas.order_by('-fecha_registro')  
+    
+    cajas_abiertas = Caja.objects.filter(estado=True).exists()
+    return render(request, 'list_reservas.html', {
+        'reservas': reservas,
+        'es_admin': empleado.es_admin,
+        'cajas_abiertas': cajas_abiertas,
+        'estado_reserva_actual': estado_reserva,
+        'rango_fecha_actual': rango_fecha
+    })
+
 
 @login_required
 @requerir_autenticacion
@@ -349,7 +525,7 @@ def add_servicio(request):
 
         errores = {}
 
-        # Validación de los campos obligatorios
+
         if not nombre_del_servicio:
             errores['nombre_del_servicio'] = 'El nombre del servicio es obligatorio.'
         if not precio_del_servicio:
@@ -359,7 +535,7 @@ def add_servicio(request):
         if not duracion:
             errores['duracion'] = 'La duración es obligatoria.'
 
-        # Validación de precios y seña (deben ser números positivos)
+
         try:
             if float(precio_del_servicio) <= 0:
                 errores['precio_del_servicio'] = 'El precio debe ser un valor positivo.'
@@ -380,7 +556,7 @@ def add_servicio(request):
                 'cajas_abiertas': cajas_abiertas,
             })
 
-        # Si no hay errores, guarda el servicio
+
         servicio = Servicios(
             nombre_del_servicio=nombre_del_servicio,
             descripcion_del_servicio=descripcion_del_servicio,
@@ -395,15 +571,24 @@ def add_servicio(request):
     
     return render(request, 'add_servicio.html', {'form': None, 'es_admin': empleado.es_admin, 'cajas_abiertas': cajas_abiertas})
 
+
 @login_required
 @requerir_autenticacion
 def modificar_servicio(request, id_servicio):
     empleado = obtener_empleado_autenticado(request)
+    if not empleado:
+        messages.error(request, "No se pudo obtener el empleado.")
+        return redirect('login')  # O donde desees redirigir en caso de que no se pueda obtener el empleado
+    
     cajas_abiertas = Caja.objects.filter(estado=True).exists()
     servicio = get_object_or_404(Servicios, id_servicio=id_servicio)
-    
+
+    # Verificar si el empleado es admin
+    print("Empleado es admin:", empleado.es_admin)
+    print("Caja abierta:", cajas_abiertas)
+
     if request.method == 'POST':
-        # Verifica los datos que están llegando
+
         nombre_del_servicio = request.POST.get('nombre_del_servicio')
         descripcion_del_servicio = request.POST.get('descripcion_del_servicio')
         duracion = request.POST.get('duracion')
@@ -429,7 +614,13 @@ def modificar_servicio(request, id_servicio):
         messages.success(request, 'Servicio actualizado con éxito.')
         return redirect('list_servicios')
 
-    return render(request, 'modificar_servicio.html', {'servicio': servicio, 'es_admin': empleado.es_admin, 'cajas_abiertas': cajas_abiertas})
+    return render(request, 'update_servicio.html', {
+        'servicio': servicio,
+        'es_admin': empleado.es_admin,
+        'cajas_abiertas': cajas_abiertas
+    })
+
+
 
 @requerir_autenticacion
 def delete_servicio(request, id_servicio):
@@ -449,7 +640,7 @@ def registrar_cliente(request):
         form = ClienteForm(request.POST)
         if form.is_valid():
             cliente = form.save()
-            # Guardar el ID del cliente en la sesión para usarlo en la vista de Turno
+
             request.session['cliente_id'] = cliente.id_cliente
             return redirect('registrar_turno')
     else:
@@ -466,19 +657,17 @@ def registrar_turno(request):
         return redirect('registrar_cliente')
 
     if request.method == "POST":
-        form = TurnoForm(request.POST, request.FILES)  # Importante: Agregar request.FILES aquí
+        form = TurnoForm(request.POST, request.FILES)
         if form.is_valid():
-            # Guardar el turno con commit=False para no guardar inmediatamente
+
             turno = form.save(commit=False)
-            turno.id_cliente_id = cliente_id  # Asociar el cliente automáticamente
-            turno.estado_turno = "Pendiente"  # Estado predeterminado como "Pendiente"
+            turno.id_cliente_id = cliente_id 
+            turno.estado_turno = "Pendiente" 
             turno.save()
 
-            # Obtener el empleado y servicio del formulario
             empleado = form.cleaned_data['id_empleado']
             servicio = form.cleaned_data['id_servicio']
-            
-            # Crear registros en las tablas intermedias
+
             EmpleadoXTurno.objects.create(dni_emp=empleado, id_turno=turno)
             ServicioXTurno.objects.create(id_servicio=servicio, id_turno=turno)
 
@@ -493,76 +682,8 @@ def registrar_turno(request):
 @admin_required
 @requerir_autenticacion
 def cancelar_registro(request):
-    request.session.pop('cliente_id', None)  # Limpiar datos de sesión si existen
+    request.session.pop('cliente_id', None)  
     return redirect('list_turnos')
-
-# Listar turnos
-from datetime import date, timedelta
-from django.utils.timezone import now
-
-from datetime import timedelta
-from django.shortcuts import render
-from django.utils.timezone import now
-from .models import Turno, EmpleadoXTurno, ServicioXTurno, Caja
-from django.contrib.auth.decorators import login_required
-
-@login_required
-@requerir_autenticacion
-def list_turnos(request):
-    empleado = obtener_empleado_autenticado(request)
-
-    # Obtener filtros de la solicitud GET
-    estado = request.GET.get('estado', 'Pendiente')  # Por defecto 'Pendiente'
-    rango_fecha = request.GET.get('rango_fecha', 'hoy')  # Por defecto 'hoy'
-
-    # Filtrar turnos por fecha
-    hoy = now().date()
-    if rango_fecha == 'hoy':
-        turnos = Turno.objects.filter(fecha=hoy)
-    elif rango_fecha == 'semana':
-        inicio_semana = hoy - timedelta(days=hoy.weekday())  # Lunes de esta semana
-        fin_semana = inicio_semana + timedelta(days=6)  # Domingo de esta semana
-        turnos = Turno.objects.filter(fecha__range=[inicio_semana, fin_semana])
-    elif rango_fecha == 'mes':
-        turnos = Turno.objects.filter(fecha__month=hoy.month, fecha__year=hoy.year)
-    elif rango_fecha == 'todo':
-        turnos = Turno.objects.all()  # No filtrar por fecha
-    else:
-        turnos = Turno.objects.all()
-
-    # Filtrar por estado de turno
-    if estado != 'todos':
-        turnos = turnos.filter(estado_turno=estado)
-
-    # Obtener datos adicionales para cada turno
-    turnos_data = []
-    for turno in turnos:
-        empleados = EmpleadoXTurno.objects.filter(id_turno=turno).select_related('dni_emp')
-        servicios = ServicioXTurno.objects.filter(id_turno=turno).select_related('id_servicio')
-
-        empleado_nombres = ', '.join([f"{emp.dni_emp.nombre} {emp.dni_emp.apellido}" for emp in empleados])
-        servicio_nombres = ', '.join([servicio.id_servicio.nombre_del_servicio for servicio in servicios])
-
-        turnos_data.append({
-            'turno': turno,
-            'empleados': empleado_nombres,
-            'servicios': servicio_nombres,
-            'id_cliente': turno.id_cliente if turno.id_cliente else None,
-            'diseño_uñas': turno.diseño_uñas,
-            'senia_comprobante': turno.senia_comprobante,
-        })
-
-    context = {
-        'turnos_data': turnos_data,
-        'cajas_abiertas': Caja.objects.filter(estado=True).exists(),
-        'es_admin': empleado.es_admin,
-        'estado_actual': estado,
-        'rango_fecha_actual': rango_fecha,  # Pasar el rango actual al contexto
-    }
-
-    return render(request, 'list_turnos.html', context)
-
-
 
 
 @requerir_autenticacion
@@ -573,63 +694,21 @@ def modificar_turno(request, turno_id):
     if request.method == "POST":
         empleado_id = request.POST.get('empleado')
 
-        # Actualizar el turno con los nuevos datos
-        turno.id_empleado_id = empleado_id  # Asignar empleado
+
+        turno.id_empleado_id = empleado_id  
         turno.save()
 
-        # Redirigir al listado de turnos o a una página de confirmación
         return redirect('list_turnos')
 
-    # Obtener todos los empleados y servicios para mostrarlos en el formulario
     empleados = Empleado.objects.all()
 
     return render(request, 'modificar_turno.html', {
         'turno': turno,
         'empleados': empleados,
-        'es_admin': empleado.es_admin,  # Pasar la variable es_admin
+        'es_admin': empleado.es_admin,  
         'cajas_abiertas': cajas_abiertas,
     })
 
-from datetime import timedelta
-from django.shortcuts import render
-from django.utils.timezone import now
-from datetime import timedelta
-from django.shortcuts import render
-from django.utils.timezone import now
-from .models import Cliente, Caja
-from django.contrib.auth.decorators import login_required
-
-@login_required
-@requerir_autenticacion
-def list_clientes(request):
-    empleado = obtener_empleado_autenticado(request)
-
-    # Obtener filtros de la solicitud GET
-    rango_fecha = request.GET.get('rango_fecha', 'hoy')  # Por defecto 'hoy'
-
-    # Filtrar clientes por fecha
-    hoy = now().date()
-    if rango_fecha == 'hoy':
-        clientes = Cliente.objects.filter(fecha_registro__date=hoy)
-    elif rango_fecha == 'semana':
-        inicio_semana = hoy - timedelta(days=hoy.weekday())  # Lunes de esta semana
-        fin_semana = inicio_semana + timedelta(days=7)  # Domingo de esta semana
-        clientes = Cliente.objects.filter(fecha_registro__date__range=[inicio_semana, fin_semana])
-    elif rango_fecha == 'mes':
-        clientes = Cliente.objects.filter(fecha_registro__month=hoy.month, fecha_registro__year=hoy.year)
-    elif rango_fecha == 'todo':
-        clientes = Cliente.objects.all()  # No filtrar por fecha
-    else:
-        clientes = Cliente.objects.all()
-
-    cajas_abiertas = Caja.objects.filter(estado=True).exists()
-
-    return render(request, 'list_clientes.html', {
-        'clientes': clientes,
-        'es_admin': empleado.es_admin,
-        'cajas_abiertas': cajas_abiertas,
-        'rango_fecha_actual': rango_fecha,  # Pasar el rango actual al contexto
-    })
 
 
 @login_required
@@ -675,61 +754,31 @@ def restore_database(request):
 
     return render(request, 'restore_database.html')
 
-from django.utils import timezone
 
-from django.utils import timezone
-from datetime import datetime, timedelta  # IMPORTA datetime
-
-@login_required
-@requerir_autenticacion
-def list_ventas(request):
-    # Obtener la fecha actual y el inicio de hoy
-    today = timezone.now().date()
-    start_of_day = timezone.make_aware(datetime.combine(today, datetime.min.time()))
-    end_of_day = start_of_day + timedelta(days=1)
-
-    # Filtrar ventas realizadas hoy (de 00:00 a 23:59)
-    ventas = Venta.objects.filter(fecha_venta__gte=start_of_day, fecha_venta__lt=end_of_day)
-
-    empleado = obtener_empleado_autenticado(request)
-    cajas_abiertas = Caja.objects.filter(estado=True).exists()
-    
-    return render(request, 'list_ventas.html', {
-        'ventas': ventas,
-        'es_admin': empleado.es_admin,
-        'cajas_abiertas': cajas_abiertas,
-    })
 
 
 @login_required
 @requerir_autenticacion
 def modificar_metodo_pago(request, venta_id):
-    # Obtener si hay cajas abiertas
     cajas_abiertas = Caja.objects.filter(estado=True).exists()
-
-    # Obtener la venta
     venta = get_object_or_404(Venta, id_venta=venta_id)
-    
-    # Intentar obtener todos los DetalleVenta relacionados con la venta
     detalle_venta_list = DetalleVenta.objects.filter(id_venta=venta)
     
     if detalle_venta_list.count() == 1:
-        # Si hay solo un detalle de venta, usamos ese
+
         detalle_venta = detalle_venta_list.first()
     elif detalle_venta_list.count() > 1:
-        # Si hay múltiples detalles de venta, puedes manejar cuál usar
-        detalle_venta = detalle_venta_list.first()  # Ejemplo: selecciona el primero
-        # También puedes usar otro criterio como el más reciente, etc.
+
+        detalle_venta = detalle_venta_list.first()  
     else:
-        # Si no hay detalles de venta, lanzar un error o redirigir
+
         messages.error(request, "No se encontraron detalles de venta para esta venta.")
         return redirect('list_ventas')
 
-    # Si se envió el formulario con los cambios
     if request.method == 'POST':
         form = MetodoPagoForm(request.POST, instance=detalle_venta)
         if form.is_valid():
-            # Asignamos la venta actual a id_venta para asegurar que se mantenga la relación
+
             detalle_venta.id_venta = venta
             form.save()
             messages.success(request, 'Método de pago modificado correctamente.')
@@ -737,7 +786,6 @@ def modificar_metodo_pago(request, venta_id):
     else:
         form = MetodoPagoForm(instance=detalle_venta)
 
-    # Renderizamos el formulario de modificación de método de pago
     return render(request, 'modificar_metodo_pago.html', {
         'form': form,
         'venta': venta,
@@ -754,55 +802,19 @@ def detalle_venta(request, id_venta):
     empleado = obtener_empleado_autenticado(request)
     return render(request, 'detalle_venta.html', {'venta': venta, 'detalle_venta': detalle_venta, 'es_admin': empleado.es_admin, 'cajas_abiertas': cajas_abiertas,})
 
-@login_required
-@requerir_autenticacion
-def list_reservas(request):
-    empleado = obtener_empleado_autenticado(request)
-    
-    # Obtener los filtros de la solicitud GET
-    estado_reserva = request.GET.get('estado_reserva', '')  # Filtro por estado de reserva
-    rango_fecha = request.GET.get('rango_fecha', 'hoy')  # Filtro por fecha (por defecto 'hoy')
-    
-    # Filtrar las reservas por estado
-    reservas = Reservas.objects.all()
-    if estado_reserva:
-        reservas = reservas.filter(estado_reserva=estado_reserva)
-    
-    # Filtrar por fecha
-    hoy = now().date()
-    if rango_fecha == 'hoy':
-        reservas = reservas.filter(fecha_registro__date=hoy)
-    elif rango_fecha == 'semana':
-        inicio_semana = hoy - timedelta(days=hoy.weekday())  # Lunes de esta semana
-        fin_semana = inicio_semana + timedelta(days=6)  # Domingo de esta semana
-        reservas = reservas.filter(fecha_registro__range=[inicio_semana, fin_semana])
-    elif rango_fecha == 'mes':
-        reservas = reservas.filter(fecha_registro__month=hoy.month, fecha_registro__year=hoy.year)
-    
-    cajas_abiertas = Caja.objects.filter(estado=True).exists()
-    return render(request, 'list_reservas.html', {
-        'reservas': reservas,
-        'es_admin': empleado.es_admin,
-        'cajas_abiertas': cajas_abiertas,
-        'estado_reserva_actual': estado_reserva,
-        'rango_fecha_actual': rango_fecha
-    })
 
-
-# Alias para confirmar específicamente turnos
 def confirmar_turno(request):
     return gestionar_turno(request, accion='confirmar')
 
 def gestionar_turno(request, accion):
     if request.method == 'POST':
-        data = json.loads(request.body)  # Leer el cuerpo JSON de la solicitud
-        turnos_ids = data.get('turnos')  # IDs de los turnos seleccionados
-        action = data.get('action')  # "confirmar" o "cancelar"
+        data = json.loads(request.body)  
+        turnos_ids = data.get('turnos') 
+        action = data.get('action')  
 
         if not turnos_ids:
             return JsonResponse({'success': False, 'message': 'No se seleccionaron turnos.'})
 
-        # Obtener la caja activa (supone que hay una caja abierta única)
         caja_activa = Caja.objects.filter(estado=True).first()
 
         if not caja_activa:
@@ -813,16 +825,15 @@ def gestionar_turno(request, accion):
                 turno = Turno.objects.get(id_turno=turno_id)
 
                 if action == 'confirmar':
-                    # Actualizar estado del turno y crear una reserva
+
                     turno.estado_turno = 'Confirmado'
                     turno.save()
 
-                    # Obtener el servicio asociado al turno
+
                     servicio_x_turno = ServicioXTurno.objects.filter(id_turno=turno).first()
                     if not servicio_x_turno:
                         return JsonResponse({'success': False, 'message': f'No se encontró un servicio asociado al turno {turno_id}.'})
 
-                    # Crear reserva asociada al turno
                     reserva = Reservas.objects.create(
                         id_cliente=turno.id_cliente,
                         id_turno=turno,
@@ -830,27 +841,25 @@ def gestionar_turno(request, accion):
                         estado_reserva='Confirmada'
                     )
 
-                    # Crear registro de venta asociado a la reserva
                     precio_servicio = servicio_x_turno.id_servicio.precio_del_servicio
                     senia = servicio_x_turno.id_servicio.senia
                     monto_subtotal = (precio_servicio * senia) / 100
 
-                    # Crear la venta
+
                     venta = Venta.objects.create(
                         id_caja=caja_activa,
                         id_cliente=turno.id_cliente,
                         monto_total=monto_subtotal
                     )
 
-                    # Crear el detalle de venta
                     DetalleVenta.objects.create(
                         id_venta=venta,
                         id_reserva=reserva,
-                        metodo_pago='Tranferencia',  # Se puede modificar según corresponda
+                        metodo_pago='Tranferencia',
                         monto_subtotal=monto_subtotal
                     )
 
-                    # Enviar correo de confirmación
+
                     send_mail(
                         'Confirmación de Turno',
                         f'Hola {turno.id_cliente.nombre}, tu turno ha sido confirmado para el día {turno.fecha} a las {turno.hora}.',
@@ -860,11 +869,10 @@ def gestionar_turno(request, accion):
                     )
 
                 elif action == 'cancelar':
-                    # Actualizar estado del turno a "cancelado"
+
                     turno.estado_turno = 'Cancelado'
                     turno.save()
 
-                    # Enviar correo de cancelación
                     send_mail(
                         'Cancelación de Turno',
                         f'Hola {turno.id_cliente.nombre}, lamentamos informarte que tu turno para el día {turno.fecha} a las {turno.hora} ha sido cancelado.',
@@ -885,59 +893,57 @@ def gestionar_turno(request, accion):
 def actualizar_reserva(request, reserva_id):
     if request.method == 'POST':
         try:
-            # Leer el cuerpo JSON de la solicitud
+
             data = json.loads(request.body)
 
-            # Obtener la acción
+
             accion = data.get('accion')
             if accion not in ['confirmar', 'cancelar']:
                 return JsonResponse({"error": "Acción no válida"}, status=400)
 
-            # Obtener la reserva correspondiente
+
             reserva = get_object_or_404(Reservas, id_reserva=reserva_id)
             
-            # Obtener el empleado asociado al turno de la reserva
+
             empleado_turno = EmpleadoXTurno.objects.filter(id_turno=reserva.id_turno).first()
             if not empleado_turno:
                 return JsonResponse({"error": "No se encuentra el empleado asociado al turno."}, status=400)
 
-            # Verificar si la caja está abierta para el empleado
             caja_abierta = Caja.objects.filter(estado=True).last()
 
-            # Acciones para confirmar o cancelar la reserva
             if accion == 'confirmar':
-                # Obtener el servicio y los montos
+
                 servicio = reserva.id_serv_x_tur.id_servicio
                 monto_subtotal = (servicio.precio_del_servicio * servicio.senia) / 100
                 monto_total_adicional = servicio.precio_del_servicio - monto_subtotal
 
-                # Verificar si ya existe una venta para este cliente en la caja abierta
+
                 venta_existente = Venta.objects.filter(
                     id_caja=caja_abierta,
                     id_cliente=reserva.id_cliente
                 ).last()
 
                 if venta_existente:
-                    # Si la caja de la venta existente es la misma, actualizar el monto
+
                     if venta_existente.id_caja == caja_abierta:
                         venta_existente.monto_total += monto_total_adicional
                         venta_existente.save()
                     else:
-                        # Si es otra caja, crear una nueva venta
+
                         venta_existente = Venta.objects.create(
                             id_caja=caja_abierta,
                             id_cliente=reserva.id_cliente,
                             monto_total=monto_total_adicional
                         )
                 else:
-                    # Si no hay una venta existente, crear una nueva
+
                     venta_existente = Venta.objects.create(
                         id_caja=caja_abierta,
                         id_cliente=reserva.id_cliente,
                         monto_total=monto_total_adicional
                     )
 
-                # Crear un detalle de venta asociado
+
                 DetalleVenta.objects.create(
                     id_venta=venta_existente,
                     id_reserva=reserva,
@@ -945,14 +951,14 @@ def actualizar_reserva(request, reserva_id):
                     monto_subtotal=monto_total_adicional
                 )
 
-                # Actualizar el estado de la reserva a 'terminada'
+
                 reserva.estado_reserva = 'Terminada'
                 reserva.save()
 
                 return JsonResponse({"success": "Se confirmó la reserva como terminada exitosamente"})
 
             elif accion == 'cancelar':
-                # Actualizar el estado de la reserva a 'cancelada'
+
                 reserva.estado_reserva = 'Cancelada'
                 reserva.save()
 
@@ -967,7 +973,7 @@ def actualizar_reserva(request, reserva_id):
 def inicio(request):
    
     return render(request,'index.html')
-    #return HttpResponse("<h1>hola feos<h1>")
+
 
 @requerir_autenticacion
 def gturno(request):
@@ -977,7 +983,7 @@ def gturno(request):
         .order_by('-total')
     )
 
-    # Preparar los datos para Chart.js
+
     labels = [servicio['id_servicio__nombre_del_servicio'] for servicio in servicios]
     data = [servicio['total'] for servicio in servicios]
 
@@ -986,7 +992,7 @@ def gturno(request):
         'data': data,
     }
     return render(request,'graficos/grafico_turno.html',context)
-    #return HttpResponse("<h1>hola feos<h1>")
+
 
 
 
@@ -998,7 +1004,6 @@ def gventas(request):
         .order_by('-total')
     )
 
-    # Preparar los datos para Chart.js
     labels = [venta['metodo_pago'] if venta['metodo_pago'] else 'Desconocido' for venta in ventas_por_metodo]
     data = [venta['total'] for venta in ventas_por_metodo]
 
@@ -1015,17 +1020,8 @@ def gcaja(request):
     ).order_by('-total_recaudado')
 
     empleados = [f"{d['empleado_nombre']} {d['empleado_apellido']}" for d in data]
-    # montos = [float(d['total_recaudado']) or 0 for d in data]
+
     montos = [float(d['total_recaudado'] or 0) for d in data]
 
     return render(request, 'graficos/grafico_caja.html', {'empleados': empleados, 'montos': montos})
 
-def ventas_por_caja(request, id_caja):
-    caja = get_object_or_404(Caja, id_caja=id_caja)
-    ventas = Venta.objects.filter(id_caja=caja)
-
-    context = {
-        'caja': caja,
-        'ventas': ventas,
-    }
-    return render(request, 'ventas_por_caja.html', context)

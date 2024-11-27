@@ -109,11 +109,14 @@
                     <td>{{ data.servicios }}</td>
                     {% if es_admin %}
                     <td>
-                        <!-- Botones de Modificar y Eliminar solo para administradores -->
-                        <a href="{% url 'modificar_turno' data.turno.id_turno %}" class="btn btn-warning btn-sm" title="Cambiar Empleado">
-                            <i class="fas fa-edit"></i> 
-                        </a>
+                        <!-- Botón de Modificar solo cuando el estado del turno no sea 'Confirmado' o 'Cancelado' -->
+                        {% if data.turno.estado_turno != 'Confirmado' and data.turno.estado_turno != 'Cancelado' %}
+                            <a href="{% url 'modificar_turno' data.turno.id_turno %}" class="btn btn-warning btn-sm" title="Cambiar Empleado">
+                                <i class="fas fa-edit"></i> 
+                            </a>
+                        {% endif %}
                     </td>
+                    
                     {% endif %}
                 </tr>
                 {% endfor %}

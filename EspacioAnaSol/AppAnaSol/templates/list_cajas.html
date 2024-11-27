@@ -14,9 +14,6 @@
         </form>
         {% endif %}
     </div>
-    <a href="{% url 'gcaja' %}"><button class="btn btn-primary">
-        <i class="fas fa-chart-line"></i> Gráfico
-    </button></a>    
 
     <div class="action-bar">
         <label for="rango-filtro" class="mr-3 mb-0">Filtrar por Fecha:</label>
@@ -73,7 +70,7 @@
                     </td>
                     
                     <td>
-                        {% if not cajas_abiertas %}
+                        {% if caja.estado %}
                         <form action="{% url 'cerrar_caja' caja.id_caja %}" method="post" style="display:inline;">
                             {% csrf_token %}
                             <button type="submit" class="btn-sm" title="Cerrar Caja">

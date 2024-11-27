@@ -7,21 +7,11 @@
 <div class="col-md-9 main-content">
     <div class="title-section">
         <h1>Gestión de Empleados</h1>
-        {% if not cajas_abiertas %}
         <form action="{% url 'add_empleado' %}" method="get">
             <button type="submit" class="btn btn-insert">Agregar Empleado +</button>
         </form>
-        {% endif %}
     </div>
     
-    <div class="action-bar">
-        <select class="form-control">
-            <option>Seleccionar</option>
-            <option>Opción 1</option>
-            <option>Opción 2</option>
-        </select>
-        <button class="btn btn-filter btn-light ml-2">Filtrar</button>
-    </div>
     
     <!-- Scrollable Table Wrapper -->
     <div class="table-responsive" style="max-height: 400px; overflow-y: auto; margin-top: 15px;">
